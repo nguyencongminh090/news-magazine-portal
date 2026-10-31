@@ -8,5 +8,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
-- **#11.** Read API for articles and categories `[Model: Sonnet]` — [detail](docs/todo/A11-articles-read-api.md)
 - **#12.** Fix migrate test that hardcodes migration 005 as the latest `[Model: Haiku]` — [detail](docs/todo/A12-migrate-test-005-hardcodes-latest.md)
