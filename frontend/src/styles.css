@@ -68,6 +68,9 @@ footer.site { border-top: 1px solid var(--border); background: var(--surface); p
 .article p { font: 18px/1.65 var(--sans); margin: 0 0 24px; }
 .tags a { display: inline-block; border: 1px solid var(--border); padding: 0 8px; margin: 0 8px 8px 0; font-size: var(--fs-small); text-decoration: none; }
 .comment { border-top: 1px solid var(--border); padding: 16px 0; }
+.article section { margin-top: 40px; }
+.article h2 { margin-bottom: 8px; }
+.article .rating-summary { margin-bottom: 0; }
 .rating { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 16px; }
 .rating .star { min-width: var(--target); }
 .rating .star.on { background: var(--primary); color: var(--on-primary); }
