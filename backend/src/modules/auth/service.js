@@ -1,6 +1,7 @@
 import { HttpError } from '../../http/errors.js';
 import { burnVerify, hashPassword, verifyPassword } from './password.js';
-import { hashToken, newRefreshToken, signAccess } from './tokens.js';
+import { RESET_TTL_MINUTES, resetPasswordEmail } from './emails.js';
+import { hashToken, newOpaqueToken, newRefreshToken, signAccess } from './tokens.js';
 
 /** The one user shape returned by register / login / refresh / me. */
 export const toUserPayload = (row) => ({
@@ -9,9 +10,10 @@ export const toUserPayload = (row) => ({
 
 const invalidLogin = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid email or password' });
 const wrongCurrentPassword = () => new HttpError(400, 'Bad Request', { detail: 'Current password is incorrect' });
+const invalidResetLink = () => new HttpError(400, 'Bad Request', { detail: 'Invalid or expired reset link' });
 const invalidRefresh = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid or expired session' });
 
-export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds = 0 }) {
+export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds = 0, mailer, appBaseUrl }) {
   const refreshExpiry = () => new Date(Date.now() + refreshTtlDays * 86_400_000);
 
   async function startSession(userRow) {
@@ -64,6 +66,26 @@ export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSecon
       if (!(await verifyPassword(user.password_hash, currentPassword))) throw wrongCurrentPassword();
       await repo.updatePassword(user.id, await hashPassword(newPassword), new Date());
       return startSession(user);
+    },
+
+    /**
+     * ADR-003 #6: runs after the 202 has been sent, so known and unknown emails cost the caller the same. Unknown and
+     * inactive accounts get no mail and no error.
+     */
+    async requestPasswordReset(email) {
+      const user = await repo.findUserByEmail(email);
+      if (!user || !user.is_active) return;
+      const { token, hash } = newOpaqueToken();
+      await repo.issueUserToken({ userId: user.id, purpose: 'reset', hash, expiresAt: new Date(Date.now() + RESET_TTL_MINUTES * 60_000) });
+      await mailer.send(resetPasswordEmail({ to: user.email, appBaseUrl, token }));
+    },
+
+    /** One generic error for unknown / used / expired / superseded tokens and inactive users. No auto-login. */
+    async confirmPasswordReset({ token, newPassword }) {
+      const userId = await repo.resetPasswordWithToken({
+        tokenHash: hashToken(token), passwordHash: await hashPassword(newPassword), changedAt: new Date(),
+      });
+      if (!userId) throw invalidResetLink();
     },
 
     async logout(token) {

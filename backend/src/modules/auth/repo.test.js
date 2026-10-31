@@ -97,6 +97,42 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal((await rotate(l1, newRefreshToken())).status, 'reuse');
     assert.equal(await liveIn(lFam), 0);
 
+    // A15 reset: reissue kills the older token; consume is single-use, checks expiry + purpose, revokes all, verifies email.
+    const resetFor = (hash) => repo.resetPasswordWithToken({ tokenHash: hash, passwordHash: 'h4', changedAt: new Date() });
+    const r1 = newRefreshToken();
+    const r2 = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: r1.hash, expiresAt: future });
+    await repo.issueUserToken({ userId: id, purpose: 'verify', hash: newRefreshToken().hash, expiresAt: future });
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: r2.hash, expiresAt: future });
+    assert.equal((await query("SELECT count(*)::int n FROM user_tokens WHERE user_id = $1 AND purpose = 'reset'", [id])).rows[0].n, 1);
+    assert.equal((await query("SELECT count(*)::int n FROM user_tokens WHERE user_id = $1 AND purpose = 'verify'", [id])).rows[0].n, 1);
+    assert.equal(await resetFor(r1.hash), null); // superseded
+    await repo.insertRefreshToken({ userId: id, hash: newRefreshToken().hash, expiresAt: future });
+    assert.equal((await repo.findUserById(id)).email_verified_at ?? null, null);
+    assert.equal(String(await resetFor(r2.hash)), String(id));
+    assert.equal((await repo.findUserById(id)).password_hash, 'h4');
+    assert.equal((await query('SELECT count(*)::int n FROM refresh_tokens WHERE user_id = $1 AND revoked_at IS NULL', [id])).rows[0].n, 0);
+    assert.ok((await query('SELECT email_verified_at FROM users WHERE id = $1', [id])).rows[0].email_verified_at instanceof Date);
+    assert.equal(await resetFor(r2.hash), null); // single use
+    const vt = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'verify', hash: vt.hash, expiresAt: future });
+    assert.equal(await resetFor(vt.hash), null); // wrong purpose
+    const ex = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: ex.hash, expiresAt: new Date(Date.now() - 1000) });
+    assert.equal(await resetFor(ex.hash), null); // expired
+    const off = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: off.hash, expiresAt: future });
+    await query('UPDATE users SET is_active = false WHERE id = $1', [id]);
+    assert.equal(await resetFor(off.hash), null); // deactivated after the mail went out
+    await query('UPDATE users SET is_active = true WHERE id = $1', [id]);
+    assert.equal(await resetFor(hashToken('unknown')), null);
+    // A password change kills outstanding reset links (a link from a once-compromised mailbox must not undo it).
+    const pending = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: pending.hash, expiresAt: future });
+    await repo.updatePassword(id, 'h5', new Date());
+    assert.equal(await resetFor(pending.hash), null);
+    assert.equal((await repo.findUserById(id)).password_hash, 'h5');
+
     // A15 race: a rotation in flight when the password changes must not leave its successor live. Under READ
     // COMMITTED the revoking UPDATE never sees a row inserted after its snapshot, so the two must serialise.
     const blocker = new pg.Client({ connectionString: testDb });

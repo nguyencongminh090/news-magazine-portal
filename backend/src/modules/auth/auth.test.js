@@ -5,75 +5,7 @@ import { limiter } from '../../http/rateLimit.js';
 import { hashPassword, passwordSchema, verifyPassword } from './password.js';
 import { hashToken, signAccess, verifyAccess } from './tokens.js';
 import { SignJWT } from 'jose';
-
-const jwt = { secret: 's'.repeat(40), issuer: 'iss', audience: 'aud', accessTtl: '15m' };
-const ORIGIN = 'http://localhost:5173';
-
-async function withServer(app, fn) {
-  const server = app.listen(0);
-  try {
-    await fn(`http://127.0.0.1:${server.address().port}`);
-  } finally {
-    server.close();
-  }
-}
-
-/** Minimal in-memory repo with the same contract as repo.js (SQL semantics are covered by the real-DB test). */
-function fakeRepo() {
-  const users = [];
-  const tokens = [];
-  let seq = 0;
-  const repo = {
-    users, tokens,
-    findUserByEmail: async (e) => users.find((u) => u.email.toLowerCase() === e.toLowerCase()) ?? null,
-    findUserById: async (id) => users.find((u) => String(u.id) === String(id)) ?? null,
-    createUser: async ({ email, passwordHash, displayName, roles }) => {
-      if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) throw Object.assign(new Error('dup'), { code: '23505' });
-      users.push({ id: ++seq, email, password_hash: passwordHash, display_name: displayName, is_active: true, roles });
-      return seq;
-    },
-    // One family per sign-in (like gen_random_uuid() in the DB); rotation keeps it.
-    insertRefreshToken: async ({ userId, hash, expiresAt, familyId }) =>
-      tokens.push({ userId, hash, family: familyId ?? `fam-${tokens.length}`, expiresAt, revoked: false }),
-    rotateRefreshToken: async ({ oldHash, newHash, expiresAt }) => {
-      const t = tokens.find((x) => x.hash === oldHash);
-      if (!t) return { status: 'invalid' };
-      if (t.revoked) { tokens.filter((x) => x.family === t.family).forEach((x) => (x.revoked = true)); return { status: 'reuse' }; }
-      t.revoked = true;
-      tokens.push({ userId: t.userId, hash: newHash, family: t.family, expiresAt, revoked: false });
-      return { status: 'ok', userId: String(t.userId) };
-    },
-    revokeFamilyByHash: async (h) => {
-      const t = tokens.find((x) => x.hash === h);
-      if (t) tokens.filter((x) => x.family === t.family).forEach((x) => (x.revoked = true));
-    },
-    updatePassword: async (id, passwordHash, changedAt) => {
-      const u = users.find((x) => String(x.id) === String(id));
-      u.password_hash = passwordHash;
-      u.password_changed_at = changedAt;
-      tokens.filter((x) => String(x.userId) === String(id)).forEach((x) => (x.revoked = true));
-    },
-    setRoles: async (id, roles) => {
-      const u = users.find((x) => x.id === id);
-      if (!u) return false;
-      u.roles = roles;
-      tokens.filter((x) => x.userId === id).forEach((x) => (x.revoked = true));
-      return true;
-    },
-  };
-  return repo;
-}
-
-const pass = (_q, _s, n) => n();
-const open = () => ({ login: pass, register: pass, refresh: pass, changePassword: pass });
-function makeApp(repo = fakeRepo(), limits = open()) {
-  return { repo, app: createApp({ jwt, corsOrigin: ORIGIN, refreshTokenTtlDays: 14, auth: { repo, limits } }) };
-}
-const post = (base, path, body, headers = {}) =>
-  fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: body && JSON.stringify(body) });
-const refreshCookie = (res) => /refresh_token=([^;]+)/.exec(res.headers.get('set-cookie') ?? '')?.[1];
-const csrf = { 'x-requested-with': 'fetch', origin: ORIGIN };
-const reg = { email: 'Reader@Example.com', displayName: 'Rea', password: 'correct horse battery' };
+import { ORIGIN, csrf, fakeRepo, jwt, makeApp, open, post, refreshCookie, reg, withServer } from './testkit.js';
 
 test('password policy: length 8-128, no composition rules, blocklist', () => {
   assert.ok(passwordSchema.safeParse('alllowercaseletters').success);

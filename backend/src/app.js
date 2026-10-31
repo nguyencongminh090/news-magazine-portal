@@ -9,6 +9,7 @@ import { articleShellRouter } from './modules/articles/shellRoute.js';
 import { articlesRouter } from './modules/articles/routes.js';
 import { categoriesRouter } from './modules/categories/routes.js';
 import { authRouter } from './modules/auth/routes.js';
+import { createMailer } from './mail/mailer.js';
 import { usersRouter } from './modules/users/routes.js';
 import { adminArticlesRouter } from './modules/adminArticles/routes.js';
 import { requireJson } from './http/validate.js';
@@ -31,7 +32,9 @@ export function createApp(cfg = {}) {
     const origins = [cfg.corsOrigin ?? 'http://localhost:5173', cfg.publicBaseUrl].filter(Boolean);
     app.use('/api/auth', authRouter({
       jwt: cfg.jwt, refreshTtlDays: cfg.refreshTokenTtlDays, refreshGraceSeconds: cfg.refreshReuseGraceSeconds,
-      cookieSecure: cfg.cookieSecure, allowedOrigins: origins, ...cfg.auth,
+      cookieSecure: cfg.cookieSecure, allowedOrigins: origins,
+      // Links in emails point at the SPA: the public origin in prod, the Vite origin in dev.
+      appBaseUrl: cfg.publicBaseUrl ?? origins[0], mailer: createMailer(cfg.mail), ...cfg.auth,
     }));
     app.use('/api/users', usersRouter({ jwt: cfg.jwt, repo: cfg.auth?.repo }));
     app.use('/api/admin/articles', adminArticlesRouter({ jwt: cfg.jwt, auth: cfg.auth?.repo, ...cfg.adminArticles }));
