@@ -1,5 +1,5 @@
 # A03 — Seed 50–100 real articles (Wikinews EN) + license file
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — 104 articles (8 categories), CC BY 4.0 verified, seed idempotent (2 runs identical)
 **Area:** `backend/db/seed/`, `DATA_LICENSE.md`
 **From:** features/stack-adr (approved 2026-10-31)   **Depends:** A02
 
@@ -19,3 +19,6 @@ Brief requires 50–100 realistic records, no Lorem Ipsum.
 Cleanest redistributable license for a public GitHub repo (BBC News content is BBC copyright).
 ## Done when
 - ≥ 50 documents seeded, categories populated, license file complete, seed idempotent.
+## Notes
+- Author = real Wikinews creator (CC BY attribution), IPs replaced by "Anonymous Wikinews contributor"; tags = the articles' own Wikinews categories (deviates from "generate").
+- Dataset in `backend/db/seed/articles.json` (388 KB, committed); `fetch-wikinews.js` is resumable; Argon2id via `argon2`.
