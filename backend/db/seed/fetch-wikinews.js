@@ -59,7 +59,7 @@ async function listTitles(topic) {
   return titles;
 }
 
-const anonymousUser = (name) => /^(\d{1,3}\.){3}\d{1,3}$/.test(name) || /^[0-9a-f]{0,4}(:[0-9a-f]{0,4}){2,7}$/i.test(name);
+export const anonymousUser = (name) => /^(\d{1,3}\.){3}\d{1,3}$/.test(name) || /^[0-9a-f]{0,4}(:[0-9a-f]{0,4}){2,7}$/i.test(name);
 
 async function fetchArticle(title, category) {
   const body = await api({

@@ -47,10 +47,18 @@ export function summarize(content, max = 280) {
   return (summary.trim() || content).slice(0, max).trim();
 }
 
+/** Demo accounts share a public password, so refuse production unless explicitly overridden. */
+export function assertSeedAllowed(env = process.env) {
+  if (env.NODE_ENV === 'production' && env.SEED_ALLOW_PRODUCTION !== '1') {
+    throw new Error('Refusing to seed: NODE_ENV=production (demo accounts use a public password). Set SEED_ALLOW_PRODUCTION=1 to override.');
+  }
+}
+
 const nameKey = (name) => slugify(name, 100);
 
-/** Idempotent: every row is keyed by slug/email, so reruns update in place. Returns counts. */
-export async function seed(databaseUrl, articles) {
+/** Idempotent: every row is keyed by slug/email, so reruns update in place. views_count is insert-only. Returns counts. */
+export async function seed(databaseUrl, articles, { env = process.env } = {}) {
+  assertSeedAllowed(env);
   const client = new pg.Client({ connectionString: databaseUrl });
   await client.connect();
   try {
@@ -98,7 +106,7 @@ export async function seed(databaseUrl, articles) {
          ON CONFLICT (slug) DO UPDATE SET
            title = EXCLUDED.title, summary = EXCLUDED.summary, content = EXCLUDED.content,
            category_id = EXCLUDED.category_id, author_name = EXCLUDED.author_name,
-           views_count = EXCLUDED.views_count, published_at = EXCLUDED.published_at
+           published_at = EXCLUDED.published_at
          RETURNING id`,
         [
           article.title.slice(0, 300),
@@ -144,5 +152,10 @@ export async function seed(databaseUrl, articles) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { config } = await import('../../src/config.js');
   const articles = JSON.parse(await readFile(ARTICLES_FILE, 'utf8'));
-  console.log(await seed(config.databaseUrl(), articles));
+  try {
+    console.log(await seed(config.databaseUrl(), articles));
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
 }
