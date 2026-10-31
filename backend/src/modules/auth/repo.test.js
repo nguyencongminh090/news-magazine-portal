@@ -64,6 +64,8 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal((await rotate(g1, g2)).status, 'ok');
     assert.equal((await rotate(g1, g3)).status, 'ok', 'replay of a just-rotated token within grace re-mints');
     assert.equal(await liveIn(gFam), 1, 'the unused successor was revoked: one live token per family');
+    const usedAt = async (t) => (await query('SELECT used_at FROM refresh_tokens WHERE token_hash = $1', [t.hash])).rows[0].used_at.getTime();
+    assert.equal(await usedAt(g2), await usedAt(g1), 'the sibling inherits the original rotation time: the chain window never restarts');
     assert.equal((await rotate(g2, g4)).status, 'ok', 'out-of-order cookie: the revoked sibling also gets grace');
     assert.equal((await rotate(g4, g5)).status, 'ok');
     assert.equal(await liveIn(gFam), 1);

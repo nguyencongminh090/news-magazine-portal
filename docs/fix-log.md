@@ -9,3 +9,4 @@ Append-only. Detail files: `docs/fix-log/<YYYY-MM-DD>-<slug>.md` (template `docs
 | 2026-10-31 15:05 | #10 Article/404 views lacked a main landmark (declared per page); moved to PublicLayout; 404 link target enlarged | [detail](fix-log/2026-10-31-public-main-landmark.md) |
 | 2026-10-31 16:00 | #14 login rate-limit key skipped email normalisation (bypass) and bootstrap crashed/pre-registered on an existing ADMIN_EMAIL | [detail](fix-log/2026-10-31-auth-review-findings.md) |
 | 2026-10-31 19:45 | #16 replay of a just-rotated refresh token (lost response, two tabs) revoked the family; 30 s grace re-mint via used_at/replaced_by | [detail](fix-log/2026-10-31-refresh-grace-window.md) |
+| 2026-10-31 19:48 | #16 follow-up: grace re-mint restarted the window on each superseded sibling (ping-pong bypass); sibling now inherits the original used_at | [detail](fix-log/2026-10-31-refresh-grace-sibling-window.md) |
