@@ -35,10 +35,13 @@ tracked in `schema_migrations` with a checksum; never edit an applied file, add 
 
 | Area | Tables |
 |---|---|
-| Auth / RBAC | `users`, `roles` (seeded: admin, editor, seo, reader), `user_roles`, `refresh_tokens` (SHA-256 hash, `family_id` for rotation) |
+| Auth / RBAC | `users`, `roles` (seeded: admin, editor, seo, reader), `user_roles`, `refresh_tokens` (SHA-256 hash; `family_id` has no default, rotation inherits the parent's family; `used_at`/`replaced_by` mark rotated tokens so reuse is detectable) |
 | Content | `categories`, `tags`, `documents`, `document_tags` (tags only via this junction; API exposes a tag list) |
-| Engagement | `comments`, `ratings` (1-5, one per user/document), `reports` (targets exactly one document or comment) |
+| Engagement | `comments`, `ratings` (1-5, one per user/document), `reports` (targets exactly one document or comment; one report per reporter per target) |
 | Logs | `search_click_log` (`user_id` NULL = anonymous), `audit_log` |
 
 `documents.status` is `draft|published|archived`; `published` requires `published_at`. SEO fields: `slug`, `meta_title`,
-`meta_description`, `og_image_url`. `updated_at` is set by the application (no triggers).
+`meta_description`, `og_image_url`. `updated_at` is maintained by a shared `set_updated_at()` trigger (users, documents, comments, ratings).
+`documents.tsv` is a generated weighted `tsvector` (`english`, title A > content B) with a GIN index; no search queries yet (Phase 2).
+Prefer `status = 'archived'` over deleting a document: a hard delete cascades `search_click_log`, comments, ratings and reports.
+`views_count` must not be UPDATEd per page view on the hot row; decide the counting strategy (batched/async) before the articles API.
