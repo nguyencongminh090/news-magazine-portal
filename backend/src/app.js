@@ -12,6 +12,7 @@ import { authRouter } from './modules/auth/routes.js';
 import { createMailer } from './mail/mailer.js';
 import { usersRouter } from './modules/users/routes.js';
 import { adminArticlesRouter } from './modules/adminArticles/routes.js';
+import { engagementRouter } from './modules/engagement/routes.js';
 import { requireJson } from './http/validate.js';
 
 /** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell?, articles?, categories? }. Routers needing the DB import their own repo. */
@@ -25,7 +26,7 @@ export function createApp(cfg = {}) {
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api/health', healthRouter);
-  app.use('/api/articles', articlesRouter(cfg.articles));
+  app.use('/api/articles', articlesRouter({ jwt: cfg.jwt?.secret ? cfg.jwt : undefined, auth: cfg.auth?.repo, ...cfg.articles }));
   app.use('/api/categories', categoriesRouter(cfg.categories));
   // Auth needs a signing key; bare createApp() (health/articles tests) simply has no auth routes.
   if (cfg.jwt?.secret) {
@@ -37,6 +38,7 @@ export function createApp(cfg = {}) {
       appBaseUrl: cfg.publicBaseUrl ?? origins[0], mailer: createMailer(cfg.mail), ...cfg.auth,
     }));
     app.use('/api/users', usersRouter({ jwt: cfg.jwt, repo: cfg.auth?.repo }));
+    app.use('/api', engagementRouter({ jwt: cfg.jwt, auth: cfg.auth?.repo, ...cfg.engagement }));
     app.use('/api/admin/articles', adminArticlesRouter({ jwt: cfg.jwt, auth: cfg.auth?.repo, ...cfg.adminArticles }));
   }
 
