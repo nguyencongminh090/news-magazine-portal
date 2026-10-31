@@ -111,7 +111,7 @@ test('loadConfig fails eagerly listing all problems', () => {
     /DATABASE_URL/.test(e.message) && /JWT_SECRET/.test(e.message));
   assert.throws(() => loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'x', JWT_SECRET: 'a'.repeat(32), COOKIE_SECURE: 'false' }),
     /COOKIE_SECURE/);
-  const ok = loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32) });
+  const ok = loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32), PUBLIC_BASE_URL: 'https://news.example' });
   assert.equal(ok.cookieSecure, true);
   assert.equal(ok.jwt.issuer, 'news-portal');
   assert.equal(loadConfig({ DATABASE_URL: 'x' }).nodeEnv, 'development');
