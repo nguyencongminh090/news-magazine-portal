@@ -1,6 +1,6 @@
 # ADR-002: How SEO meta fields reach crawlers (item #6 / A06)
 
-Status: **DRAFT, awaiting user sign-off.** No implementation until approved (size L).
+Status: **ACCEPTED (2026-10-31): option (a), production only, PUBLIC_BASE_URL required.** Implementation tracked as item #7.
 
 ## Context
 - SEO role edits `documents.meta_title` (<=70), `meta_description` (<=320), `og_image_url` (no CHECK yet) — `backend/db/migrations/002_content.sql`.

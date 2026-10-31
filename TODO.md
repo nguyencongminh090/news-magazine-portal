@@ -8,4 +8,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
-- **#6.** Decide SEO meta rendering (SPA vs server) — ADR first `[Model: Opus]` — [detail](docs/todo/A06-seo-meta-rendering-decision.md)
+- **#7.** Implement SEO meta injection per ADR-002 `[Model: Opus]` — [detail](docs/todo/A07-seo-meta-injection.md)
