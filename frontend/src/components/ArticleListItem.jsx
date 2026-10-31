@@ -8,7 +8,7 @@ export function ArticleListItem({ article }) {
       <div>
         {article.category && <span className="cat">{article.category.name}</span>}
         <h3><Link to={`/articles/${article.slug}`}>{article.title}</Link></h3>
-        {article.summary && <p style={{ margin: '4px 0' }}>{article.summary}</p>}
+        {article.summary && <p className="summary">{article.summary}</p>}
         {date && <span className="muted">{date}</span>}
       </div>
     </li>
