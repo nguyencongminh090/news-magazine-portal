@@ -1,16 +1,17 @@
 # A14 — Auth backend API (register / login / session / me)
-**Status:** OPEN
+**Status:** OPEN (ADR approved, ready to implement)
 **Area:** `backend/src/modules/auth/`, `backend/src/app.js`, `backend/db/migrations/001_users_roles_auth.sql` (schema exists, no routes)
 **From:** #10 auth wiring blocked — backend exposes no auth endpoints, 2026-10-31   **Depends:** A05
 
 ## Problem
 Schema for users / roles / refresh tokens exists, but no endpoint creates a user or signs one in, so the frontend login/register forms (`AuthPage`) cannot be wired.
 ## Scope
-1. ADR first (size L, `features/auth/`): session mechanism (httpOnly cookie vs token), password hashing, CSRF stance, rate limits. Get user sign-off before code.
-2. Endpoints: register, login, logout, current user (`/me` with role), refresh if the ADR keeps refresh tokens.
+1. ADR approved: `features/auth/planning.md` (ADR-002) is the spec; JWT + rotating refresh cookie per ADR-001.
+2. Endpoints: register (reader only), login, refresh, logout, `GET me`; admin `PUT /api/users/:id/roles`; env bootstrap of first admin.
 3. RBAC middleware for admin/editor/seo/reader; server enforces, UI nav is only a hint.
 4. Tests: validation, duplicate email (case-insensitive), wrong password, rate limit.
 ## Don't
+- Don't add password change/reset or email verification (#15).
 - Don't wire the frontend here; that stays in #10 after this lands.
 - Don't leak whether an email exists on login failure.
 ## Traps
