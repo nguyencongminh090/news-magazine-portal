@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import { renderWithRouter } from '../test/render.jsx';
 import { article, mockFetch, respond } from '../test/mockFetch.js';
@@ -41,7 +41,7 @@ test('document.title is set while mounted and restored on unmount', async () => 
   mockFetch({ '/api/articles/a-1': article(1, { body: 'x' }) });
   const { unmount } = renderArticle();
   await screen.findByRole('heading', { level: 1 });
-  expect(document.title).toBe('Title 1 · News Portal');
+  await waitFor(() => expect(document.title).toBe('Title 1 · News Portal'));
   unmount();
   expect(document.title).toBe('Before');
 });
