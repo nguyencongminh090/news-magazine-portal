@@ -8,4 +8,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
-- **#9.** Fix migrate.js trailing-slash dir argument `[Model: Sonnet]` — [detail](docs/todo/A09-migrate-dir-trailing-slash.md)
+- **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
