@@ -1,5 +1,5 @@
 # A13 — Seed safety: production guard, keep views_count, re-verify fetch
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — guard (SEED_ALLOW_PRODUCTION=1 overrides), views_count insert-only, anonymousUser exported+tested; 33/33 pass with postgres:16
 **Area:** `backend/db/seed/seed.js`, `seed.test.js`, `fetch-wikinews.js`, `articles.json`
 **From:** review of #3 (2026-10-31)   **Depends:** —
 
