@@ -10,7 +10,7 @@ export const toUserPayload = (row) => ({
 const invalidLogin = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid email or password' });
 const invalidRefresh = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid or expired session' });
 
-export function createAuthService({ repo, jwt, refreshTtlDays }) {
+export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds = 0 }) {
   const refreshExpiry = () => new Date(Date.now() + refreshTtlDays * 86_400_000);
 
   async function startSession(userRow) {
@@ -46,7 +46,9 @@ export function createAuthService({ repo, jwt, refreshTtlDays }) {
     async refresh(oldToken) {
       if (!oldToken) throw invalidRefresh();
       const next = newRefreshToken();
-      const r = await repo.rotateRefreshToken({ oldHash: hashToken(oldToken), newHash: next.hash, expiresAt: refreshExpiry() });
+      const r = await repo.rotateRefreshToken({
+        oldHash: hashToken(oldToken), newHash: next.hash, expiresAt: refreshExpiry(), graceMs: refreshGraceSeconds * 1000,
+      });
       if (r.status !== 'ok') throw invalidRefresh();
       const user = await repo.findUserById(r.userId);
       if (!user || !user.is_active) {
