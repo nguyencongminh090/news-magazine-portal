@@ -1,7 +1,9 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useApi } from '../api/useApi.js';
 
 export function PublicLayout() {
   const navigate = useNavigate();
+  const { data: categories } = useApi('/api/categories');
 
   function onSearch(event) {
     event.preventDefault();
@@ -27,6 +29,9 @@ export function PublicLayout() {
           </div>
           <nav className="cats" aria-label="Categories">
             <NavLink to="/" end>Latest</NavLink>
+            {(categories?.items ?? []).map((c) => (
+              <NavLink key={c.slug} to={`/category/${c.slug}`}>{c.name}</NavLink>
+            ))}
           </nav>
         </div>
       </header>
