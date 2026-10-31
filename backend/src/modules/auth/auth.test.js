@@ -32,7 +32,9 @@ function fakeRepo() {
       users.push({ id: ++seq, email, password_hash: passwordHash, display_name: displayName, is_active: true, roles });
       return seq;
     },
-    insertRefreshToken: async ({ userId, hash, expiresAt }) => tokens.push({ userId, hash, family: userId, expiresAt, revoked: false }),
+    // One family per sign-in (like gen_random_uuid() in the DB); rotation keeps it.
+    insertRefreshToken: async ({ userId, hash, expiresAt, familyId }) =>
+      tokens.push({ userId, hash, family: familyId ?? `fam-${tokens.length}`, expiresAt, revoked: false }),
     rotateRefreshToken: async ({ oldHash, newHash, expiresAt }) => {
       const t = tokens.find((x) => x.hash === oldHash);
       if (!t) return { status: 'invalid' };
@@ -45,6 +47,12 @@ function fakeRepo() {
       const t = tokens.find((x) => x.hash === h);
       if (t) tokens.filter((x) => x.family === t.family).forEach((x) => (x.revoked = true));
     },
+    updatePassword: async (id, passwordHash, changedAt) => {
+      const u = users.find((x) => String(x.id) === String(id));
+      u.password_hash = passwordHash;
+      u.password_changed_at = changedAt;
+      tokens.filter((x) => String(x.userId) === String(id)).forEach((x) => (x.revoked = true));
+    },
     setRoles: async (id, roles) => {
       const u = users.find((x) => x.id === id);
       if (!u) return false;
@@ -56,7 +64,8 @@ function fakeRepo() {
   return repo;
 }
 
-const open = () => ({ login: (_q, _s, n) => n(), register: (_q, _s, n) => n(), refresh: (_q, _s, n) => n() });
+const pass = (_q, _s, n) => n();
+const open = () => ({ login: pass, register: pass, refresh: pass, changePassword: pass });
 function makeApp(repo = fakeRepo(), limits = open()) {
   return { repo, app: createApp({ jwt, corsOrigin: ORIGIN, refreshTokenTtlDays: 14, auth: { repo, limits } }) };
 }
@@ -234,4 +243,70 @@ test('bootstrapAdmin: never promotes an existing account, never throws on operat
   assert.equal(await bootstrapAdmin({ email: 'boss@example.com', password: 'short' }, repo), 'weak-password');
   assert.equal(await bootstrapAdmin({ email: 'boss@example.com', password: 'correct horse battery' }, repo), 'created');
   assert.equal(await bootstrapAdmin({ email: 'other@example.com', password: 'correct horse battery' }, repo), 'exists');
+});
+
+const signAt = (userId, iatSeconds) => new SignJWT({}).setProtectedHeader({ alg: 'HS256' }).setSubject(String(userId))
+  .setIssuer(jwt.issuer).setAudience(jwt.audience).setIssuedAt(iatSeconds).setExpirationTime('15m')
+  .sign(new TextEncoder().encode(jwt.secret));
+
+test('change-password: bearer + current password required; revokes every session; caller gets a fresh one', async () => {
+  const { app, repo } = makeApp();
+  await withServer(app, async (base) => {
+    const r1 = await post(base, '/api/auth/register', reg);
+    const deviceA = refreshCookie(r1);
+    const deviceB = refreshCookie(await post(base, '/api/auth/login', { email: reg.email, password: reg.password }));
+    const auth = { authorization: `Bearer ${(await r1.json()).accessToken}` };
+    const newPassword = 'a brand new passphrase';
+    const change = (body, headers = auth) => post(base, '/api/auth/change-password', body, headers);
+
+    assert.equal((await change({ currentPassword: reg.password, newPassword }, {})).status, 401);
+    const wrong = await change({ currentPassword: 'not my password', newPassword });
+    assert.equal(wrong.status, 400);
+    assert.equal((await wrong.json()).detail, 'Current password is incorrect');
+    assert.equal((await change({ currentPassword: reg.password, newPassword: 'short' })).status, 422);
+    assert.equal((await change({ currentPassword: reg.password, newPassword, extra: 1 })).status, 422);
+    assert.ok(repo.tokens.every((t) => !t.revoked)); // failed attempts change nothing
+
+    const ok = await change({ currentPassword: reg.password, newPassword });
+    assert.equal(ok.status, 200);
+    assert.equal(ok.headers.get('cache-control'), 'no-store');
+    const body = await ok.json();
+    assert.equal(body.user.email, 'reader@example.com');
+    const fresh = refreshCookie(ok);
+    const refreshWith = (t) => post(base, '/api/auth/refresh', null, { ...csrf, cookie: `refresh_token=${t}` });
+    assert.equal((await refreshWith(deviceA)).status, 401);
+    assert.equal((await refreshWith(deviceB)).status, 401);
+    assert.equal((await refreshWith(fresh)).status, 200); // the caller stays signed in
+    assert.equal((await fetch(`${base}/api/auth/me`, { headers: { authorization: `Bearer ${body.accessToken}` } })).status, 200);
+
+    assert.equal((await post(base, '/api/auth/login', { email: reg.email, password: reg.password })).status, 401);
+    assert.equal((await post(base, '/api/auth/login', { email: reg.email, password: newPassword })).status, 200);
+  });
+});
+
+test('change-password: access tokens issued before the change stop working (iat vs password_changed_at)', async () => {
+  const { app, repo } = makeApp();
+  await withServer(app, async (base) => {
+    await post(base, '/api/auth/register', reg);
+    const now = Math.floor(Date.now() / 1000);
+    const stolen = { authorization: `Bearer ${await signAt(1, now - 60)}` };
+    assert.equal((await fetch(`${base}/api/auth/me`, { headers: stolen })).status, 200);
+    repo.users[0].password_changed_at = new Date((now - 30) * 1000 + 999); // sub-second part must not matter
+    assert.equal((await fetch(`${base}/api/auth/me`, { headers: stolen })).status, 401);
+    const sameSecond = { authorization: `Bearer ${await signAt(1, now - 30)}` };
+    assert.equal((await fetch(`${base}/api/auth/me`, { headers: sameSecond })).status, 200);
+  });
+});
+
+test('change-password is rate limited per user, after authentication', async () => {
+  const { app } = makeApp(fakeRepo(), { ...open(), changePassword: limiter({ windowMs: 60_000, limit: 2 }) });
+  await withServer(app, async (base) => {
+    assert.equal((await post(base, '/api/auth/change-password', {})).status, 401); // unauthenticated: not counted
+    const { accessToken } = await (await post(base, '/api/auth/register', reg)).json();
+    const auth = { authorization: `Bearer ${accessToken}` };
+    const body = { currentPassword: 'wrong guess 1', newPassword: 'a brand new passphrase' };
+    assert.equal((await post(base, '/api/auth/change-password', body, auth)).status, 400);
+    assert.equal((await post(base, '/api/auth/change-password', body, auth)).status, 400);
+    assert.equal((await post(base, '/api/auth/change-password', body, auth)).status, 429);
+  });
 });
