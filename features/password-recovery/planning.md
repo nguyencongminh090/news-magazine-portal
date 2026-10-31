@@ -23,7 +23,8 @@ Knowledge: `authn-passwords` (recovery: single-use, time-limited, no enumeration
    - `POST password-reset/confirm` `{ token, newPassword }` → set hash, revoke all families, mark email verified (link proved mailbox
      control); no auto-login. Invalid/expired/used token = one generic 400.
    - `POST email-verification/request` (Bearer) → `202`; `POST email-verification/confirm` `{ token }` → `204`.
-   Token travels in the link (`/reset-password#token=…` fragment, so it never hits server logs) and then in the JSON body; no cookie → no CSRF guard needed.
+   Every user payload (register/login/refresh/me/change-password) carries `emailVerified: boolean`.
+   Token travels in the link (`/reset-password#token=…`, `/verify-email#token=…` fragment, so it never hits server logs) and then in the JSON body; no cookie → no CSRF guard needed.
 6. **Enumeration / timing**: reset-request does lookup + token + send after responding, so latency is the same for known
    and unknown emails. Same generic body for inactive users.
 7. **Rate limits** (per IP+email key like `loginKey`, plus per IP): reset-request 3/h per IP+email, 10/h per IP;

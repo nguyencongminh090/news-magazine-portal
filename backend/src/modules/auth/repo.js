@@ -1,6 +1,6 @@
 import { query, withTransaction } from '../../db.js';
 
-const USER_SQL = `SELECT u.id, u.email, u.display_name, u.password_hash, u.password_changed_at, u.is_active,
+const USER_SQL = `SELECT u.id, u.email, u.display_name, u.password_hash, u.password_changed_at, u.email_verified_at, u.is_active,
     COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.name IS NOT NULL), '{}') AS roles
   FROM users u
   LEFT JOIN user_roles ur ON ur.user_id = u.id
@@ -16,12 +16,15 @@ export async function findUserById(id) {
   return rows[0] ?? null;
 }
 
-/** Creates a user with the given roles in one transaction. Throws pg 23505 on duplicate email. */
-export async function createUser({ email, passwordHash, displayName, roles }) {
+/**
+ * Creates a user with the given roles in one transaction. Throws pg 23505 on duplicate email.
+ * `emailVerifiedAt` stays null (unverified) unless the caller already trusts the address (bootstrap admin).
+ */
+export async function createUser({ email, passwordHash, displayName, roles, emailVerifiedAt = null }) {
   return withTransaction(async (c) => {
     const { rows } = await c.query(
-      'INSERT INTO users (email, password_hash, display_name) VALUES ($1, $2, $3) RETURNING id',
-      [email, passwordHash, displayName],
+      'INSERT INTO users (email, password_hash, display_name, email_verified_at) VALUES ($1, $2, $3, $4) RETURNING id',
+      [email, passwordHash, displayName, emailVerifiedAt],
     );
     await c.query(
       'INSERT INTO user_roles (user_id, role_id) SELECT $1, id FROM roles WHERE name = ANY($2)',
@@ -85,6 +88,27 @@ export async function resetPasswordWithToken({ tokenHash, passwordHash, changedA
     );
     if (!consumed.rowCount || !user.is_active) return null;
     await setPasswordAndRevoke(c, user.id, passwordHash, changedAt);
+    await c.query('UPDATE users SET email_verified_at = COALESCE(email_verified_at, now()) WHERE id = $1', [user.id]);
+    return user.id;
+  });
+}
+
+/**
+ * Consume a verify token (single use, unexpired, purpose 'verify') and mark the email verified; an earlier
+ * verification time is kept. Returns the user id, or null for an unknown / used / expired token or an inactive user.
+ */
+export async function verifyEmailWithToken(tokenHash) {
+  return withTransaction(async (c) => {
+    const owner = await c.query('SELECT user_id FROM user_tokens WHERE token_hash = $1', [tokenHash]);
+    if (!owner.rows[0]) return null;
+    // Lock order user -> tokens, same as issueUserToken / resetPasswordWithToken.
+    const user = (await c.query('SELECT id, is_active FROM users WHERE id = $1 FOR UPDATE', [owner.rows[0].user_id])).rows[0];
+    const consumed = await c.query(
+      `UPDATE user_tokens SET used_at = now()
+        WHERE token_hash = $1 AND purpose = 'verify' AND used_at IS NULL AND expires_at > now()`,
+      [tokenHash],
+    );
+    if (!consumed.rowCount || !user.is_active) return null;
     await c.query('UPDATE users SET email_verified_at = COALESCE(email_verified_at, now()) WHERE id = $1', [user.id]);
     return user.id;
   });

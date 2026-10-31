@@ -20,3 +20,4 @@ Kept out of #14 to keep it one small, reviewable concern.
 ## Progress
 - 2026-10-31 branch 1 `feature/change-password`: `POST /api/auth/change-password`, migration 007, old-JWT cutoff in `requireAuth`.
 - 2026-10-31 branch 2 `feature/password-reset`: `src/mail/mailer.js` (nodemailer ~10.1.7), migration 008 `user_tokens` + `email_verified_at`, `POST password-reset/{request,confirm}`, `MAIL_*` env. Next: branch 3 verification (+ bootstrap admin created verified).
+- 2026-10-31 branch 3 `feature/email-verification`: `POST email-verification/request` (Bearer, 202, 3/h per user) + `/confirm` (204, 10/15 min per IP), `emailVerified` in user payload, bootstrap admin created verified. Seed users stay unverified. Pending: merge approval; then item done (pages go with #10).

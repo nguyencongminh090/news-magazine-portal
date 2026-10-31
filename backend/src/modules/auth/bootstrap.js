@@ -12,7 +12,7 @@ export async function bootstrapAdmin({ email, password }, repo = defaultRepo) {
   if (await repo.findUserByEmail(normalised)) return 'email-taken';
   if (!passwordSchema.safeParse(password).success) return 'weak-password';
   try {
-    await repo.createUser({ email: normalised, passwordHash: await hashPassword(password), displayName: 'Administrator', roles: ['admin'] });
+    await repo.createUser({ email: normalised, passwordHash: await hashPassword(password), displayName: 'Administrator', roles: ['admin'], emailVerifiedAt: new Date() }); // ADR-003 #4: operator-supplied address
   } catch (err) {
     if (err?.code === '23505') return 'email-taken'; // lost a race with a registration
     throw err;
