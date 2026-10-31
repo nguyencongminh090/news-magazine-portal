@@ -20,11 +20,16 @@ test('requests the category filter and uses the category name as heading', async
   expect(fetchMock.mock.calls.some(([u]) => u.includes('category=science') && u.includes('page=1'))).toBe(true);
 });
 
-test('falls back to the slug when the category name is unknown', async () => {
-  mockFetch({ '/api/categories': { items: [] }, '/api/articles': { items: [], page: 1, pageSize: 20, total: 0 } });
+test('shows the 404 page when the slug is not a known category', async () => {
+  mockFetch({ '/api/categories': cats, '/api/articles': { items: [], page: 1, pageSize: 20, total: 0 } });
+  renderCat('/category/nope');
+  expect(await screen.findByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument();
+});
+
+test('falls back to the slug when the category list fails to load', async () => {
+  mockFetch({ '/api/articles': { items: [], page: 1, pageSize: 20, total: 0 } });
   renderCat('/category/weather');
   expect(await screen.findByRole('heading', { level: 1, name: 'weather' })).toBeInTheDocument();
-  expect(await screen.findByText('No articles found')).toBeInTheDocument();
 });
 
 test('page beyond the last shows the empty state and pager keeps the page', async () => {
