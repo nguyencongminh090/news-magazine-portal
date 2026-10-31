@@ -13,3 +13,13 @@ export function toArticlePayload(row) {
   if (row.body !== undefined) payload.body = row.body; // omitted by list queries (no full text per list row)
   return payload;
 }
+
+/** Staff superset of the public payload (same builder underneath, rule 7): adds workflow + audit fields. */
+export function toAdminArticlePayload(row) {
+  return {
+    ...toArticlePayload(row),
+    status: row.status,
+    viewsCount: Number(row.views_count ?? 0),
+    updatedAt: row.updated_at,
+  };
+}
