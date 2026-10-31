@@ -54,7 +54,7 @@ nav.cats a:hover, nav.cats a[aria-current] { border-bottom-color: var(--primary)
 .list h3 a { display: flex; align-items: center; min-height: var(--target); }
 .page .list { max-width: 75ch; } .page .list li { grid-template-columns: 1fr; }
 .summary { margin: 4px 0; }
-.btn[aria-disabled="true"] { opacity: .6; cursor: default; }
+.btn[aria-disabled="true"] { border-color: var(--border-strong); color: var(--muted); cursor: default; }
 .list .img { aspect-ratio: 4/3; }
 aside h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 8px; }
 aside ol { margin: 0 0 32px; padding-left: 24px; }
@@ -77,9 +77,9 @@ footer.site { border-top: 1px solid var(--border); background: var(--surface); p
 /* Admin */
 .admin { display: grid; grid-template-columns: 220px 1fr; min-height: 640px; }
 .admin nav { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 16px; }
-.admin nav a { display: block; padding: 8px; color: var(--text); text-decoration: none; border-left: 3px solid transparent; }
+.admin nav a { display: flex; align-items: center; min-height: var(--target); padding: 8px; color: var(--text); text-decoration: none; border-left: 3px solid transparent; }
 .admin nav a[aria-current="page"] { border-left-color: var(--primary); font-weight: 600; background: var(--bg); }
-.admin main { padding: 24px 32px; }
+.admin main { padding: 24px 32px; min-width: 0; }
 .admin h1 { font-size: 28px; }
 .bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; flex-wrap: wrap; }
 table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); }
@@ -89,7 +89,8 @@ th { font-size: var(--fs-small); color: var(--muted); }
 .status.pub { color: var(--success); } .status.draft { color: var(--warning); }
 
 @media (max-width: 800px) {
-  .home, .lead, .admin { grid-template-columns: 1fr; }
+  .home, .lead { grid-template-columns: 1fr; }
+  .admin { grid-template-columns: minmax(0, 1fr); }
   .list li { grid-template-columns: 1fr; }
   .lead h1, .article h1 { font-size: 28px; }
   .admin nav { border-right: 0; border-bottom: 1px solid var(--border); }
@@ -111,3 +112,6 @@ aside li { padding: 0; }
 .link-btn.danger { color: var(--danger); }
 .admin-form { max-width: 75ch; }
 .admin-form textarea { resize: vertical; }
+
+.bar.filter { justify-content: flex-start; gap: 8px; }
+td a { display: inline-flex; align-items: center; min-height: var(--target); min-width: var(--target); }
