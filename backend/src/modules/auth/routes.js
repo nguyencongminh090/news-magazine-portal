@@ -26,8 +26,12 @@ const readCookie = (req, name) => {
 };
 
 const ip = (req) => ipKeyGenerator(req.ip ?? '');
+/** Same normalisation as the schema (trim + lower-case), so case/whitespace variants share one bucket. */
+export const loginKey = (req) => `${ip(req)}|${String(req.body?.email ?? '').trim().toLowerCase()}`;
 const defaultLimits = () => ({
-  login: limiter({ windowMs: 15 * 60_000, limit: 10, keyGenerator: (req) => `${ip(req)}|${req.body?.email ?? ''}` }),
+  // Two buckets: per IP+account (slows guessing one account) and per IP alone (caps spraying many accounts).
+  // No IP-less per-account bucket: it would let anyone lock a victim out (DoS lever).
+  login: [limiter({ windowMs: 15 * 60_000, limit: 10, keyGenerator: loginKey }), limiter({ windowMs: 15 * 60_000, limit: 40 })],
   register: limiter({ windowMs: 60 * 60_000, limit: 5 }),
   refresh: limiter({ windowMs: 60_000, limit: 60 }),
 });
