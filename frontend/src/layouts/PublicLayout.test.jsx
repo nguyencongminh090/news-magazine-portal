@@ -32,3 +32,27 @@ test('wraps every routed page in exactly one main landmark (skip link target)', 
   expect(mains[0]).toHaveAttribute('id', 'content');
   expect(container.querySelectorAll('main')).toHaveLength(1);
 });
+
+const signedIn = (roles) => ({ user: { id: 1, email: 'a@b.c', displayName: 'Ann', roles } });
+const renderAs = (auth) => {
+  mockFetch({ '/api/categories': { items: [] } });
+  return renderWithRouter(<Routes><Route element={<PublicLayout />}><Route index element={<p>child</p>} /></Route></Routes>, { auth });
+};
+
+test('anonymous sees Sign in and Register', () => {
+  renderAs({});
+  expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+  expect(screen.getByRole('link', { name: 'Register' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument();
+});
+test('reader sees name and Sign out but no Admin link', () => {
+  renderAs(signedIn(['reader']));
+  expect(screen.getByText('Ann')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Sign in' })).not.toBeInTheDocument();
+});
+test('staff roles see the Admin link', () => {
+  renderAs(signedIn(['editor']));
+  expect(screen.getByRole('link', { name: 'Admin' })).toHaveAttribute('href', '/admin');
+});

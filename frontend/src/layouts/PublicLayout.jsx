@@ -1,8 +1,10 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApi } from '../api/useApi.js';
+import { STAFF_ROLES, useAuth } from '../auth/AuthContext.jsx';
 
 export function PublicLayout() {
   const navigate = useNavigate();
+  const { user, status, logout } = useAuth();
   const { data: categories } = useApi('/api/categories');
 
   function onSearch(event) {
@@ -23,8 +25,18 @@ export function PublicLayout() {
               <button className="btn secondary" type="submit">Search</button>
             </form>
             <div className="acct">
-              <Link to="/login">Sign in</Link>
-              <Link className="btn" to="/register">Register</Link>
+              {status === 'loading' ? null : user ? (
+                <>
+                  <span className="muted">{user.displayName}</span>
+                  {user.roles.some((r) => STAFF_ROLES.includes(r)) && <Link to="/admin">Admin</Link>}
+                  <button className="btn secondary" type="button" onClick={() => logout()}>Sign out</button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">Sign in</Link>
+                  <Link className="btn" to="/register">Register</Link>
+                </>
+              )}
             </div>
           </div>
           <nav className="cats" aria-label="Categories">
