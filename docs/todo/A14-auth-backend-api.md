@@ -1,5 +1,5 @@
 # A14 — Auth backend API (register / login / session / me)
-**Status:** OPEN (ADR approved, ready to implement)
+**Status:** IN PROGRESS — implemented on `feature/auth-backend` (44 backend tests pass incl. real-DB); frontend wiring stays in #10
 **Area:** `backend/src/modules/auth/`, `backend/src/app.js`, `backend/db/migrations/001_users_roles_auth.sql` (schema exists, no routes)
 **From:** #10 auth wiring blocked — backend exposes no auth endpoints, 2026-10-31   **Depends:** A05
 
