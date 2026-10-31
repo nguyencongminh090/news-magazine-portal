@@ -1,0 +1,11 @@
+name: backend-patterns
+description: "Backend patterns for Node.js, Express and Next.js API routes: repositories, caching, retries, auth middleware, error handling"
+domain: architecture-backend
+tags: backend,nodejs,api,caching,retry,jwt,error-handling
+apply_when: "writing server-side code for Node or Next.js API routes"
+scope: global
+project: ""
+language: en
+knowledge: dist-resilience-patterns,dist-idempotency-retries,data-caching,authn-tokens-jwt,be-http-semantics
+conflicts: "authn-tokens-jwt: jwt.verify without an algorithm allowlist | dist-resilience-patterns: retries every error with fixed backoff, no jitter, no idempotency check"
+last_reviewed: 2026-09-26

@@ -1,0 +1,11 @@
+name: nodejs-backend-patterns
+description: "Production Node.js services with Express or Fastify: middleware, error handling, auth, database integration, API design"
+domain: architecture-backend
+tags: nodejs,express,fastify,api,middleware,backend
+apply_when: "building Node.js servers or APIs"
+scope: global
+project: ""
+language: en
+knowledge: be-http-semantics,be-api-style-for-web,be-background-jobs,be-auth-integration,websec-cors,webtest-api-contract
+conflicts: ""
+last_reviewed: 2026-09-26

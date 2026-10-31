@@ -1,0 +1,12 @@
+name: frontend-design-anthropic
+description: "Guidance for intentional visual direction and typography that avoids templated defaults"
+domain: frontend-ui-design
+tags: frontend,visual-design,typography,art-direction
+apply_when: "choosing an aesthetic direction for new or reshaped UI"
+scope: global
+project: ""
+language: en
+knowledge: vpick-choosing-style,vpick-style-by-site-type,vpick-brand-attributes,vbase-visual-principles,vbase-eye-flow-scanning
+conflicts: "vbase-depth-motion: no prefers-reduced-motion rule"
+source: "https://github.com/anthropics/skills/tree/34040c9/skills/frontend-design"
+last_reviewed: 2026-09-26
