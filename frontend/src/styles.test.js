@@ -13,3 +13,12 @@ describe('styles.css gutters', () => {
     expect(rule).not.toMatch(/(^|[;{\s])padding:/);
   });
 });
+
+// Regression: the status badge is "<icon> <label>"; without nowrap a narrow table cell breaks after the icon
+// and the glyph sits alone on its own line above the label.
+describe('styles.css status badge', () => {
+  it('.status never wraps between icon and label', () => {
+    const rule = css.split('\n').find((l) => l.startsWith('.status {'));
+    expect(rule).toMatch(/white-space:\s*nowrap/);
+  });
+});
