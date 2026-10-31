@@ -23,9 +23,9 @@ export function fakeRepo() {
     users, tokens, userTokens,
     findUserByEmail: async (e) => users.find((u) => u.email.toLowerCase() === e.toLowerCase()) ?? null,
     findUserById: async (id) => users.find((u) => String(u.id) === String(id)) ?? null,
-    createUser: async ({ email, passwordHash, displayName, roles }) => {
+    createUser: async ({ email, passwordHash, displayName, roles, emailVerifiedAt = null }) => {
       if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) throw Object.assign(new Error('dup'), { code: '23505' });
-      users.push({ id: ++seq, email, password_hash: passwordHash, display_name: displayName, is_active: true, roles });
+      users.push({ id: ++seq, email, password_hash: passwordHash, display_name: displayName, is_active: true, roles, email_verified_at: emailVerifiedAt });
       return seq;
     },
     // One family per sign-in (like gen_random_uuid() in the DB); rotation keeps it.
@@ -68,6 +68,15 @@ export function fakeRepo() {
       tokens.filter((x) => String(x.userId) === String(u.id)).forEach((x) => (x.revoked = true));
       return u.id;
     },
+    verifyEmailWithToken: async (tokenHash) => {
+      const t = userTokens.find((x) => x.hash === tokenHash && x.purpose === 'verify' && !x.usedAt && x.expiresAt > new Date());
+      if (!t) return null;
+      t.usedAt = new Date();
+      const u = users.find((x) => String(x.id) === String(t.userId));
+      if (!u?.is_active) return null;
+      u.email_verified_at ??= new Date();
+      return u.id;
+    },
     setRoles: async (id, roles) => {
       const u = users.find((x) => x.id === id);
       if (!u) return false;
@@ -80,7 +89,9 @@ export function fakeRepo() {
 }
 
 const pass = (_q, _s, n) => n();
-export const open = () => ({ login: pass, register: pass, refresh: pass, changePassword: pass, resetRequest: pass, resetConfirm: pass });
+export const open = () => ({
+  login: pass, register: pass, refresh: pass, changePassword: pass, resetRequest: pass, resetConfirm: pass, verifyRequest: pass, verifyConfirm: pass,
+});
 export function makeApp(repo = fakeRepo(), limits = open(), auth = {}) {
   return { repo, app: createApp({ jwt, corsOrigin: ORIGIN, refreshTokenTtlDays: 14, auth: { repo, limits, ...auth } }) };
 }

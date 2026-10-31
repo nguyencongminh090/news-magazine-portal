@@ -1,17 +1,19 @@
 import { HttpError } from '../../http/errors.js';
 import { burnVerify, hashPassword, verifyPassword } from './password.js';
-import { RESET_TTL_MINUTES, resetPasswordEmail } from './emails.js';
+import { RESET_TTL_MINUTES, VERIFY_TTL_HOURS, resetPasswordEmail, verifyEmailEmail } from './emails.js';
 import { hashToken, newOpaqueToken, newRefreshToken, signAccess } from './tokens.js';
 
 /** The one user shape returned by register / login / refresh / me. */
 export const toUserPayload = (row) => ({
   id: Number(row.id), email: row.email, displayName: row.display_name, roles: row.roles,
+  emailVerified: row.email_verified_at != null,
 });
 
 const invalidLogin = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid email or password' });
 const wrongCurrentPassword = () => new HttpError(400, 'Bad Request', { detail: 'Current password is incorrect' });
 const invalidResetLink = () => new HttpError(400, 'Bad Request', { detail: 'Invalid or expired reset link' });
-const invalidRefresh = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid or expired session' });
+const invalidVerifyLink = () => new HttpError(400, 'Bad Request', { detail: 'Invalid or expired verification link' });
+const invalidRefresh =() => new HttpError(401, 'Unauthorized', { detail: 'Invalid or expired session' });
 
 export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds = 0, mailer, appBaseUrl }) {
   const refreshExpiry = () => new Date(Date.now() + refreshTtlDays * 86_400_000);
@@ -86,6 +88,19 @@ export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSecon
         tokenHash: hashToken(token), passwordHash: await hashPassword(newPassword), changedAt: new Date(),
       });
       if (!userId) throw invalidResetLink();
+    },
+
+    /** Runs after the 202 (mail off the request path, ADR-003 #2). Already verified: nothing to send. */
+    async requestEmailVerification(user) {
+      if (user.email_verified_at != null) return;
+      const { token, hash } = newOpaqueToken();
+      await repo.issueUserToken({ userId: user.id, purpose: 'verify', hash, expiresAt: new Date(Date.now() + VERIFY_TTL_HOURS * 3_600_000) });
+      await mailer.send(verifyEmailEmail({ to: user.email, appBaseUrl, token }));
+    },
+
+    /** One generic error for unknown / used / expired / superseded tokens and inactive users. */
+    async confirmEmailVerification({ token }) {
+      if (!(await repo.verifyEmailWithToken(hashToken(token)))) throw invalidVerifyLink();
     },
 
     async logout(token) {
