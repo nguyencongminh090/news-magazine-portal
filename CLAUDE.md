@@ -44,6 +44,12 @@ Harness:
    sau nhiều lượt đọc file lớn/ output dài, khi đổi sang task không liên quan, sau khi xong một mốc (item ✅, commit, xong một skill/feature),
    hoặc khi thấy mình bắt đầu lặp/quên fact đã chốt. Nêu rõ: *vì sao*, *nên mở session mới lúc nào* (ngay / sau bước hiện tại), và
    *cần mang theo gì* (item `#N`, đường dẫn todo, trạng thái dở dang — ghi vào `docs/todo`/`docs/notes` trước khi đóng). Không đợi tới khi bị auto-compact.
+6. **Tránh conflict (git / nhiều session).** `main` có thể được session khác đẩy tiến lên bất kỳ lúc nào; working tree có thể có thay đổi chưa commit của user.
+   - Trước khi tạo branch / commit / merge: `git status --short` + `git log --oneline -3 main` để biết `main` đã đi tới đâu và cây có gì dở dang.
+   - Chỉ `git add` đúng file thuộc task (không `git add -A`/`.`); không đụng file không phải của mình (`DESIGN.md`, `features/ui-mockup/`, `backend/db/seed/`, `.claude/worktrees/`…).
+   - Cây bẩn mà cần chuyển branch: dùng worktree tạm để merge (không chạm cây của user), hoặc hỏi user stash/commit trước — không tự `stash`/`reset --hard`/`checkout --` file của user.
+   - Lockfile (`package-lock.json`) conflict: không merge tay — lấy bản của `main` rồi sinh lại (`npm --prefix <dir> install --package-lock-only`).
+   - Một branch = một việc nhỏ, merge sớm (merge commit, `--no-ff`) để giảm trôi so với `main`; không xoá stash/branch chưa merge khi chưa được user đồng ý.
 
 ## Reasoning with knowledge
 Design / architecture / security / DB / UX decision → `docs/knowledge/INDEX.md` first, then
