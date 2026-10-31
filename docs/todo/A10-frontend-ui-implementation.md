@@ -1,5 +1,5 @@
 # A10 — Implement frontend UI from DESIGN.md and approved mockup
-**Status:** IN PROGRESS — Admin articles UI done (API = #17), pending real-browser pass + ui-audit. public views (Home, Category, Search, Article, category nav) wired to the API and quality-gated 2026-10-31 (ui-audit 0 block / 0 major, real-browser pass done). Unknown-category 404 done. Auth wiring done on feature/auth-frontend (AuthProvider, login/register, RequireRole, role-aware nav). Remaining: Admin (articles table + form), comments/rating/report, per-page titles (#7).
+**Status:** IN PROGRESS — Admin articles UI done (API = #17), real-browser pass + ui-audit F1-F4 fixed (1ac9fb9, 46fd217). public views (Home, Category, Search, Article, category nav) wired to the API and quality-gated 2026-10-31 (ui-audit 0 block / 0 major, real-browser pass done). Unknown-category 404 done. Auth wiring done on feature/auth-frontend (AuthProvider, login/register, RequireRole, role-aware nav). Remaining: comments/rating/report, per-page titles (#7).
 **Area:** `frontend/src/`, `frontend/index.html`, `DESIGN.md`, `features/ui-mockup/mockup.html`
 **From:** UI design session, mockup approved by user 2026-10-31   **Depends:** A05 (API), A03 (seed data) for real content
 
