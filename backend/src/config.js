@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 // Load the repo-root .env when present (--env-file would make --watch crash on a missing file).
@@ -44,6 +45,10 @@ export function loadConfig(env = process.env) {
     problems.push('PUBLIC_BASE_URL is required in production (canonical + og:url)');
   }
 
+  const adminEmail = env.ADMIN_EMAIL?.trim();
+  const adminPassword = env.ADMIN_PASSWORD;
+  if (Boolean(adminEmail) !== Boolean(adminPassword)) problems.push('ADMIN_EMAIL and ADMIN_PASSWORD must be set together');
+
   if (problems.length) throw new Error(`Invalid configuration:\n- ${problems.join('\n- ')}`);
 
   return {
@@ -55,11 +60,13 @@ export function loadConfig(env = process.env) {
     corsOrigin: env.CORS_ORIGIN ?? 'http://localhost:5173',
     trustProxy,
     jwt: {
-      secret: jwtSecret,
+      // Dev/test without a secret: ephemeral key (tokens die on restart). Production requires JWT_SECRET (checked above).
+      secret: jwtSecret || randomBytes(48).toString('hex'),
       issuer: env.JWT_ISSUER ?? 'news-portal',
       audience: env.JWT_AUDIENCE ?? 'news-portal-web',
       accessTtl: env.JWT_ACCESS_TTL ?? '15m',
     },
+    bootstrapAdmin: adminEmail ? { email: adminEmail, password: adminPassword } : null,
     refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS ?? 14),
     cookieSecure,
     db: {
