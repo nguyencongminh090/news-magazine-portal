@@ -16,6 +16,7 @@ const email = z.string().trim().toLowerCase().email().max(254);
 const registerBody = z.object({ email, displayName: z.string().trim().min(1).max(100), password: passwordSchema }).strict();
 // Login must not leak policy: any non-empty string is accepted here and checked against the hash.
 const loginBody = z.object({ email, password: z.string().min(1).max(128) }).strict();
+const changePasswordBody = z.object({ currentPassword: z.string().min(1).max(128), newPassword: passwordSchema }).strict();
 
 const readCookie = (req, name) => {
   for (const part of (req.headers.cookie ?? '').split(';')) {
@@ -34,6 +35,8 @@ const defaultLimits = () => ({
   login: [limiter({ windowMs: 15 * 60_000, limit: 10, keyGenerator: loginKey }), limiter({ windowMs: 15 * 60_000, limit: 40 })],
   register: limiter({ windowMs: 60 * 60_000, limit: 5 }),
   refresh: limiter({ windowMs: 60_000, limit: 60 }),
+  // Runs after requireAuth: per user, so a stolen access token cannot brute-force the current password.
+  changePassword: limiter({ windowMs: 15 * 60_000, limit: 5, keyGenerator: (req) => `user:${req.user.id}` }),
 });
 
 /**
@@ -50,7 +53,7 @@ function csrfGuard(allowedOrigins) {
   };
 }
 
-/** POST /api/auth/{register,login,refresh,logout}, GET /api/auth/me */
+/** POST /api/auth/{register,login,refresh,logout,change-password}, GET /api/auth/me */
 export function authRouter({
   repo = defaultRepo, jwt, refreshTtlDays = 14, refreshGraceSeconds = 0, cookieSecure = false, allowedOrigins = [],
   limits = defaultLimits(),
@@ -58,6 +61,7 @@ export function authRouter({
   const router = Router();
   const service = createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds });
   const csrf = csrfGuard(allowedOrigins);
+  const authenticated = requireAuth({ repo, jwt });
   const cookieOpts = { httpOnly: true, secure: cookieSecure, sameSite: 'strict', path: COOKIE_PATH };
 
   const sendSession = (res, status, s) => {
@@ -93,7 +97,11 @@ export function authRouter({
     res.set('Cache-Control', 'no-store').status(204).end();
   }));
 
-  router.get('/me', requireAuth({ repo, jwt }), (req, res) => {
+  // Bearer-authenticated (no cookie), so not CSRF-prone; limiter before validate so every attempt counts.
+  router.post('/change-password', authenticated, limits.changePassword, validate({ body: changePasswordBody }),
+    wrap(async (req, res) => sendSession(res, 200, await service.changePassword(req.user, req.validated.body))));
+
+  router.get('/me', authenticated, (req, res) => {
     res.set('Cache-Control', 'no-store').json({ user: toUserPayload(req.user) });
   });
 

@@ -16,17 +16,20 @@ export function signAccess(userId, jwt) {
     .sign(key(jwt.secret));
 }
 
-/** Returns the user id (string) or null for any invalid/expired/wrong-alg token. */
-export async function verifyAccess(token, jwt) {
+/** Returns the verified claims ({ sub, iat, ... }) or null for any invalid/expired/wrong-alg token. */
+export async function verifyAccessClaims(token, jwt) {
   try {
     const { payload } = await jwtVerify(token, key(jwt.secret), {
-      algorithms: [ALG], issuer: jwt.issuer, audience: jwt.audience, requiredClaims: ['sub', 'exp'],
+      algorithms: [ALG], issuer: jwt.issuer, audience: jwt.audience, requiredClaims: ['sub', 'exp', 'iat'],
     });
-    return payload.sub;
+    return payload;
   } catch {
     return null;
   }
 }
+
+/** Returns the user id (string) or null for any invalid/expired/wrong-alg token. */
+export const verifyAccess = async (token, jwt) => (await verifyAccessClaims(token, jwt))?.sub ?? null;
 
 export const hashToken = (token) => createHash('sha256').update(token).digest('hex');
 
