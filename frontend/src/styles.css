@@ -12,3 +12,7 @@ main {
   margin: 0 auto;
   padding: 1rem;
 }
+
+main p {
+  max-inline-size: 66ch;
+}
