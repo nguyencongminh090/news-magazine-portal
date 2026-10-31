@@ -54,6 +54,15 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal((await query('SELECT count(*)::int n FROM refresh_tokens WHERE revoked_at IS NULL')).rows[0].n, 0);
     assert.equal(await repo.setRoles(9999, ['reader']), false);
 
+    // A15: password change stores hash + app-clock change time and revokes every token of the user (all families).
+    for (let i = 0; i < 2; i++) await repo.insertRefreshToken({ userId: id, hash: newRefreshToken().hash, expiresAt: future });
+    const changedAt = new Date(Date.now() - 1234);
+    await repo.updatePassword(id, 'h2', changedAt);
+    const changed = await repo.findUserById(id);
+    assert.equal(changed.password_hash, 'h2');
+    assert.equal(changed.password_changed_at.getTime(), changedAt.getTime());
+    assert.equal((await query('SELECT count(*)::int n FROM refresh_tokens WHERE user_id = $1 AND revoked_at IS NULL', [id])).rows[0].n, 0);
+
     // A16: a lost refresh response (navigation abort, two tabs) must not look like token theft.
     const grace = { expiresAt: future, graceMs: 30_000 };
     const rotate = (oldT, newT, opts = grace) => repo.rotateRefreshToken({ oldHash: oldT.hash, newHash: newT.hash, ...opts });

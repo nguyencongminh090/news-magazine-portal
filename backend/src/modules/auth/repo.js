@@ -1,6 +1,6 @@
 import { query, withTransaction } from '../../db.js';
 
-const USER_SQL = `SELECT u.id, u.email, u.display_name, u.password_hash, u.is_active,
+const USER_SQL = `SELECT u.id, u.email, u.display_name, u.password_hash, u.password_changed_at, u.is_active,
     COALESCE(array_agg(r.name ORDER BY r.name) FILTER (WHERE r.name IS NOT NULL), '{}') AS roles
   FROM users u
   LEFT JOIN user_roles ur ON ur.user_id = u.id
@@ -36,6 +36,14 @@ export async function anyAdminExists() {
     `SELECT 1 FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE r.name = 'admin' LIMIT 1`,
   );
   return rows.length > 0;
+}
+
+/** Set a new password hash and revoke every refresh token of the user (all devices). `changedAt` comes from the app clock, the clock that signs iat. */
+export async function updatePassword(userId, passwordHash, changedAt) {
+  await withTransaction(async (c) => {
+    await c.query('UPDATE users SET password_hash = $2, password_changed_at = $3 WHERE id = $1', [userId, passwordHash, changedAt]);
+    await c.query('UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [userId]);
+  });
 }
 
 /** Replace a user's roles; revokes their refresh tokens so the change cannot be outlived by a session. Returns false if the user is missing. */

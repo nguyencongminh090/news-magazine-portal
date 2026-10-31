@@ -1,16 +1,23 @@
 import { HttpError } from '../../http/errors.js';
-import { verifyAccess } from './tokens.js';
+import { verifyAccessClaims } from './tokens.js';
 
 const challenge = { 'WWW-Authenticate': 'Bearer' };
+
+/**
+ * ADR-003 #8: a token minted before the last password change is dead. iat has 1 s resolution, so compare against the
+ * change time floored to seconds; otherwise the fresh session issued right after the change would be rejected.
+ */
+const issuedBeforePasswordChange = (iat, changedAt) =>
+  changedAt != null && iat < Math.floor(new Date(changedAt).getTime() / 1000);
 
 /** Bearer JWT -> user row from the DB on every request (roles + is_active are never trusted from the token). Sets req.user. */
 export function requireAuth({ repo, jwt }) {
   return async (req, _res, next) => {
     try {
       const m = /^Bearer (\S+)$/.exec(req.headers.authorization ?? '');
-      const userId = m && (await verifyAccess(m[1], jwt));
-      const user = userId && (await repo.findUserById(userId));
-      if (!user || !user.is_active) throw new HttpError(401, 'Unauthorized', { headers: challenge });
+      const claims = m && (await verifyAccessClaims(m[1], jwt));
+      const user = claims && (await repo.findUserById(claims.sub));
+      if (!user || !user.is_active || issuedBeforePasswordChange(claims.iat, user.password_changed_at)) throw new HttpError(401, 'Unauthorized', { headers: challenge });
       req.user = user;
       next();
     } catch (err) {

@@ -8,6 +8,7 @@ export const toUserPayload = (row) => ({
 });
 
 const invalidLogin = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid email or password' });
+const wrongCurrentPassword = () => new HttpError(400, 'Bad Request', { detail: 'Current password is incorrect' });
 const invalidRefresh = () => new HttpError(401, 'Unauthorized', { detail: 'Invalid or expired session' });
 
 export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds = 0 }) {
@@ -56,6 +57,13 @@ export function createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSecon
         throw invalidRefresh();
       }
       return { accessToken: await signAccess(user.id, jwt), refreshToken: next.token, user: toUserPayload(user) };
+    },
+
+    /** ADR-003: re-auth with the current password; every session dies, the caller gets a fresh one. */
+    async changePassword(user, { currentPassword, newPassword }) {
+      if (!(await verifyPassword(user.password_hash, currentPassword))) throw wrongCurrentPassword();
+      await repo.updatePassword(user.id, await hashPassword(newPassword), new Date());
+      return startSession(user);
     },
 
     async logout(token) {
