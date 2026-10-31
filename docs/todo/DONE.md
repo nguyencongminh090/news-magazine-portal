@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#16.** Aborted refresh request signs the user out (rotation reuse false positive) `[Model: Opus]` — [detail](docs/todo/A16-refresh-rotation-aborted-request.md)
 ✅ - **#14.** Auth backend API (register/login/session/me + RBAC); blocks #10 auth wiring, Admin, comments `[Model: Opus]` — [detail](docs/todo/A14-auth-backend-api.md)
 ✅ - **#13.** Seed safety: production guard, keep views_count on rerun, test IP anonymiser `[Model: Sonnet]` — [detail](docs/todo/A13-seed-safety-and-followups.md)
 ✅ - **#12.** Fix migrate test that hardcodes migration 005 as the latest `[Model: Haiku]` — [detail](docs/todo/A12-migrate-test-005-hardcodes-latest.md)

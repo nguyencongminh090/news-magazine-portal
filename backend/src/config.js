@@ -7,6 +7,9 @@ const envFile = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envFile)) process.loadEnvFile(envFile);
 
 const ENVS = ['development', 'test', 'production'];
+// ADR-002 §6 (A16): a replay this soon after rotation is treated as a lost response, not theft.
+const DEFAULT_REFRESH_GRACE_SECONDS = 30;
+const MAX_REFRESH_GRACE_SECONDS = 300;
 
 /** Parse + validate env. Throws one aggregated Error listing every problem (fail fast at boot). */
 export function loadConfig(env = process.env) {
@@ -49,6 +52,11 @@ export function loadConfig(env = process.env) {
   const adminPassword = env.ADMIN_PASSWORD;
   if (Boolean(adminEmail) !== Boolean(adminPassword)) problems.push('ADMIN_EMAIL and ADMIN_PASSWORD must be set together');
 
+  const refreshReuseGraceSeconds = Number(env.REFRESH_REUSE_GRACE_SECONDS ?? DEFAULT_REFRESH_GRACE_SECONDS);
+  if (!Number.isInteger(refreshReuseGraceSeconds) || refreshReuseGraceSeconds < 0 || refreshReuseGraceSeconds > MAX_REFRESH_GRACE_SECONDS) {
+    problems.push(`REFRESH_REUSE_GRACE_SECONDS must be an integer 0-${MAX_REFRESH_GRACE_SECONDS}`);
+  }
+
   if (problems.length) throw new Error(`Invalid configuration:\n- ${problems.join('\n- ')}`);
 
   return {
@@ -68,6 +76,7 @@ export function loadConfig(env = process.env) {
     },
     bootstrapAdmin: adminEmail ? { email: adminEmail, password: adminPassword } : null,
     refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS ?? 14),
+    refreshReuseGraceSeconds,
     cookieSecure,
     db: {
       max: Number(env.DB_POOL_MAX ?? 10),
