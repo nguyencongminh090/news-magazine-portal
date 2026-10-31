@@ -51,7 +51,7 @@ export function AdminArticlesPage() {
   return (
     <div>
       <div className="bar"><h1>Articles</h1><Link className="btn" to="/admin/articles/new">New article</Link></div>
-      <form className="bar" onSubmit={applyFilter} role="search" key={`${q}|${status}`}>
+      <form className="bar filter" onSubmit={applyFilter} role="search" key={`${q}|${status}`}>
         <input type="search" name="q" aria-label="Filter by title" placeholder="Filter by title" defaultValue={q} maxLength={100} style={{ maxWidth: 280 }} />
         <select name="status" aria-label="Status" defaultValue={status} style={{ width: 'auto' }}>
           <option value="">All statuses</option>
