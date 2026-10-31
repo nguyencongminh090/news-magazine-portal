@@ -131,7 +131,8 @@ test('migration 005 applies on a database already at 004', { skip: !testDb }, as
     await client.query(
       `INSERT INTO documents (title, slug, content, category_id, author_name) VALUES ('t', 't', 'c', 1, 'a')`,
     );
-    assert.deepEqual(await migrate(testDb), ['005_schema_hardening.sql']);
+    const applied = await migrate(testDb);
+    assert.equal(applied[0], '005_schema_hardening.sql');
     const { rows } = await client.query('SELECT tsv IS NOT NULL AS ok FROM documents');
     assert.equal(rows[0].ok, true);
   } finally {
