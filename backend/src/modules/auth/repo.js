@@ -49,10 +49,11 @@ export async function updatePassword(userId, passwordHash, changedAt) {
   });
 }
 
-/** Caller holds the user-row lock. */
+/** Caller holds the user-row lock. Kills every session and every outstanding reset link: a new password ends them all. */
 async function setPasswordAndRevoke(c, userId, passwordHash, changedAt) {
   await c.query('UPDATE users SET password_hash = $2, password_changed_at = $3 WHERE id = $1', [userId, passwordHash, changedAt]);
   await c.query('UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [userId]);
+  await c.query("UPDATE user_tokens SET used_at = now() WHERE user_id = $1 AND purpose = 'reset' AND used_at IS NULL", [userId]);
 }
 
 /** Store a new emailed token; the user's outstanding tokens of the same purpose die with it (ADR-003 #3). */

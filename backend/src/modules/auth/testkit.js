@@ -48,6 +48,7 @@ export function fakeRepo() {
       u.password_hash = passwordHash;
       u.password_changed_at = changedAt;
       tokens.filter((x) => String(x.userId) === String(id)).forEach((x) => (x.revoked = true));
+      userTokens.filter((x) => String(x.userId) === String(id) && x.purpose === 'reset').forEach((x) => (x.usedAt ??= new Date()));
     },
     issueUserToken: async ({ userId, purpose, hash, expiresAt }) => {
       for (let i = userTokens.length - 1; i >= 0; i--) {
