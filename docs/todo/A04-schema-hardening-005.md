@@ -1,5 +1,5 @@
 # A04 — Migration 005: schema hardening from architecture review
-**Status:** OPEN
+**Status:** ✅ DONE
 **Area:** `backend/db/migrations/005_*.sql`, README schema section, `backend/db/migrate.test.js`
 **From:** architecture review vs knowledge, 2026-10-31   **Depends:** A02
 
