@@ -1,5 +1,5 @@
 # A11 — Read API for articles and categories
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — endpoints + tests in backend/src/modules/{articles,categories}
 **Area:** `backend/src/modules/articles/`, `backend/src/modules/categories/`, `backend/src/app.js`
 **From:** #10 frontend foundation, 2026-10-31 (UI views wait on these endpoints)   **Depends:** A03 (seed data), A05 (done)
 
