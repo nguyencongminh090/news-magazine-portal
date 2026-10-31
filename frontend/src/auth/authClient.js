@@ -69,7 +69,8 @@ export function createAuthClient({ onChange = () => {} } = {}) {
       if (res.status === 401) set(null);
     }
     if (!res.ok) throw await toError(res);
-    return res.status === 204 ? null : res.json();
+    const text = await res.text(); // 204 and body-less 201 (report endpoints) both mean "no payload"
+    return text ? JSON.parse(text) : null;
   }
 
   return {
