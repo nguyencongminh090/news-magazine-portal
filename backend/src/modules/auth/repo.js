@@ -77,8 +77,9 @@ async function graceRemint(c, t, newHash, expiresAt, graceMs) {
   const { rows } = await c.query('SELECT id, revoked_at FROM refresh_tokens WHERE id = $1 FOR UPDATE', [t.replaced_by]);
   if (!rows[0] || rows[0].revoked_at) return false;
   const newId = await insertSuccessor(c, t, newHash, expiresAt);
-  // The revoked sibling points at the new token too, so an out-of-order cookie write still gets grace.
-  await c.query('UPDATE refresh_tokens SET revoked_at = now(), used_at = now(), replaced_by = $2 WHERE id = $1', [rows[0].id, newId]);
+  // The revoked sibling points at the new token too, so an out-of-order cookie write still gets grace. It inherits
+  // t's used_at: the whole chain stays inside the window of the original rotation (no ping-pong re-mints).
+  await c.query('UPDATE refresh_tokens SET revoked_at = now(), used_at = $3, replaced_by = $2 WHERE id = $1', [rows[0].id, newId, t.used_at]);
   await c.query('UPDATE refresh_tokens SET replaced_by = $2 WHERE id = $1', [t.id, newId]);
   return true;
 }
@@ -92,7 +93,7 @@ export async function rotateRefreshToken({ oldHash, newHash, expiresAt, graceMs 
   return withTransaction(async (c) => {
     const { rows } = await c.query(
       // Age measured on the DB clock, the same clock that wrote used_at.
-      `SELECT id, user_id, family_id, expires_at, revoked_at, replaced_by,
+      `SELECT id, user_id, family_id, expires_at, revoked_at, replaced_by, used_at,
               (extract(epoch FROM now() - used_at) * 1000)::float8 AS used_ago_ms
          FROM refresh_tokens WHERE token_hash = $1 FOR UPDATE`,
       [oldHash],
