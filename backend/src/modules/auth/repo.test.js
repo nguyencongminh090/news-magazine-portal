@@ -97,6 +97,34 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal((await rotate(l1, newRefreshToken())).status, 'reuse');
     assert.equal(await liveIn(lFam), 0);
 
+    // A15 race: a rotation in flight when the password changes must not leave its successor live. Under READ
+    // COMMITTED the revoking UPDATE never sees a row inserted after its snapshot, so the two must serialise.
+    const blocker = new pg.Client({ connectionString: testDb });
+    await blocker.connect();
+    try {
+      const r = newRefreshToken();
+      await repo.insertRefreshToken({ userId: id, hash: r.hash, expiresAt: future });
+      await blocker.query('BEGIN');
+      await blocker.query('SELECT 1 FROM refresh_tokens WHERE token_hash = $1 FOR UPDATE', [r.hash]);
+      const waiting = async (n) => {
+        for (let i = 0; i < 200; i++) {
+          const q = await blocker.query('SELECT count(*)::int n FROM pg_locks WHERE NOT granted');
+          if (q.rows[0].n >= n) return;
+          await new Promise((ok) => setTimeout(ok, 10));
+        }
+        throw new Error('lock wait never happened');
+      };
+      const rotation = repo.rotateRefreshToken({ oldHash: r.hash, newHash: newRefreshToken().hash, expiresAt: future });
+      await waiting(1); // rotation is mid-flight, queued on the token row
+      const change = repo.updatePassword(id, 'h3', new Date());
+      await new Promise((ok) => setTimeout(ok, 100)); // let the change reach its first lock wait
+      await blocker.query('COMMIT');
+      await Promise.all([rotation, change]);
+      assert.equal((await query('SELECT count(*)::int n FROM refresh_tokens WHERE user_id = $1 AND revoked_at IS NULL', [id])).rows[0].n, 0);
+    } finally {
+      await blocker.end();
+    }
+
     // Bootstrap: creates once, then is a no-op.
     assert.equal(await bootstrapAdmin({ email: ' Boss@X.io ', password: 'correct horse battery' }), 'created');
     assert.equal(await bootstrapAdmin({ email: 'other@x.io', password: 'correct horse battery' }), 'exists');
