@@ -18,8 +18,9 @@ npm run dev                 # API http://localhost:4000, web http://localhost:51
 |---|---|
 | `npm run dev` | API + Vite dev server (`/api` is proxied) |
 | `npm run build` | Production frontend bundle (`frontend/dist`) |
-| `npm --prefix backend test` | Backend tests (set `TEST_DATABASE_URL` to a **disposable** Postgres DB to also run the migration test; it drops schema `public`) |
+| `npm --prefix backend test` | Backend tests (set `TEST_DATABASE_URL` to a **disposable** Postgres DB to also run the DB tests; they drop schema `public`, so files run serially) |
 | `npm --prefix backend run migrate` | Apply pending SQL migrations to `DATABASE_URL` |
+| `npm --prefix backend run seed` | Load the 104 Wikinews articles and 4 demo users (idempotent; run after `migrate`) |
 
 ## Layout
 ```
@@ -28,6 +29,14 @@ frontend/  React app (src/)
 docs/      Tracking files and knowledge index
 features/  Design folders (ADRs)
 ```
+
+## Seed data
+`backend/db/seed/articles.json` holds real English Wikinews articles (CC BY 4.0, see [DATA_LICENSE.md](DATA_LICENSE.md)).
+`seed` upserts them by slug, so reruns change nothing. `node backend/db/seed/fetch-wikinews.js` refreshes the dataset
+(resumable) and `node backend/db/seed/build-license.js` rewrites `DATA_LICENSE.md`.
+
+Demo accounts, **local development only** (password for all: `DevPassw0rd!`):
+`admin@example.test`, `editor@example.test`, `seo@example.test`, `reader@example.test`.
 
 ## Database schema
 PostgreSQL, plain SQL migrations in `backend/db/migrations/` (`NNN_name.sql`, applied in order, one transaction each,
