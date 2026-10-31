@@ -17,7 +17,7 @@ Repro (Playwright, seeded DB): sign in, `goto('/admin')` then immediately `goto(
 - Don't drop reuse detection or rotation. Don't return the old successor (only hashes are stored).
 ## Traps
 - `revoked_at` alone cannot tell rotation from logout/role change: grace keys on `used_at` + live successor.
-- Measure age on the DB clock; keep the original `used_at` so repeated replays never extend the window.
+- Measure age on the DB clock; keep the original `used_at`, and copy it onto the superseded sibling, so the chain never extends the window (security review, fix-log 2026-10-31 19:48).
 - Lock the successor row inside the same transaction so concurrent replays cannot both mint.
 ## Why this way
 Server-side fix covers both triggers (lost response and two tabs); client single-flight is per tab only.
