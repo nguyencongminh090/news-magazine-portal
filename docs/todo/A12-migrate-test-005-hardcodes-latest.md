@@ -1,5 +1,5 @@
 # A12 — migration 005 test fails once a later migration exists
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — assertion now pins only `applied[0] === 005`; 30/30 pass against postgres:16
 **Area:** `backend/db/migrate.test.js` ("migration 005 applies on a database already at 004")
 **From:** found while finishing #3 (2026-10-31)   **Depends:** —
 
