@@ -35,9 +35,9 @@ export function PublicLayout() {
           </nav>
         </div>
       </header>
-      <div id="content">
+      <main id="content">
         <Outlet />
-      </div>
+      </main>
       <footer className="site">
         <div className="wrap muted">News Portal · Articles from Wikinews, licensed CC BY</div>
       </footer>

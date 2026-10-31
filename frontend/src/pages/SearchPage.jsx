@@ -16,7 +16,7 @@ export function SearchPage() {
   };
 
   return (
-    <main className="wrap page">
+    <div className="wrap page">
       {q ? (
         <>
           <h1>Results for "{q}"</h1>
@@ -28,6 +28,6 @@ export function SearchPage() {
           <p>Enter a search term in the box above to find articles.</p>
         </>
       )}
-    </main>
+    </div>
   );
 }

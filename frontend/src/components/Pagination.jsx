@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 function PageLink({ label, to }) {
-  if (!to) return <span className="btn secondary" aria-disabled="true" style={{ opacity: 0.6 }}>{label}</span>;
+  if (!to) return <span className="btn secondary" aria-disabled="true">{label}</span>;
   return <Link className="btn secondary" to={to}>{label}</Link>;
 }
 

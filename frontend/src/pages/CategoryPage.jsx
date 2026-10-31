@@ -12,9 +12,9 @@ export function CategoryPage() {
   const name = categories?.items?.find((c) => c.slug === slug)?.name ?? slug;
 
   return (
-    <main className="wrap page">
+    <div className="wrap page">
       <h1>{name}</h1>
       <ArticleResults state={articles} page={page} buildHref={(p) => `/category/${slug}?page=${p}`} />
-    </main>
+    </div>
   );
 }
