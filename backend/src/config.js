@@ -5,15 +5,63 @@ import { fileURLToPath } from 'node:url';
 const envFile = fileURLToPath(new URL('../../.env', import.meta.url));
 if (existsSync(envFile)) process.loadEnvFile(envFile);
 
-const required = (name) => {
-  const value = process.env[name];
-  if (!value) throw new Error(`Missing required env var ${name}`);
-  return value;
-};
+const ENVS = ['development', 'test', 'production'];
 
+/** Parse + validate env. Throws one aggregated Error listing every problem (fail fast at boot). */
+export function loadConfig(env = process.env) {
+  const problems = [];
+  const nodeEnv = env.NODE_ENV ?? 'development';
+  if (!ENVS.includes(nodeEnv)) problems.push(`NODE_ENV must be one of ${ENVS.join('|')}`);
+  const isProd = nodeEnv === 'production';
+
+  const port = Number(env.PORT ?? 4000);
+  if (!Number.isInteger(port) || port < 0 || port > 65535) problems.push('PORT must be an integer 0-65535');
+
+  const databaseUrl = env.DATABASE_URL;
+  if (!databaseUrl) problems.push('DATABASE_URL is required');
+
+  const jwtSecret = env.JWT_SECRET ?? '';
+  if ((isProd || jwtSecret) && jwtSecret.length < 32) {
+    problems.push('JWT_SECRET must be at least 32 chars (required in production)');
+  }
+
+  const cookieSecure = env.COOKIE_SECURE === undefined ? isProd : env.COOKIE_SECURE === 'true';
+  if (isProd && !cookieSecure) problems.push('COOKIE_SECURE must be true in production');
+
+  let trustProxy = false; // set only when behind a reverse proxy: hop count or true
+  if (env.TRUST_PROXY !== undefined) trustProxy = /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY === 'true';
+
+  if (problems.length) throw new Error(`Invalid configuration:\n- ${problems.join('\n- ')}`);
+
+  return {
+    nodeEnv,
+    isProd,
+    port,
+    corsOrigin: env.CORS_ORIGIN ?? 'http://localhost:5173',
+    trustProxy,
+    jwt: {
+      secret: jwtSecret,
+      issuer: env.JWT_ISSUER ?? 'news-portal',
+      audience: env.JWT_AUDIENCE ?? 'news-portal-web',
+      accessTtl: env.JWT_ACCESS_TTL ?? '15m',
+    },
+    refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS ?? 14),
+    cookieSecure,
+    db: {
+      max: Number(env.DB_POOL_MAX ?? 10),
+      connectionTimeoutMillis: Number(env.DB_CONNECT_TIMEOUT_MS ?? 5000),
+      idleTimeoutMillis: Number(env.DB_IDLE_TIMEOUT_MS ?? 30000),
+      statementTimeoutMs: Number(env.DB_STATEMENT_TIMEOUT_MS ?? 10000),
+    },
+    databaseUrl: () => databaseUrl,
+  };
+}
+
+// Back-compat for the migration CLI (backend/db/migrate.js), which only needs the URL.
+// The server itself uses loadConfig() eagerly in index.js.
 export const config = {
-  port: Number(process.env.PORT ?? 4000),
-  corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
-  // Resolved lazily so the skeleton can run before a database exists.
-  databaseUrl: () => required('DATABASE_URL'),
+  databaseUrl: () => {
+    if (!process.env.DATABASE_URL) throw new Error('Missing required env var DATABASE_URL');
+    return process.env.DATABASE_URL;
+  },
 };
