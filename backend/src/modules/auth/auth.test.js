@@ -214,3 +214,24 @@ test('login is rate limited (429) and responses carry no stack/hash', async () =
     assert.equal((await post(base, '/api/auth/login', body)).status, 429);
   });
 });
+
+test('login rate limit: case/whitespace variants of one email share a bucket (default limits)', async () => {
+  const app = createApp({ jwt, corsOrigin: ORIGIN, auth: { repo: fakeRepo() } }); // default limits
+  await withServer(app, async (base) => {
+    const variants = ['a@example.com', 'A@example.com', 'a@EXAMPLE.com', ' a@example.com', 'a@example.com ', 'A@Example.Com', 'a@example.COM', 'A@EXAMPLE.COM', ' A@example.com ', 'a@Example.com'];
+    for (const email of variants) assert.equal((await post(base, '/api/auth/login', { email, password: 'whatever12' })).status, 401);
+    assert.equal((await post(base, '/api/auth/login', { email: 'a@example.com', password: 'whatever12' })).status, 429);
+  });
+});
+
+test('bootstrapAdmin: never promotes an existing account, never throws on operator mistakes', async () => {
+  const { bootstrapAdmin } = await import('./bootstrap.js');
+  const repo = fakeRepo();
+  repo.anyAdminExists = async () => repo.users.some((u) => u.roles.includes('admin'));
+  await repo.createUser({ email: 'victim@example.com', passwordHash: 'h', displayName: 'V', roles: ['reader'] });
+  assert.equal(await bootstrapAdmin({ email: ' Victim@Example.com ', password: 'correct horse battery' }, repo), 'email-taken');
+  assert.deepEqual(repo.users[0].roles, ['reader']);
+  assert.equal(await bootstrapAdmin({ email: 'boss@example.com', password: 'short' }, repo), 'weak-password');
+  assert.equal(await bootstrapAdmin({ email: 'boss@example.com', password: 'correct horse battery' }, repo), 'created');
+  assert.equal(await bootstrapAdmin({ email: 'other@example.com', password: 'correct horse battery' }, repo), 'exists');
+});
