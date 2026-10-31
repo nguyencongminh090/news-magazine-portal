@@ -9,15 +9,14 @@ const renderArticle = (slug = 'a-1') =>
 afterEach(() => vi.unstubAllGlobals());
 
 test('splits the body on blank lines into paragraphs', async () => {
-  mockFetch({ '/api/articles/a-1': article(1, { body: 'One\n\nTwo' }) });
+  mockFetch({ '/api/articles/a-1/comments': { items: [], total: 0 }, '/api/articles/a-1': article(1, { body: 'One\n\nTwo' }) });
   const { container } = renderArticle();
   expect(await screen.findByRole('heading', { level: 1, name: 'Title 1' })).toBeInTheDocument();
   expect([...container.querySelectorAll('.article p')].map((p) => p.textContent).filter((t) => ['One', 'Two'].includes(t))).toEqual(['One', 'Two']);
-  expect(screen.getByText('Comments are not available yet.')).toBeInTheDocument();
 });
 
 test('HTML-like body text is inert', async () => {
-  mockFetch({ '/api/articles/a-1': article(1, { body: '<b>x</b> &amp; y' }) });
+  mockFetch({ '/api/articles/a-1/comments': { items: [], total: 0 }, '/api/articles/a-1': article(1, { body: '<b>x</b> &amp; y' }) });
   const { container } = renderArticle();
   expect(await screen.findByText('<b>x</b> &amp; y')).toBeInTheDocument();
   expect(container.querySelector('.article b')).toBeNull();
@@ -38,7 +37,7 @@ test('500 shows the alert with Try again', async () => {
 
 test('document.title is set while mounted and restored on unmount', async () => {
   document.title = 'Before';
-  mockFetch({ '/api/articles/a-1': article(1, { body: 'x' }) });
+  mockFetch({ '/api/articles/a-1/comments': { items: [], total: 0 }, '/api/articles/a-1': article(1, { body: 'x' }) });
   const { unmount } = renderArticle();
   await screen.findByRole('heading', { level: 1 });
   await waitFor(() => expect(document.title).toBe('Title 1 · News Portal'));
@@ -47,7 +46,7 @@ test('document.title is set while mounted and restored on unmount', async () => 
 });
 
 test('missing publishedAt and author render no "Invalid Date"', async () => {
-  mockFetch({ '/api/articles/a-1': article(1, { body: 'x', publishedAt: null, summary: null, category: null }) });
+  mockFetch({ '/api/articles/a-1/comments': { items: [], total: 0 }, '/api/articles/a-1': article(1, { body: 'x', publishedAt: null, summary: null, category: null }) });
   renderArticle();
   await screen.findByRole('heading', { level: 1 });
   expect(screen.queryByText(/Invalid Date/)).toBeNull();
