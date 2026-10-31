@@ -7,6 +7,7 @@ import { SearchPage } from './pages/SearchPage.jsx';
 import { ArticlePage } from './pages/ArticlePage.jsx';
 import { AuthPage } from './pages/AuthPage.jsx';
 import { AdminArticlesPage } from './pages/AdminArticlesPage.jsx';
+import { AdminArticleFormPage } from './pages/AdminArticleFormPage.jsx';
 import { RequireRole } from './auth/RequireRole.jsx';
 import { STAFF_ROLES } from './auth/AuthContext.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
@@ -25,6 +26,8 @@ export function App() {
       </Route>
       <Route path="admin" element={<RequireRole roles={STAFF_ROLES}><AdminLayout /></RequireRole>}>
         <Route index element={<AdminArticlesPage />} />
+        <Route path="articles/new" element={<AdminArticleFormPage />} />
+        <Route path="articles/:id" element={<AdminArticleFormPage />} />
       </Route>
     </Routes>
   );
