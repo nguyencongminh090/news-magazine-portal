@@ -1,5 +1,5 @@
 # A05 — Backend foundation: pool, config, errors, validation, rate limit
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — db.js pool, loadConfig, problem+json, zod validate, express-rate-limit, modules/ layout. Limiters defined in http/rateLimit.js (limits.*), not yet mounted: routes come in later items.
 **Area:** `backend/src/` (db.js, config.js, index.js, app.js, new modules/ layout)
 **From:** architecture review vs knowledge, 2026-10-31   **Depends:** A02 (A04 for refresh-token columns)
 

@@ -1,27 +1,118 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import express from 'express';
+import { z } from 'zod';
 import { createApp } from './app.js';
+import { loadConfig } from './config.js';
+import { HttpError, errorHandler, notFound, toProblem } from './http/errors.js';
+import { limiter } from './http/rateLimit.js';
+import { pagination, requireJson, validate } from './http/validate.js';
+
+async function withServer(app, fn) {
+  const server = app.listen(0);
+  try {
+    await fn(`http://127.0.0.1:${server.address().port}`);
+  } finally {
+    server.close();
+  }
+}
+
+// Test app: real middleware stack + routes exercising each layer.
+function testApp() {
+  const app = express();
+  app.use(requireJson);
+  app.use(express.json());
+  const create = z.object({ title: z.string().min(1) }).strict();
+  app.post('/items', validate({ body: create }), (req, res) => res.status(201).json(req.validated.body));
+  app.get('/items', validate({ query: pagination }), (req, res) => res.json(req.validated.query));
+  app.get('/limited', limiter({ windowMs: 60_000, limit: 2 }), (_req, res) => res.json({ ok: true }));
+  app.get('/teapot', () => { throw new HttpError(418, 'Teapot'); });
+  app.get('/dup', () => { throw Object.assign(new Error('secret sql'), { code: '23505' }); });
+  app.get('/boom', () => { throw new Error('db password leaked'); });
+  app.use(notFound);
+  app.use(errorHandler);
+  return app;
+}
+
+const json = (body) => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 
 test('GET /api/health returns ok', async () => {
-  const server = createApp().listen(0);
-  try {
-    const { port } = server.address();
-    const res = await fetch(`http://127.0.0.1:${port}/api/health`);
+  await withServer(createApp(), async (base) => {
+    const res = await fetch(`${base}/api/health`);
     assert.equal(res.status, 200);
     assert.equal((await res.json()).status, 'ok');
-  } finally {
-    server.close();
-  }
+  });
 });
 
-test('unknown /api route returns JSON 404', async () => {
-  const server = createApp().listen(0);
-  try {
-    const { port } = server.address();
-    const res = await fetch(`http://127.0.0.1:${port}/api/nope`);
+test('unknown /api route returns problem+json 404', async () => {
+  await withServer(createApp(), async (base) => {
+    const res = await fetch(`${base}/api/nope`);
     assert.equal(res.status, 404);
-    assert.deepEqual(await res.json(), { error: 'Not found' });
-  } finally {
-    server.close();
-  }
+    assert.match(res.headers.get('content-type'), /application\/problem\+json/);
+    assert.deepEqual(await res.json(), { type: 'about:blank', title: 'Not Found', status: 404 });
+  });
+});
+
+test('error mapping: HttpError status, pg codes, unknown -> 500 without leaking', async () => {
+  assert.equal(toProblem(new HttpError(403, 'Forbidden')).status, 403);
+  assert.equal(toProblem({ code: '23505' }).status, 409);
+  assert.equal(toProblem({ code: '23503' }).status, 409);
+  assert.equal(toProblem({ code: '23514' }).status, 422);
+  await withServer(testApp(), async (base) => {
+    assert.equal((await fetch(`${base}/teapot`)).status, 418);
+    assert.equal((await fetch(`${base}/dup`)).status, 409);
+    const res = await fetch(`${base}/boom`);
+    assert.equal(res.status, 500);
+    const text = await res.text();
+    assert.ok(!text.includes('password') && !text.includes('secret sql'));
+  });
+});
+
+test('malformed JSON -> 400 problem', async () => {
+  await withServer(testApp(), async (base) => {
+    const res = await fetch(`${base}/items`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{bad' });
+    assert.equal(res.status, 400);
+  });
+});
+
+test('validation rejects: wrong type, missing field, mass-assignment field, page-size cap', async () => {
+  await withServer(testApp(), async (base) => {
+    assert.equal((await fetch(`${base}/items`, json({ title: 'ok' }))).status, 201);
+    assert.equal((await fetch(`${base}/items`, json({ title: 5 }))).status, 422);
+    assert.equal((await fetch(`${base}/items`, json({}))).status, 422);
+    const mass = await fetch(`${base}/items`, json({ title: 'x', role: 'admin' }));
+    assert.equal(mass.status, 422);
+    assert.equal((await mass.json()).errors[0].in, 'body');
+    assert.equal((await fetch(`${base}/items?pageSize=51`)).status, 422);
+    assert.equal((await fetch(`${base}/items?pageSize=50&page=2`)).status, 200);
+  });
+});
+
+test('wrong Content-Type on a body request -> 415', async () => {
+  await withServer(testApp(), async (base) => {
+    const res = await fetch(`${base}/items`, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: 'hi' });
+    assert.equal(res.status, 415);
+  });
+});
+
+test('rate limit: third request in window -> 429 problem with Retry-After', async () => {
+  await withServer(testApp(), async (base) => {
+    assert.equal((await fetch(`${base}/limited`)).status, 200);
+    assert.equal((await fetch(`${base}/limited`)).status, 200);
+    const res = await fetch(`${base}/limited`);
+    assert.equal(res.status, 429);
+    assert.equal(res.headers.get('retry-after'), '60');
+    assert.match(res.headers.get('content-type'), /problem\+json/);
+  });
+});
+
+test('loadConfig fails eagerly listing all problems', () => {
+  assert.throws(() => loadConfig({ NODE_ENV: 'production' }), (e) =>
+    /DATABASE_URL/.test(e.message) && /JWT_SECRET/.test(e.message));
+  assert.throws(() => loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'x', JWT_SECRET: 'a'.repeat(32), COOKIE_SECURE: 'false' }),
+    /COOKIE_SECURE/);
+  const ok = loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32) });
+  assert.equal(ok.cookieSecure, true);
+  assert.equal(ok.jwt.issuer, 'news-portal');
+  assert.equal(loadConfig({ DATABASE_URL: 'x' }).nodeEnv, 'development');
 });
