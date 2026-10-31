@@ -1,5 +1,5 @@
 # A02 — PostgreSQL schema + versioned SQL migrations
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 — 4 migrations + runner + test; schema doc in README. Assumed role names admin/editor/seo/reader and ratings only (no separate likes); `author_name` text + nullable `author_id`.
 **Area:** `backend/db/migrations/*.sql`, migration runner script
 **From:** features/stack-adr (approved 2026-10-31)   **Depends:** A01
 

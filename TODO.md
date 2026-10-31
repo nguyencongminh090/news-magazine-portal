@@ -7,5 +7,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 `- **#N.** title \`[Model: Haiku|Sonnet|Opus]\` — [detail](docs/todo/<CODE>-<slug>.md)`
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
-- **#2.** PostgreSQL schema + SQL migrations `[Model: Opus]` — [detail](docs/todo/A02-db-schema-migrations.md)
 - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
