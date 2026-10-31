@@ -1,11 +1,14 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { healthRouter } from './modules/health/routes.js';
 import { errorHandler, notFound } from './http/errors.js';
+import { articleShellRouter } from './modules/articles/shellRoute.js';
 import { requireJson } from './http/validate.js';
 
-/** cfg: { corsOrigin, trustProxy }. Routers needing the DB import their own repo. */
+/** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell? }. Routers needing the DB import their own repo. */
 export function createApp(cfg = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -18,6 +21,11 @@ export function createApp(cfg = {}) {
   app.use('/api/health', healthRouter);
 
   app.use('/api', notFound);
+
+  // Production only: dev serves the shell from Vite. `cfg.shell` lets tests inject the HTML.
+  const shell = cfg.shell ?? (cfg.isProd ? readFileSync(join(cfg.frontendDist, 'index.html'), 'utf8') : null);
+  if (shell) app.use(articleShellRouter({ shell, baseUrl: cfg.publicBaseUrl }));
+
   app.use(errorHandler);
   return app;
 }
