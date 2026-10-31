@@ -9,3 +9,4 @@ Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the deta
 
 - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
 - **#15.** Change/reset password + email verification (after #14) `[Model: Opus]` — [detail](docs/todo/A15-password-reset-email-verification.md)
+- **#17.** Admin articles API for the Admin view (blocks #10) `[Model: Sonnet]` — [detail](docs/todo/A17-admin-articles-api.md)
