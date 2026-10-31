@@ -1,5 +1,5 @@
 # A08 — Update .env.example for new config variables
-**Status:** OPEN
+**Status:** ✅ DONE
 **Area:** `backend/.env.example` (or root), README env section
 **From:** item #5 follow-up, 2026-10-31   **Depends:** A05
 
