@@ -9,5 +9,4 @@ Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the deta
 
 - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
 - **#4.** Migration 005: schema hardening (refresh-token reuse, indexes, updated_at, reports unique, tsvector) `[Model: Opus]` — [detail](docs/todo/A04-schema-hardening-005.md)
-- **#5.** Backend foundation: pg Pool, eager config, problem+json errors, validation, rate limit, module layout `[Model: Opus]` — [detail](docs/todo/A05-backend-foundation.md)
 - **#6.** Decide SEO meta rendering (SPA vs server) — ADR first `[Model: Opus]` — [detail](docs/todo/A06-seo-meta-rendering-decision.md)
