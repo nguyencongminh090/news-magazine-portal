@@ -8,4 +8,3 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
-- **#13.** Seed safety: production guard, keep views_count on rerun, test IP anonymiser `[Model: Sonnet]` — [detail](docs/todo/A13-seed-safety-and-followups.md)
