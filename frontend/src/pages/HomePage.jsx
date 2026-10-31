@@ -41,7 +41,7 @@ export function HomePage() {
 
   return (
     <div className="wrap home">
-      <main>
+      <div>
         <StateView loading={loading} error={error} empty={!loading && !error && items.length === 0} onRetry={reload} />
         {lead && (
           <section className="lead" aria-label="Top story">
@@ -67,7 +67,7 @@ export function HomePage() {
           </>
         )}
         {data && <Pagination page={page} total={data.total} pageSize={data.pageSize} buildHref={(p) => `/?page=${p}`} />}
-      </main>
+      </div>
       <Categories />
     </div>
   );
