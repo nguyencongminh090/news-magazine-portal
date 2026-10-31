@@ -19,3 +19,4 @@ Kept out of #14 to keep it one small, reviewable concern.
 - Flows tested; mailer choice recorded in ADR-003 (done). Branches: 1 change-password, 2 mailer+reset, 3 verification.
 ## Progress
 - 2026-10-31 branch 1 `feature/change-password`: `POST /api/auth/change-password`, migration 007, old-JWT cutoff in `requireAuth`.
+- 2026-10-31 branch 2 `feature/password-reset`: `src/mail/mailer.js` (nodemailer ~10.1.7), migration 008 `user_tokens` + `email_verified_at`, `POST password-reset/{request,confirm}`, `MAIL_*` env. Next: branch 3 verification (+ bootstrap admin created verified).

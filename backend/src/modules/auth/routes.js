@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { ipKeyGenerator } from 'express-rate-limit';
 import { z } from 'zod';
 import { HttpError } from '../../http/errors.js';
+import { createMailer } from '../../mail/mailer.js';
 import { limiter } from '../../http/rateLimit.js';
 import { validate } from '../../http/validate.js';
 import { requireAuth } from './middleware.js';
@@ -16,6 +17,8 @@ const email = z.string().trim().toLowerCase().email().max(254);
 const registerBody = z.object({ email, displayName: z.string().trim().min(1).max(100), password: passwordSchema }).strict();
 // Login must not leak policy: any non-empty string is accepted here and checked against the hash.
 const loginBody = z.object({ email, password: z.string().min(1).max(128) }).strict();
+const resetRequestBody = z.object({ email }).strict();
+const resetConfirmBody = z.object({ token: z.string().min(1).max(200), newPassword: passwordSchema }).strict();
 const changePasswordBody = z.object({ currentPassword: z.string().min(1).max(128), newPassword: passwordSchema }).strict();
 
 const readCookie = (req, name) => {
@@ -36,6 +39,9 @@ const defaultLimits = () => ({
   register: limiter({ windowMs: 60 * 60_000, limit: 5 }),
   refresh: limiter({ windowMs: 60_000, limit: 60 }),
   // Runs after requireAuth: per user, so a stolen access token cannot brute-force the current password.
+  // Same IP+account / IP-only pair as login (loginKey normalises req.body.email): caps mail-bombing one inbox and spraying.
+  resetRequest: [limiter({ windowMs: 60 * 60_000, limit: 3, keyGenerator: loginKey }), limiter({ windowMs: 60 * 60_000, limit: 10 })],
+  resetConfirm: limiter({ windowMs: 15 * 60_000, limit: 10 }),
   changePassword: limiter({ windowMs: 15 * 60_000, limit: 5, keyGenerator: (req) => `user:${req.user.id}` }),
 });
 
@@ -53,13 +59,18 @@ function csrfGuard(allowedOrigins) {
   };
 }
 
-/** POST /api/auth/{register,login,refresh,logout,change-password}, GET /api/auth/me */
+/** Fire-and-forget work after the response. Logs only the error class: SMTP errors can carry addresses. */
+const logBackgroundFailure = (p) => {
+  p.catch((err) => console.error(`auth background task failed: ${err?.code ?? err?.name ?? 'Error'}`));
+};
+
+/** POST /api/auth/{register,login,refresh,logout,change-password,password-reset/request,password-reset/confirm}, GET /api/auth/me */
 export function authRouter({
   repo = defaultRepo, jwt, refreshTtlDays = 14, refreshGraceSeconds = 0, cookieSecure = false, allowedOrigins = [],
-  limits = defaultLimits(),
+  limits = defaultLimits(), mailer = createMailer(), appBaseUrl = allowedOrigins[0], background = logBackgroundFailure,
 } = {}) {
   const router = Router();
-  const service = createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds });
+  const service = createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds, mailer, appBaseUrl });
   const csrf = csrfGuard(allowedOrigins);
   const authenticated = requireAuth({ repo, jwt });
   const cookieOpts = { httpOnly: true, secure: cookieSecure, sameSite: 'strict', path: COOKIE_PATH };
@@ -100,6 +111,18 @@ export function authRouter({
   // Bearer-authenticated (no cookie), so not CSRF-prone; limiter before validate so every attempt counts.
   router.post('/change-password', authenticated, limits.changePassword, validate({ body: changePasswordBody }),
     wrap(async (req, res) => sendSession(res, 200, await service.changePassword(req.user, req.validated.body))));
+
+  // ADR-003 #5-6: answer first, then look up + mail, so the response never depends on whether the account exists.
+  router.post('/password-reset/request', limits.resetRequest, validate({ body: resetRequestBody }), (req, res) => {
+    res.set('Cache-Control', 'no-store').status(202).json({ status: 'accepted' });
+    background(service.requestPasswordReset(req.validated.body.email));
+  });
+
+  // Token in the JSON body, no cookie: not CSRF-prone.
+  router.post('/password-reset/confirm', limits.resetConfirm, validate({ body: resetConfirmBody }), wrap(async (req, res) => {
+    await service.confirmPasswordReset(req.validated.body);
+    res.set('Cache-Control', 'no-store').status(204).end();
+  }));
 
   router.get('/me', authenticated, (req, res) => {
     res.set('Cache-Control', 'no-store').json({ user: toUserPayload(req.user) });
