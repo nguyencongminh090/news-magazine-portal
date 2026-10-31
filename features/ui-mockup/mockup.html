@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>News Portal mockup</title>
+<style>
+/* Tokens from DESIGN.md */
+:root {
+  --bg: #FAFAF7; --surface: #FFFFFF; --border: #E3E1DA;
+  --text: #1A1A1A; --muted: #5C5C58; --primary: #8A1C1C;
+  --border-strong: #8F8D85; --ph-from: #D9D5C8; --ph-to: #B9B3A0; --on-primary: #FFFFFF; --placeholder-text: #3A362C;
+  --success: #1F6B3A; --warning: #8A5A00; --danger: #B3261E;
+  --serif: "Source Serif 4", Georgia, serif; --sans: system-ui, sans-serif;
+  --u: 8px; --radius: 2px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 var(--sans); }
+a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+a, button, input, select, textarea { transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.muted { color: var(--muted); font-size: 14px; }
+.cat { color: var(--primary); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.btn { display: inline-block; padding: 8px 16px; border: 1px solid var(--primary); border-radius: var(--radius); background: var(--primary); color: var(--on-primary); font: 600 16px var(--sans); text-decoration: none; cursor: pointer; }
+.btn.secondary { background: transparent; color: var(--primary); }
+.btn:hover { filter: brightness(1.15); }
+input, select, textarea { width: 100%; padding: 8px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); font: 16px var(--sans); color: var(--text); }
+label { display: block; font-weight: 600; margin: 16px 0 4px; }
+
+/* Mockup switcher (not part of the design) */
+.switcher { background: var(--text); padding: 8px 0; }
+.switcher .wrap { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--border); font-size: 14px; }
+.switcher button { background: var(--muted); color: var(--surface); border: 0; padding: 4px 12px; border-radius: var(--radius); cursor: pointer; font: 14px var(--sans); }
+.switcher button[aria-pressed="true"] { background: var(--surface); color: var(--text); }
+.view { display: none; } .view.on { display: block; }
+
+/* Public masthead */
+.masthead { background: var(--surface); border-bottom: 1px solid var(--border); }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; flex-wrap: wrap; }
+.brand { font: 700 28px var(--serif); color: var(--text); text-decoration: none; }
+.top form { display: flex; gap: 8px; flex: 1 1 240px; max-width: 360px; }
+.top .acct { display: flex; gap: 16px; align-items: center; }
+nav.cats { display: flex; gap: 24px; overflow-x: auto; border-top: 1px solid var(--border); padding: 8px 0; }
+nav.cats a { color: var(--text); text-decoration: none; padding: 4px 0; white-space: nowrap; border-bottom: 2px solid transparent; }
+nav.cats a:hover, nav.cats a[aria-current] { border-bottom-color: var(--primary); }
+
+/* Home */
+.home { display: grid; grid-template-columns: 1fr 300px; gap: 48px; padding: 32px 0 64px; }
+.lead { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
+.img { background: linear-gradient(135deg, var(--ph-from), var(--ph-to)); aspect-ratio: 16/9; display: grid; place-items: center; color: var(--placeholder-text); font-size: 14px; }
+.lead h1 { font-size: 40px; margin: 8px 0; }
+.lead p { font-size: 18px; margin: 8px 0; }
+.second { display: grid; gap: 16px; align-content: start; }
+.second h3 { font-size: 22px; margin: 4px 0; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { padding: 24px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 160px; gap: 16px; }
+.list h3 { font-size: 22px; margin: 4px 0; } .list h3 a { color: var(--text); text-decoration: none; } .list h3 a:hover { color: var(--primary); text-decoration: underline; }
+.list .img { aspect-ratio: 4/3; }
+aside h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 8px; }
+aside ol { margin: 0 0 32px; padding-left: 24px; } aside li { padding: 8px 0; }
+.pager { display: flex; gap: 8px; margin-top: 24px; }
+footer.site { border-top: 1px solid var(--border); background: var(--surface); padding: 24px 0; }
+
+/* Article */
+.article { max-width: 66ch; margin: 0 auto; padding: 48px 16px 64px; }
+.article h1 { font-size: 40px; margin: 8px 0 16px; }
+.article p { font: 18px/1.65 var(--sans); margin: 0 0 24px; }
+.tags a { display: inline-block; border: 1px solid var(--border); padding: 0 8px; margin: 0 8px 8px 0; font-size: 14px; text-decoration: none; }
+.comment { border-top: 1px solid var(--border); padding: 16px 0; }
+.rating { display: flex; gap: 8px; align-items: center; margin: 24px 0; }
+
+/* Auth */
+.auth { max-width: 400px; margin: 64px auto; padding: 32px; background: var(--surface); border: 1px solid var(--border); }
+.auth h1 { font-size: 28px; }
+
+/* Admin */
+.admin { display: grid; grid-template-columns: 220px 1fr; min-height: 640px; }
+.admin nav { background: var(--surface); border-right: 1px solid var(--border); padding: 24px 16px; }
+.admin nav a { display: block; padding: 8px; color: var(--text); text-decoration: none; border-left: 3px solid transparent; }
+.admin nav a[aria-current] { border-left-color: var(--primary); font-weight: 600; background: var(--bg); }
+.admin main { padding: 24px 32px; }
+.admin h1 { font-size: 28px; }
+.bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; flex-wrap: wrap; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); }
+th, td { text-align: left; padding: 8px 16px; border-bottom: 1px solid var(--border); }
+th { font-size: 14px; color: var(--muted); }
+.status { font-size: 14px; font-weight: 600; }
+.status.pub { color: var(--success); } .status.draft { color: var(--warning); }
+
+@media (max-width: 800px) {
+  .home, .lead, .admin { grid-template-columns: 1fr; }
+  .list li { grid-template-columns: 1fr; }
+  .lead h1, .article h1 { font-size: 28px; }
+  .admin nav { border-right: 0; border-bottom: 1px solid var(--border); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="switcher"><div class="wrap">
+  <span>Mockup view:</span>
+  <button data-v="home" aria-pressed="true">Home</button>
+  <button data-v="article" aria-pressed="false">Article</button>
+  <button data-v="auth" aria-pressed="false">Sign in</button>
+  <button data-v="admin" aria-pressed="false">Admin</button>
+</div></div>
+
+<!-- Public chrome (home, article, auth) -->
+<div id="public">
+  <header class="masthead"><div class="wrap">
+    <div class="top">
+      <a class="brand" href="#">News Portal</a>
+      <form role="search" onsubmit="return false"><input type="search" aria-label="Search articles" placeholder="Search articles"><button class="btn secondary">Search</button></form>
+      <div class="acct"><a href="#">Sign in</a><a class="btn" href="#">Register</a></div>
+    </div>
+    <nav class="cats" aria-label="Categories">
+      <a href="#" aria-current="page">Latest</a><a href="#">World</a><a href="#">Politics</a><a href="#">Science</a><a href="#">Technology</a><a href="#">Sport</a><a href="#">Culture</a>
+    </nav>
+  </div></header>
+
+  <section class="view on" id="v-home"><div class="wrap home">
+    <div>
+      <article class="lead">
+        <div class="img" role="img" aria-label="Lead image placeholder">lead image 16:9</div>
+        <div>
+          <span class="cat">Science</span>
+          <h1><a href="#" style="color:inherit;text-decoration:none">Probe returns first samples from the far side of the Moon</a></h1>
+          <p>Mission controllers confirmed the capsule landed safely and sample containers are intact.</p>
+          <span class="muted">Staff writer · 31 Oct 2026 · 1,204 views</span>
+        </div>
+      </article>
+      <div class="second" style="grid-template-columns:1fr 1fr;margin:24px 0;display:grid">
+        <article><span class="cat">World</span><h3><a href="#">Ministers agree on cross-border flood fund</a></h3><span class="muted">30 Oct 2026</span></article>
+        <article><span class="cat">Technology</span><h3><a href="#">City trials open data portal for transit</a></h3><span class="muted">30 Oct 2026</span></article>
+      </div>
+      <h2 style="font-size:28px;margin-top:32px">Latest news</h2>
+      <ul class="list">
+        <li><div><span class="cat">Sport</span><h3><a href="#">Underdogs reach the final after penalty shoot-out</a></h3><p style="margin:4px 0">A tense semi-final ended 4–3 on penalties in front of a full stadium.</p><span class="muted">29 Oct 2026 · 3 comments</span></div><div class="img" role="img" aria-label="Thumbnail placeholder">thumb</div></li>
+        <li><div><span class="cat">Culture</span><h3><a href="#">Restored film archive opens to the public</a></h3><p style="margin:4px 0">More than 2,000 reels are now available for viewing and research.</p><span class="muted">29 Oct 2026 · 0 comments</span></div><div class="img" role="img" aria-label="Thumbnail placeholder">thumb</div></li>
+        <li><div><span class="cat">Politics</span><h3><a href="#">Parliament passes revised data protection bill</a></h3><p style="margin:4px 0">The bill adds stricter consent rules and shorter retention periods.</p><span class="muted">28 Oct 2026 · 12 comments</span></div><div class="img" role="img" aria-label="Thumbnail placeholder">thumb</div></li>
+      </ul>
+      <div class="pager"><a class="btn secondary" href="#">Previous</a><a class="btn secondary" href="#">Next</a></div>
+    </div>
+    <aside>
+      <h2>Most viewed</h2>
+      <ol><li><a href="#">Probe returns first samples from the Moon</a></li><li><a href="#">Underdogs reach the final</a></li><li><a href="#">Parliament passes data protection bill</a></li></ol>
+      <h2>Categories</h2>
+      <ol style="list-style:none;padding:0"><li><a href="#">World (24)</a></li><li><a href="#">Science (18)</a></li><li><a href="#">Sport (15)</a></li></ol>
+    </aside>
+  </div></section>
+
+  <section class="view" id="v-article"><div class="article">
+    <span class="cat">Science</span>
+    <h1>Probe returns first samples from the far side of the Moon</h1>
+    <p class="muted" style="font-size:14px">Staff writer · 31 Oct 2026 · Source: Wikinews (CC BY)</p>
+    <div class="img" role="img" aria-label="Lead image placeholder" style="margin-bottom:24px">lead image 16:9</div>
+    <p>Mission controllers confirmed on Friday that the return capsule landed safely and that all sample containers are intact. Engineers said the first inspection found no damage to the seals.</p>
+    <p>Scientists expect the material to answer long-standing questions about the age and composition of the lunar crust. Initial analysis will begin next week.</p>
+    <div class="tags"><a href="#">moon</a><a href="#">space</a><a href="#">research</a></div>
+    <div class="rating"><strong>Rate this article:</strong><select aria-label="Rating" style="width:auto"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select><button class="btn secondary">Submit</button><a href="#" class="muted" style="margin-left:auto">Report</a></div>
+    <h2 style="font-size:28px">Comments (2)</h2>
+    <div class="comment"><strong>reader_01</strong> <span class="muted">· 31 Oct</span><p style="font-size:16px;margin:4px 0">Great news for the science community.</p></div>
+    <div class="comment"><strong>reader_02</strong> <span class="muted">· 31 Oct</span><p style="font-size:16px;margin:4px 0">Looking forward to the results.</p></div>
+    <label for="c">Add a comment</label><textarea id="c" rows="3"></textarea>
+    <p style="margin-top:16px"><button class="btn">Post comment</button></p>
+  </div></section>
+
+  <section class="view" id="v-auth"><div class="auth">
+    <h1>Sign in</h1>
+    <label for="e">Email</label><input id="e" type="email" autocomplete="email">
+    <label for="p">Password</label><input id="p" type="password" autocomplete="current-password">
+    <p><button class="btn" style="width:100%">Sign in</button></p>
+    <p class="muted">No account? <a href="#">Register</a></p>
+  </div></section>
+
+  <footer class="site"><div class="wrap muted">News Portal · Articles from Wikinews, licensed CC BY · <a href="#">About</a> · <a href="#">Data license</a></div></footer>
+</div>
+
+<!-- Admin shell -->
+<section class="view" id="v-admin">
+  <div class="admin">
+    <nav aria-label="Admin">
+      <div class="brand" style="font-size:22px;display:block;margin-bottom:24px">News Portal</div>
+      <a href="#" aria-current="page">Articles</a><a href="#">Categories</a><a href="#">Tags</a><a href="#">Comments</a><a href="#">Reports</a><a href="#">Users</a><a href="#">SEO metadata</a>
+      <p class="muted" style="margin-top:32px">Signed in as editor@demo</p>
+    </nav>
+    <main>
+      <div class="bar"><h1>Articles</h1><a class="btn" href="#">New article</a></div>
+      <div class="bar"><input type="search" aria-label="Filter" placeholder="Filter by title" style="max-width:280px"><select aria-label="Status" style="width:auto"><option>All statuses</option><option>Published</option><option>Draft</option></select></div>
+      <table>
+        <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Views</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>Probe returns first samples…</td><td>Science</td><td><span class="status pub">● Published</span></td><td>1,204</td><td><a href="#">Edit</a> · <a href="#">Delete</a></td></tr>
+          <tr><td>Ministers agree on flood fund</td><td>World</td><td><span class="status pub">● Published</span></td><td>731</td><td><a href="#">Edit</a> · <a href="#">Delete</a></td></tr>
+          <tr><td>Draft: City open data portal</td><td>Technology</td><td><span class="status draft">▲ Draft</span></td><td>0</td><td><a href="#">Edit</a> · <a href="#">Delete</a></td></tr>
+        </tbody>
+      </table>
+      <div class="pager"><a class="btn secondary" href="#">Previous</a><a class="btn secondary" href="#">Next</a></div>
+    </main>
+  </div>
+</section>
+
+<script>
+  const views = ['home', 'article', 'auth', 'admin'];
+  document.querySelectorAll('.switcher button').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    document.querySelectorAll('.switcher button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    views.forEach(n => document.getElementById('v-' + n).classList.toggle('on', n === v));
+    document.getElementById('public').style.display = v === 'admin' ? 'none' : 'block';
+  }));
+</script>
+</body>
+</html>
