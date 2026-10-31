@@ -105,3 +105,9 @@ th { font-size: var(--fs-small); color: var(--muted); }
 .hint { color: var(--muted); font-size: var(--fs-small); }
 .brand, .top .acct a:not(.btn), aside li a { display: inline-flex; align-items: center; min-height: var(--target); }
 aside li { padding: 0; }
+.status.archived { color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+.link-btn { background: none; border: 0; padding: 0; min-height: var(--target); font: inherit; color: var(--primary); text-decoration: underline; cursor: pointer; }
+.link-btn.danger { color: var(--danger); }
+.admin-form { max-width: 75ch; }
+.admin-form textarea { resize: vertical; }
