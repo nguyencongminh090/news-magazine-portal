@@ -2,12 +2,13 @@ import { rateLimit } from 'express-rate-limit';
 import { HttpError } from './errors.js';
 
 /** Build a per-IP limiter; 429 is rendered as problem+json with Retry-After. */
-export function limiter({ windowMs, limit }) {
+export function limiter({ windowMs, limit, keyGenerator }) {
   return rateLimit({
     windowMs,
     limit,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
+    ...(keyGenerator && { keyGenerator }),
     handler: (_req, _res, next, opts) => {
       const retry = String(Math.ceil(opts.windowMs / 1000));
       next(new HttpError(429, 'Too Many Requests', { headers: { 'Retry-After': retry } }));

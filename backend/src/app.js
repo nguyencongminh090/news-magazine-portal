@@ -8,6 +8,8 @@ import { errorHandler, notFound } from './http/errors.js';
 import { articleShellRouter } from './modules/articles/shellRoute.js';
 import { articlesRouter } from './modules/articles/routes.js';
 import { categoriesRouter } from './modules/categories/routes.js';
+import { authRouter } from './modules/auth/routes.js';
+import { usersRouter } from './modules/users/routes.js';
 import { requireJson } from './http/validate.js';
 
 /** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell?, articles?, categories? }. Routers needing the DB import their own repo. */
@@ -23,6 +25,14 @@ export function createApp(cfg = {}) {
   app.use('/api/health', healthRouter);
   app.use('/api/articles', articlesRouter(cfg.articles));
   app.use('/api/categories', categoriesRouter(cfg.categories));
+  // Auth needs a signing key; bare createApp() (health/articles tests) simply has no auth routes.
+  if (cfg.jwt?.secret) {
+    const origins = [cfg.corsOrigin ?? 'http://localhost:5173', cfg.publicBaseUrl].filter(Boolean);
+    app.use('/api/auth', authRouter({
+      jwt: cfg.jwt, refreshTtlDays: cfg.refreshTokenTtlDays, cookieSecure: cfg.cookieSecure, allowedOrigins: origins, ...cfg.auth,
+    }));
+    app.use('/api/users', usersRouter({ jwt: cfg.jwt, repo: cfg.auth?.repo }));
+  }
 
   app.use('/api', notFound);
 
