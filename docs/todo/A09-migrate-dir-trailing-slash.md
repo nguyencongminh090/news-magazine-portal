@@ -1,5 +1,5 @@
 # A09 — migrate.js requires trailing "/" on the migrations dir argument
-**Status:** OPEN
+**Status:** ✅ DONE
 **Area:** `backend/db/migrate.js`, `backend/db/migrate.test.js`
 **From:** item #4 follow-up, 2026-10-31   **Depends:** A02
 

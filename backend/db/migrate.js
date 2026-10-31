@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 
@@ -13,7 +14,7 @@ export async function listMigrations(dir = MIGRATIONS_DIR) {
   const names = (await readdir(dir)).filter((name) => name.endsWith('.sql')).sort();
   return Promise.all(
     names.map(async (name) => {
-      const sql = await readFile(new URL(name, `file://${dir}`), 'utf8');
+      const sql = await readFile(path.join(dir, name), 'utf8');
       return { name, sql, checksum: checksum(sql) };
     }),
   );
