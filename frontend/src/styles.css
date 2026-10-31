@@ -68,7 +68,15 @@ footer.site { border-top: 1px solid var(--border); background: var(--surface); p
 .article p { font: 18px/1.65 var(--sans); margin: 0 0 24px; }
 .tags a { display: inline-block; border: 1px solid var(--border); padding: 0 8px; margin: 0 8px 8px 0; font-size: var(--fs-small); text-decoration: none; }
 .comment { border-top: 1px solid var(--border); padding: 16px 0; }
-.rating { display: flex; gap: 8px; align-items: center; margin: 24px 0; }
+.article section { margin-top: 40px; }
+.article h2 { margin-bottom: 8px; }
+.article .rating-summary { margin-bottom: 0; }
+.rating { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 16px; }
+.rating .star { min-width: var(--target); }
+.rating .star.on { background: var(--primary); color: var(--on-primary); }
+.rating .star:disabled { border-color: var(--border-strong); color: var(--muted); background: transparent; cursor: default; }
+.report-form { margin: 8px 0; }
+.report-form textarea, #comment-body { resize: vertical; }
 
 /* Auth */
 .auth { max-width: 400px; margin: 64px auto; padding: 32px; background: var(--surface); border: 1px solid var(--border); }
