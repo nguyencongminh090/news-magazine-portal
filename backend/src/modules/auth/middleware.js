@@ -29,3 +29,14 @@ export function requireAuth({ repo, jwt }) {
 /** Run after requireAuth: 403 unless the user holds at least one of the roles. UI hints never replace this. */
 export const requireRole = (...roles) => (req, _res, next) =>
   next(req.user?.roles.some((r) => roles.includes(r)) ? undefined : new HttpError(403, 'Forbidden'));
+
+/** Like requireAuth but anonymous-friendly: no/invalid credentials just leave req.user unset; real faults still propagate. */
+export function optionalAuth(opts) {
+  const strict = requireAuth(opts);
+  return (req, res, next) =>
+    req.headers.authorization ? strict(req, res, (err) => next(err && err.status !== 401 ? err : undefined)) : next();
+}
+
+/** Run after requireAuth: 403 until the account's email address is verified (anti-spam gate for public writes). */
+export const requireVerified = (req, _res, next) =>
+  next(req.user?.email_verified_at != null ? undefined : new HttpError(403, 'Forbidden', { detail: 'Verify your email address first' }));

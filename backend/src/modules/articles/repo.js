@@ -1,4 +1,5 @@
 import { query } from '../../db.js';
+import { SUMMARY_COLUMNS, myRatingColumn } from '../engagement/summary.js';
 
 /** Fields needed for head meta of a published article, or null (draft/archived/unknown). */
 export async function findPublishedMetaBySlug(slug) {
@@ -13,7 +14,7 @@ export async function findPublishedMetaBySlug(slug) {
 const PUBLIC_COLUMNS = `d.id, d.slug, d.title, d.summary, d.published_at, d.author_name,
        c.slug AS category_slug, c.name AS category_name,
        COALESCE((SELECT array_agg(t.name ORDER BY t.name) FROM document_tags dt JOIN tags t ON t.id = dt.tag_id
-                  WHERE dt.document_id = d.id), '{}') AS tags`;
+                  WHERE dt.document_id = d.id), '{}') AS tags,${SUMMARY_COLUMNS}`;
 
 /** LIKE-escape user input so % and _ match literally. */
 const likePattern = (q) => `%${q.replace(/[\\%_]/g, '\\$&')}%`;
@@ -34,13 +35,13 @@ export async function listPublished({ page, pageSize, category, q }) {
   return { rows, total: rows.length ? Number(rows[0].total) : 0 };
 }
 
-/** Full published article (with body) or null. */
-export async function findPublishedBySlug(slug) {
+/** Full published article (with body) or null. `userId` (optional) adds the caller's own rating as my_rating. */
+export async function findPublishedBySlug(slug, userId = null) {
   const { rows } = await query(
-    `SELECT ${PUBLIC_COLUMNS}, d.content AS body
+    `SELECT ${PUBLIC_COLUMNS}, d.content AS body, ${myRatingColumn('$2')}
        FROM documents d JOIN categories c ON c.id = d.category_id
       WHERE d.slug = $1 AND d.status = 'published'`,
-    [slug],
+    [slug, userId],
   );
   return rows[0] ?? null;
 }
