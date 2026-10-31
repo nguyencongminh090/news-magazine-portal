@@ -85,7 +85,7 @@ footer.site { border-top: 1px solid var(--border); background: var(--surface); p
 table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); }
 th, td { text-align: left; padding: 8px 16px; border-bottom: 1px solid var(--border); }
 th { font-size: var(--fs-small); color: var(--muted); }
-.status { font-size: var(--fs-small); font-weight: 600; }
+.status { font-size: var(--fs-small); font-weight: 600; white-space: nowrap; }
 .status.pub { color: var(--success); } .status.draft { color: var(--warning); }
 
 @media (max-width: 800px) {

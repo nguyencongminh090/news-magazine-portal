@@ -12,3 +12,4 @@ Append-only. Detail files: `docs/fix-log/<YYYY-MM-DD>-<slug>.md` (template `docs
 | 2026-10-31 19:48 | #16 follow-up: grace re-mint restarted the window on each superseded sibling (ping-pong bypass); sibling now inherits the original used_at | [detail](fix-log/2026-10-31-refresh-grace-sibling-window.md) |
 | 2026-10-31 20:06 | #15 password change / role change raced an in-flight refresh rotation; its successor token stayed live. Lock user row first in both | [detail](fix-log/2026-10-31-revoke-all-rotation-race.md) |
 | 2026-10-31 21:30 | #15 change-password left outstanding reset links usable for 30 min; a new password now consumes every unused reset token | [detail](fix-log/2026-10-31-password-change-kills-reset-links.md) |
+| 2026-10-31 22:49 | #10 admin Status badge icon wrapped onto its own line in narrow table cells; .status is now white-space: nowrap | [detail](fix-log/2026-10-31-status-badge-wrap.md) |
