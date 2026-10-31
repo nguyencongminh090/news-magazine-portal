@@ -33,8 +33,10 @@ export const verifyAccess = async (token, jwt) => (await verifyAccessClaims(toke
 
 export const hashToken = (token) => createHash('sha256').update(token).digest('hex');
 
-/** Opaque refresh token: 32 random bytes; only the SHA-256 hex digest is stored. */
-export function newRefreshToken() {
+/** Opaque token (refresh, reset, verify): 32 random bytes; only the SHA-256 hex digest is stored. */
+export function newOpaqueToken() {
   const token = randomBytes(32).toString('base64url');
   return { token, hash: hashToken(token) };
 }
+
+export const newRefreshToken = newOpaqueToken;

@@ -45,8 +45,48 @@ export async function anyAdminExists() {
 export async function updatePassword(userId, passwordHash, changedAt) {
   await withTransaction(async (c) => {
     await c.query('SELECT 1 FROM users WHERE id = $1 FOR UPDATE', [userId]);
-    await c.query('UPDATE users SET password_hash = $2, password_changed_at = $3 WHERE id = $1', [userId, passwordHash, changedAt]);
-    await c.query('UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [userId]);
+    await setPasswordAndRevoke(c, userId, passwordHash, changedAt);
+  });
+}
+
+/** Caller holds the user-row lock. Kills every session and every outstanding reset link: a new password ends them all. */
+async function setPasswordAndRevoke(c, userId, passwordHash, changedAt) {
+  await c.query('UPDATE users SET password_hash = $2, password_changed_at = $3 WHERE id = $1', [userId, passwordHash, changedAt]);
+  await c.query('UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [userId]);
+  await c.query("UPDATE user_tokens SET used_at = now() WHERE user_id = $1 AND purpose = 'reset' AND used_at IS NULL", [userId]);
+}
+
+/** Store a new emailed token; the user's outstanding tokens of the same purpose die with it (ADR-003 #3). */
+export async function issueUserToken({ userId, purpose, hash, expiresAt }) {
+  await withTransaction(async (c) => {
+    await c.query('SELECT 1 FROM users WHERE id = $1 FOR UPDATE', [userId]); // lock order: user -> tokens
+    await c.query('DELETE FROM user_tokens WHERE user_id = $1 AND purpose = $2', [userId, purpose]);
+    await c.query(
+      'INSERT INTO user_tokens (user_id, purpose, token_hash, expires_at) VALUES ($1, $2, $3, $4)',
+      [userId, purpose, hash, expiresAt],
+    );
+  });
+}
+
+/**
+ * Consume a reset token and set the password in one transaction: single use (UPDATE ... WHERE used_at IS NULL), every
+ * refresh token revoked, email marked verified (the link proved mailbox control). Returns the user id, or null for an
+ * unknown / used / expired token or an inactive user.
+ */
+export async function resetPasswordWithToken({ tokenHash, passwordHash, changedAt }) {
+  return withTransaction(async (c) => {
+    const owner = await c.query('SELECT user_id FROM user_tokens WHERE token_hash = $1', [tokenHash]);
+    if (!owner.rows[0]) return null;
+    const user = (await c.query('SELECT id, is_active FROM users WHERE id = $1 FOR UPDATE', [owner.rows[0].user_id])).rows[0];
+    const consumed = await c.query(
+      `UPDATE user_tokens SET used_at = now()
+        WHERE token_hash = $1 AND purpose = 'reset' AND used_at IS NULL AND expires_at > now()`,
+      [tokenHash],
+    );
+    if (!consumed.rowCount || !user.is_active) return null;
+    await setPasswordAndRevoke(c, user.id, passwordHash, changedAt);
+    await c.query('UPDATE users SET email_verified_at = COALESCE(email_verified_at, now()) WHERE id = $1', [user.id]);
+    return user.id;
   });
 }
 

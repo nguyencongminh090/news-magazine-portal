@@ -111,10 +111,22 @@ test('loadConfig fails eagerly listing all problems', () => {
     /DATABASE_URL/.test(e.message) && /JWT_SECRET/.test(e.message));
   assert.throws(() => loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'x', JWT_SECRET: 'a'.repeat(32), COOKIE_SECURE: 'false' }),
     /COOKIE_SECURE/);
-  const ok = loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32), PUBLIC_BASE_URL: 'https://news.example' });
+  const ok = loadConfig({ NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32), PUBLIC_BASE_URL: 'https://news.example', MAIL_TRANSPORT: 'smtp', SMTP_URL: 'smtp://relay.example:587', MAIL_FROM: 'News <no-reply@n.example.com>' });
   assert.equal(ok.cookieSecure, true);
   assert.equal(ok.jwt.issuer, 'news-portal');
   assert.equal(loadConfig({ DATABASE_URL: 'x' }).nodeEnv, 'development');
   assert.equal(loadConfig({ DATABASE_URL: 'x' }).refreshReuseGraceSeconds, 30);
   assert.throws(() => loadConfig({ DATABASE_URL: 'x', REFRESH_REUSE_GRACE_SECONDS: '1.5' }), /REFRESH_REUSE_GRACE_SECONDS/);
+});
+
+test('loadConfig mail (ADR-003): log in dev, smtp with URL + sender required in production', () => {
+  const prod = { NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'a'.repeat(32), PUBLIC_BASE_URL: 'https://news.example' };
+  assert.deepEqual(loadConfig({ DATABASE_URL: 'x' }).mail, { transport: 'log', smtpUrl: undefined, from: undefined });
+  assert.throws(() => loadConfig(prod), /MAIL_TRANSPORT must be one of/);
+  assert.throws(() => loadConfig({ ...prod, MAIL_TRANSPORT: 'log' }), /MAIL_TRANSPORT must be smtp in production/);
+  assert.throws(() => loadConfig({ ...prod, MAIL_TRANSPORT: 'smtp' }), (e) => /SMTP_URL/.test(e.message) && /MAIL_FROM/.test(e.message));
+  assert.throws(() => loadConfig({ ...prod, MAIL_TRANSPORT: 'smtp', SMTP_URL: 'http://x', MAIL_FROM: 'a@b.c' }), /SMTP_URL/);
+  assert.throws(() => loadConfig({ DATABASE_URL: 'x', MAIL_TRANSPORT: 'sendgrid' }), /MAIL_TRANSPORT/);
+  const ok = loadConfig({ ...prod, MAIL_TRANSPORT: 'smtp', SMTP_URL: 'smtp://relay.example:587', MAIL_FROM: 'News <no-reply@n.example.com>' });
+  assert.deepEqual(ok.mail, { transport: 'smtp', smtpUrl: 'smtp://relay.example:587', from: 'News <no-reply@n.example.com>' });
 });
