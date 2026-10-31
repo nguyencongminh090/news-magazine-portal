@@ -1,3 +1,5 @@
+import { toEngagementSummary } from '../engagement/summary.js';
+
 /** The single article payload builder: every page/endpoint serialises an article row through this. */
 export function toArticlePayload(row) {
   const payload = {
@@ -10,6 +12,7 @@ export function toArticlePayload(row) {
     category: row.category_slug ? { slug: row.category_slug, name: row.category_name } : null,
     tags: row.tags ?? [],
   };
+  if (row.rating_count !== undefined) payload.engagement = toEngagementSummary(row); // list + detail share one builder
   if (row.body !== undefined) payload.body = row.body; // omitted by list queries (no full text per list row)
   return payload;
 }

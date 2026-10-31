@@ -20,7 +20,8 @@ export function limiter({ windowMs, limit, keyGenerator }) {
 export const limits = {
   login: () => limiter({ windowMs: 15 * 60_000, limit: 10 }),
   refresh: () => limiter({ windowMs: 15 * 60_000, limit: 30 }),
-  comment: () => limiter({ windowMs: 60_000, limit: 10 }),
-  rating: () => limiter({ windowMs: 60_000, limit: 20 }),
-  report: () => limiter({ windowMs: 60_000, limit: 5 }),
+  // opts.keyGenerator lets signed-in write routes budget per user instead of per IP.
+  comment: (opts) => limiter({ windowMs: 60_000, limit: 10, ...opts }),
+  rating: (opts) => limiter({ windowMs: 60_000, limit: 20, ...opts }),
+  report: (opts) => limiter({ windowMs: 60_000, limit: 5, ...opts }),
 };
