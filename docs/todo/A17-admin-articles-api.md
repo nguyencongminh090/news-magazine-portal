@@ -1,5 +1,5 @@
 # A17 — Admin articles API (list/create/edit/publish/delete)
-**Status:** IN PROGRESS — backend done on `feature/admin-articles-api` (RBAC, slug dedupe, publish-once, stale-update 409, tests incl. real DB). UI = #10.
+**Status:** IN PROGRESS — backend merged to main; Admin UI (table, filter, pager, create/edit form, admin-only delete) merged, unit-tested but NOT yet real-browser or ui-audit checked.
 **Area:** `backend/src/modules/adminArticles/`, `articles/payload.js`, `app.js`
 **From:** #10 Admin view blocked on API; design `features/admin-articles/planning.md` signed off 2026-10-31   **Depends:** A14, A11
 
