@@ -1,0 +1,12 @@
+name: react-best-practices
+description: "React and Next.js performance rules: rendering, data fetching, bundle size"
+domain: frontend-ui-design
+tags: react,nextjs,performance,bundle,rendering
+apply_when: "writing or reviewing React or Next.js code for performance"
+scope: global
+project: ""
+language: en
+knowledge: fe-framework-choice,fe-state-data-fetching,perf-loading-critical-path,a11y-aria-keyboard-focus
+conflicts: ""
+source: "https://github.com/vercel-labs/agent-skills/tree/063bee9/skills/react-best-practices"
+last_reviewed: 2026-09-26

@@ -1,0 +1,12 @@
+name: prompt-architect
+description: "Improve prompts using 27 frameworks across 7 intent categories; outputs Claude-format (XML-tagged) prompts for Claude targets"
+domain: prompt-skill-authoring
+tags: prompt-engineering,frameworks,prompt-rewrite,claude-prompting,xml-tags
+apply_when: "improving or structuring a prompt, especially one written for Claude"
+scope: global
+project: ""
+language: en
+knowledge: 
+conflicts: ""
+source: "P/C++/Project/Lab/Rapfi_V2/rapfi/.claude/skills/prompt-architect"
+last_reviewed: 2026-10-23
