@@ -10,6 +10,7 @@ import { articlesRouter } from './modules/articles/routes.js';
 import { categoriesRouter } from './modules/categories/routes.js';
 import { authRouter } from './modules/auth/routes.js';
 import { usersRouter } from './modules/users/routes.js';
+import { adminArticlesRouter } from './modules/adminArticles/routes.js';
 import { requireJson } from './http/validate.js';
 
 /** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell?, articles?, categories? }. Routers needing the DB import their own repo. */
@@ -33,6 +34,7 @@ export function createApp(cfg = {}) {
       cookieSecure: cfg.cookieSecure, allowedOrigins: origins, ...cfg.auth,
     }));
     app.use('/api/users', usersRouter({ jwt: cfg.jwt, repo: cfg.auth?.repo }));
+    app.use('/api/admin/articles', adminArticlesRouter({ jwt: cfg.jwt, auth: cfg.auth?.repo, ...cfg.adminArticles }));
   }
 
   app.use('/api', notFound);
