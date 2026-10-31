@@ -1,5 +1,5 @@
 # A17 — Admin articles API (list/create/edit/publish/delete)
-**Status:** IN PROGRESS — backend merged to main; Admin UI (table, filter, pager, create/edit form, admin-only delete) merged, unit-tested but NOT yet real-browser or ui-audit checked.
+**Status:** ✅ DONE 2026-10-31 — API + Admin UI merged to main; backend tests green (64 pass, 8 skipped). UI audit findings tracked under #10.
 **Area:** `backend/src/modules/adminArticles/`, `articles/payload.js`, `app.js`
 **From:** #10 Admin view blocked on API; design `features/admin-articles/planning.md` signed off 2026-10-31   **Depends:** A14, A11
 
