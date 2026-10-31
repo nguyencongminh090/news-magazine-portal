@@ -126,6 +126,12 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal(await resetFor(off.hash), null); // deactivated after the mail went out
     await query('UPDATE users SET is_active = true WHERE id = $1', [id]);
     assert.equal(await resetFor(hashToken('unknown')), null);
+    // A password change kills outstanding reset links (a link from a once-compromised mailbox must not undo it).
+    const pending = newRefreshToken();
+    await repo.issueUserToken({ userId: id, purpose: 'reset', hash: pending.hash, expiresAt: future });
+    await repo.updatePassword(id, 'h5', new Date());
+    assert.equal(await resetFor(pending.hash), null);
+    assert.equal((await repo.findUserById(id)).password_hash, 'h5');
 
     // A15 race: a rotation in flight when the password changes must not leave its successor live. Under READ
     // COMMITTED the revoking UPDATE never sees a row inserted after its snapshot, so the two must serialise.

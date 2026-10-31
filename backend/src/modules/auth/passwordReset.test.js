@@ -108,6 +108,19 @@ test('reset confirm: superseded, expired, unknown and deactivated-user tokens ge
   });
 });
 
+test('change-password invalidates a reset link that is still outstanding', async () => {
+  const { app, mail } = setup();
+  await withServer(app, async (base) => {
+    const { accessToken } = await (await post(base, '/api/auth/register', reg)).json();
+    await request(base, reg.email);
+    await mail.settle();
+    const changed = await post(base, '/api/auth/change-password', { currentPassword: reg.password, newPassword },
+      { authorization: `Bearer ${accessToken}` });
+    assert.equal(changed.status, 200);
+    assert.equal((await confirm(base, { token: tokenFrom(mail.sent[0]), newPassword: 'attacker passphrase' })).status, 400);
+  });
+});
+
 test('reset request is rate limited per IP+email; case variants share a bucket (default limits)', async () => {
   const mail = fakeMail();
   const app = createApp({ jwt, corsOrigin: ORIGIN, auth: { repo: fakeRepo(), mailer: mail.mailer, background: mail.background } });
