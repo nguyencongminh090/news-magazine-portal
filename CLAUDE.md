@@ -52,7 +52,11 @@ Design / architecture / security / DB / UX decision → `docs/knowledge/INDEX.md
 user instructions > knowledge notes.
 
 ## Token / quota economy
-- Locate before read: `codegraph_explore` only if a `.codegraph/` exists (none yet); else `grep -n` then `Read` with `offset/limit`.
+- Locate before read: `.codegraph/` index exists → `codegraph_explore` (MCP, pass `projectPath`) or `codegraph explore "<symbols|question>"` (shell) BEFORE grep/Read.
+  Its output is verbatim line-numbered source: treat as already Read, don't re-open those files. Fall back to `grep -n` + `Read offset/limit` only for non-code files or if the index is missing.
+- **Debugging / tracing**: start with `codegraph_explore` to find the symbols involved, the call path (callers/callees) and blast radius + tests before hypothesising a root cause or editing.
+  Re-run it on the changed symbols before fixing to check what else depends on them.
+- Keep the index fresh: `codegraph sync .` after large edits/branch switches (index does not auto-update).
 - Never Read `TODO.md`, `docs/fix-log.md`, `docs/todo/DONE.md`, `docs/archive/*` whole — use `scripts/track.js`.
   Never Read lockfiles, build output, `node_modules/`, `test-results/`.
 - Don't re-derive facts already settled in the conversation or a detail file.
