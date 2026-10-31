@@ -41,7 +41,7 @@ nav.cats a { color: var(--text); text-decoration: none; display: inline-flex; al
 nav.cats a:hover, nav.cats a[aria-current] { border-bottom-color: var(--primary); }
 
 /* Home */
-.home { display: grid; grid-template-columns: 1fr 300px; gap: 48px; padding: 32px 0 64px; }
+.home { display: grid; grid-template-columns: 1fr 300px; gap: 48px; padding-block: 32px 64px; }
 .lead { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; border-bottom: 1px solid var(--border); padding-bottom: 32px; }
 .img { background: linear-gradient(135deg, var(--ph-from), var(--ph-to)); aspect-ratio: 16/9; display: grid; place-items: center; color: var(--placeholder-text); font-size: var(--fs-small); }
 .lead h1 { font-size: 40px; margin: 8px 0; }
@@ -51,14 +51,15 @@ nav.cats a:hover, nav.cats a[aria-current] { border-bottom-color: var(--primary)
 .list { list-style: none; margin: 0; padding: 0; }
 .list li { padding: 24px 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 160px; gap: 16px; }
 .list h3 { font-size: 22px; margin: 4px 0; } .list h3 a { color: var(--text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; } .list h3 a:hover { color: var(--primary); text-decoration-thickness: 2px; }
+.list h3 a { display: flex; align-items: center; min-height: var(--target); }
 .page .list { max-width: 75ch; } .page .list li { grid-template-columns: 1fr; }
 .summary { margin: 4px 0; }
 .btn[aria-disabled="true"] { opacity: .6; cursor: default; }
 .list .img { aspect-ratio: 4/3; }
 aside h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 8px; }
-aside ol { margin: 0 0 32px; padding-left: 24px; } aside li { padding: 8px 0; }
+aside ol { margin: 0 0 32px; padding-left: 24px; }
 .pager { display: flex; gap: 8px; margin-top: 24px; }
-.page { padding: 32px 0 64px; }
+.page { padding-block: 32px 64px; }
 footer.site { border-top: 1px solid var(--border); background: var(--surface); padding: 24px 0; }
 
 /* Article */
@@ -97,8 +98,10 @@ th { font-size: var(--fs-small); color: var(--muted); }
 
 /* App additions */
 .skip { position: absolute; left: -999px; } .skip:focus { left: 8px; top: 8px; background: var(--surface); padding: 8px; z-index: 10; }
-.state { padding: 48px 0; color: var(--muted); }
+.state { padding-block: 48px; color: var(--muted); }
 .error { color: var(--danger); font-weight: 600; }
 .error::before { content: "⚠ "; }
 .stack > * + * { margin-top: 16px; }
 .hint { color: var(--muted); font-size: var(--fs-small); }
+.brand, .top .acct a:not(.btn), aside li a { display: inline-flex; align-items: center; min-height: var(--target); }
+aside li { padding: 0; }
