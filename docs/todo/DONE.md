@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#15.** Change/reset password + email verification (after #14) `[Model: Opus]` — [detail](docs/todo/A15-password-reset-email-verification.md)
 ✅ - **#16.** Aborted refresh request signs the user out (rotation reuse false positive) `[Model: Opus]` — [detail](docs/todo/A16-refresh-rotation-aborted-request.md)
 ✅ - **#14.** Auth backend API (register/login/session/me + RBAC); blocks #10 auth wiring, Admin, comments `[Model: Opus]` — [detail](docs/todo/A14-auth-backend-api.md)
 ✅ - **#13.** Seed safety: production guard, keep views_count on rerun, test IP anonymiser `[Model: Sonnet]` — [detail](docs/todo/A13-seed-safety-and-followups.md)
