@@ -1,5 +1,5 @@
 # A06 — Decide how SEO meta fields reach crawlers (SPA vs server render)
-**Status:** ADR drafted (features/seo-meta/planning.md), awaiting user sign-off
+**Status:** ✅ DONE — ADR accepted (a); implementation recorded as #7
 **Area:** `features/seo-meta/` (ADR, size L), possibly Express route for `/articles/:slug`
 **From:** architecture review vs knowledge, 2026-10-31   **Depends:** A02
 
