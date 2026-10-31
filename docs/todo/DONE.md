@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#18.** Comments, ratings and reports: design + API + ArticlePage UI `[Model: Opus]` — [detail](docs/todo/A18-comments-ratings-reports.md)
 ✅ - **#17.** Admin articles API for the Admin view (blocks #10) `[Model: Sonnet]` — [detail](docs/todo/A17-admin-articles-api.md)
 ✅ - **#15.** Change/reset password + email verification (after #14) `[Model: Opus]` — [detail](docs/todo/A15-password-reset-email-verification.md)
 ✅ - **#16.** Aborted refresh request signs the user out (rotation reuse false positive) `[Model: Opus]` — [detail](docs/todo/A16-refresh-rotation-aborted-request.md)

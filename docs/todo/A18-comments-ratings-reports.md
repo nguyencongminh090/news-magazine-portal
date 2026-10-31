@@ -1,5 +1,5 @@
 # A18 — Comments, ratings and reports (API + UI)
-**Status:** IN PROGRESS — backend done (`feature/comments-api`); ArticlePage UI + jsdom tests done (`feature/comments-ui`); real-browser pass + ui-audit pending; admin reports UI = new item
+**Status:** ✅ DONE 2026-10-31 — backend + ArticlePage UI + jsdom + real-browser pass + ui-audit (0 block/major); admin reports UI = new item
 **Area:** `backend/src/` (new routes), `frontend/src/pages/ArticlePage.jsx`, admin moderation view
 **From:** split out of #10 on 2026-10-31 (user: "tạo item riêng cho comments/rating/report")   **Depends:** A14 (auth), A17 (admin API pattern); schema exists (A02, A04: `comments`, `ratings`, `reports`)
 
