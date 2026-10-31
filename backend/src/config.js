@@ -31,12 +31,27 @@ export function loadConfig(env = process.env) {
   let trustProxy = false; // set only when behind a reverse proxy: hop count or true
   if (env.TRUST_PROXY !== undefined) trustProxy = /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY === 'true';
 
+  let publicBaseUrl = env.PUBLIC_BASE_URL?.replace(/\/+$/, '');
+  if (publicBaseUrl) {
+    try {
+      const u = new URL(publicBaseUrl);
+      if (!/^https?:$/.test(u.protocol) || u.pathname !== '/' || u.search || u.hash) throw new Error('bad');
+      publicBaseUrl = u.origin;
+    } catch {
+      problems.push('PUBLIC_BASE_URL must be an absolute http(s) origin, e.g. https://news.example.com');
+    }
+  } else if (isProd) {
+    problems.push('PUBLIC_BASE_URL is required in production (canonical + og:url)');
+  }
+
   if (problems.length) throw new Error(`Invalid configuration:\n- ${problems.join('\n- ')}`);
 
   return {
     nodeEnv,
     isProd,
     port,
+    publicBaseUrl,
+    frontendDist: env.FRONTEND_DIST ?? fileURLToPath(new URL('../../frontend/dist', import.meta.url)),
     corsOrigin: env.CORS_ORIGIN ?? 'http://localhost:5173',
     trustProxy,
     jwt: {

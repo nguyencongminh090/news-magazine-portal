@@ -1,5 +1,5 @@
 # A07 — Inject per-article SEO meta into HTML shell (ADR-002 option a)
-**Status:** OPEN
+**Status:** ✅ DONE 2026-10-31 (migration 006 + seo.js + shellRoute.js; static serving of dist/ not included)
 **Area:** `backend/src/modules/articles/`, `backend/src/config.js`, migration 006
 **From:** item #6 sign-off 2026-10-31   **Depends:** A05, A04
 
