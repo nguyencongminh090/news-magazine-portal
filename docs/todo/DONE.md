@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
 ✅ - **#9.** Fix migrate.js trailing-slash dir argument `[Model: Sonnet]` — [detail](docs/todo/A09-migrate-dir-trailing-slash.md)
 ✅ - **#8.** Update .env.example for new config variables `[Model: Haiku]` — [detail](docs/todo/A08-env-example-new-vars.md)
 ✅ - **#7.** Implement SEO meta injection per ADR-002 `[Model: Opus]` — [detail](docs/todo/A07-seo-meta-injection.md)

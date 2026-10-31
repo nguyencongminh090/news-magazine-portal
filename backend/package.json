@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "node --test",
-    "migrate": "node db/migrate.js"
+    "test": "node --test --test-concurrency=1",
+    "migrate": "node db/migrate.js",
+    "seed": "node db/seed/seed.js"
   },
   "engines": {
     "node": ">=20.12"
