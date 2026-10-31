@@ -133,6 +133,33 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal(await resetFor(pending.hash), null);
     assert.equal((await repo.findUserById(id)).password_hash, 'h5');
 
+    // A15 verify: single use, checks purpose + expiry + active, keeps the first verification time.
+    const vid = await repo.createUser({ email: 'v@x.io', passwordHash: 'h', displayName: 'V', roles: ['reader'] });
+    assert.equal((await repo.findUserById(vid)).email_verified_at, null);
+    const issueVerify = async (expiresAt = future, purpose = 'verify') => {
+      const t = newRefreshToken();
+      await repo.issueUserToken({ userId: vid, purpose, hash: t.hash, expiresAt });
+      return t.hash;
+    };
+    assert.equal(await repo.verifyEmailWithToken(await issueVerify(future, 'reset')), null); // wrong purpose
+    assert.equal(await repo.verifyEmailWithToken(await issueVerify(new Date(Date.now() - 1000))), null); // expired
+    const superseded = await issueVerify();
+    const v1 = await issueVerify();
+    assert.equal(await repo.verifyEmailWithToken(superseded), null);
+    const offV = await issueVerify();
+    await query('UPDATE users SET is_active = false WHERE id = $1', [vid]);
+    assert.equal(await repo.verifyEmailWithToken(offV), null); // deactivated
+    await query('UPDATE users SET is_active = true WHERE id = $1', [vid]);
+    assert.equal((await repo.findUserById(vid)).email_verified_at, null);
+    const v2 = await issueVerify();
+    assert.equal(await repo.verifyEmailWithToken(v1), null); // superseded by a later issue
+    assert.equal(String(await repo.verifyEmailWithToken(v2)), String(vid));
+    const verifiedAt = (await repo.findUserById(vid)).email_verified_at;
+    assert.ok(verifiedAt instanceof Date);
+    assert.equal(await repo.verifyEmailWithToken(v2), null); // single use
+    assert.equal(String(await repo.verifyEmailWithToken(await issueVerify())), String(vid));
+    assert.equal((await repo.findUserById(vid)).email_verified_at.getTime(), verifiedAt.getTime()); // first time kept
+
     // A15 race: a rotation in flight when the password changes must not leave its successor live. Under READ
     // COMMITTED the revoking UPDATE never sees a row inserted after its snapshot, so the two must serialise.
     const blocker = new pg.Client({ connectionString: testDb });
@@ -165,6 +192,7 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal(await bootstrapAdmin({ email: ' Boss@X.io ', password: 'correct horse battery' }), 'created');
     assert.equal(await bootstrapAdmin({ email: 'other@x.io', password: 'correct horse battery' }), 'exists');
     assert.deepEqual((await repo.findUserByEmail('boss@x.io')).roles, ['admin']);
+    assert.ok((await repo.findUserByEmail('boss@x.io')).email_verified_at instanceof Date); // created verified
 
     // Full HTTP flow on the real repo.
     const server = createApp({ jwt, corsOrigin: 'http://localhost:5173' }).listen(0);
@@ -175,11 +203,14 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
       assert.equal(login.status, 200);
       const { accessToken, user } = await login.json();
       assert.deepEqual(user.roles, ['admin']);
+      assert.equal(user.emailVerified, true); // USER_SQL selects email_verified_at
       const cookie = /refresh_token=([^;]+)/.exec(login.headers.get('set-cookie'))[1];
       const refreshed = await fetch(`${base}/api/auth/refresh`, { method: 'POST', headers: { 'x-requested-with': 'fetch', cookie: `refresh_token=${cookie}` } });
       assert.equal(refreshed.status, 200);
       const me = await fetch(`${base}/api/auth/me`, { headers: { authorization: `Bearer ${accessToken}` } });
-      assert.equal((await me.json()).user.email, 'boss@x.io');
+      const meUser = (await me.json()).user;
+      assert.equal(meUser.email, 'boss@x.io');
+      assert.equal(meUser.emailVerified, true);
     } finally {
       server.close();
     }

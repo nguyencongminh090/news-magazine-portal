@@ -42,7 +42,7 @@ test('register: creates reader, normalises email, sets hardened refresh cookie, 
     const res = await post(base, '/api/auth/register', reg);
     assert.equal(res.status, 201);
     const body = await res.json();
-    assert.deepEqual(body.user, { id: 1, email: 'reader@example.com', displayName: 'Rea', roles: ['reader'] });
+    assert.deepEqual(body.user, { id: 1, email: 'reader@example.com', displayName: 'Rea', roles: ['reader'], emailVerified: false });
     assert.ok(body.accessToken);
     assert.ok(!JSON.stringify(body).includes('argon2'));
     const cookie = res.headers.get('set-cookie');

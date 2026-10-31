@@ -12,3 +12,17 @@ ${appBaseUrl}/reset-password#token=${token}
 If you did not ask for this, ignore this email; your password stays the same.
 `,
 });
+
+export const VERIFY_TTL_HOURS = 24;
+
+export const verifyEmailEmail = ({ to, appBaseUrl, token }) => ({
+  to,
+  subject: 'Confirm your News Portal email address',
+  text: `Please confirm that this address belongs to your News Portal account.
+
+Open this link within ${VERIFY_TTL_HOURS} hours to confirm it:
+${appBaseUrl}/verify-email#token=${token}
+
+If you did not create a News Portal account, ignore this email.
+`,
+});
