@@ -16,6 +16,14 @@ test('migration files are numbered, ordered and non-empty', async () => {
   });
 });
 
+test('listMigrations accepts a dir with or without a trailing slash', async () => {
+  const { fileURLToPath } = await import('node:url');
+  const dir = fileURLToPath(new URL('./migrations', import.meta.url)); // no trailing slash
+  const bare = await listMigrations(dir);
+  assert.ok(bare.length > 0);
+  assert.deepEqual(await listMigrations(`${dir}/`), bare);
+});
+
 test('migrate applies on an empty database and is re-runnable', { skip: !testDb }, async () => {
   const client = new pg.Client({ connectionString: testDb });
   await client.connect();
@@ -118,7 +126,7 @@ test('migration 005 applies on a database already at 004', { skip: !testDb }, as
   await client.connect();
   try {
     await client.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public');
-    assert.equal((await migrate(testDb, `${dir}/`)).length, 4);
+    assert.equal((await migrate(testDb, dir)).length, 4);
     await client.query(`INSERT INTO categories (name, slug) VALUES ('World', 'world')`);
     await client.query(
       `INSERT INTO documents (title, slug, content, category_id, author_name) VALUES ('t', 't', 'c', 1, 'a')`,
