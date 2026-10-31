@@ -61,7 +61,7 @@ test('published slug -> 200 with meta; unknown/draft -> 404 default shell', asyn
 });
 
 test('production config requires a valid PUBLIC_BASE_URL', () => {
-  const prod = { NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'x'.repeat(32) };
+  const prod = { NODE_ENV: 'production', DATABASE_URL: 'postgres://x', JWT_SECRET: 'x'.repeat(32), MAIL_TRANSPORT: 'smtp', SMTP_URL: 'smtp://relay.example:587', MAIL_FROM: 'News <no-reply@n.example.com>' };
   assert.throws(() => loadConfig(prod), /PUBLIC_BASE_URL is required/);
   assert.throws(() => loadConfig({ ...prod, PUBLIC_BASE_URL: 'javascript:alert(1)' }), /PUBLIC_BASE_URL must be/);
   assert.equal(loadConfig({ ...prod, PUBLIC_BASE_URL: 'https://n.example.com/' }).publicBaseUrl, 'https://n.example.com');

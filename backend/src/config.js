@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { MAIL_TRANSPORTS } from './mail/mailer.js';
 
 // Load the repo-root .env when present (--env-file would make --watch crash on a missing file).
 const envFile = fileURLToPath(new URL('../../.env', import.meta.url));
@@ -57,6 +58,13 @@ export function loadConfig(env = process.env) {
     problems.push(`REFRESH_REUSE_GRACE_SECONDS must be an integer 0-${MAX_REFRESH_GRACE_SECONDS}`);
   }
 
+  // ADR-003 #1: production must really send mail; the log transport would print reset links to stdout.
+  const mailTransport = env.MAIL_TRANSPORT ?? (isProd ? undefined : 'log');
+  if (!MAIL_TRANSPORTS.includes(mailTransport)) problems.push(`MAIL_TRANSPORT must be one of ${MAIL_TRANSPORTS.join('|')} (required in production)`);
+  else if (isProd && mailTransport !== 'smtp') problems.push('MAIL_TRANSPORT must be smtp in production');
+  if (mailTransport === 'smtp' && !/^smtps?:\/\//.test(env.SMTP_URL ?? '')) problems.push('SMTP_URL must be an smtp:// or smtps:// URL when MAIL_TRANSPORT=smtp');
+  if (mailTransport === 'smtp' && !env.MAIL_FROM?.trim()) problems.push('MAIL_FROM is required when MAIL_TRANSPORT=smtp');
+
   if (problems.length) throw new Error(`Invalid configuration:\n- ${problems.join('\n- ')}`);
 
   return {
@@ -78,6 +86,7 @@ export function loadConfig(env = process.env) {
     refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS ?? 14),
     refreshReuseGraceSeconds,
     cookieSecure,
+    mail: { transport: mailTransport, smtpUrl: env.SMTP_URL, from: env.MAIL_FROM?.trim() || undefined },
     db: {
       max: Number(env.DB_POOL_MAX ?? 10),
       connectionTimeoutMillis: Number(env.DB_CONNECT_TIMEOUT_MS ?? 5000),
