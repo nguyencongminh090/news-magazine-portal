@@ -8,3 +8,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
+- **#18.** Comments, ratings and reports: design + API + ArticlePage UI `[Model: Opus]` — [detail](docs/todo/A18-comments-ratings-reports.md)
