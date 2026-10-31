@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#12.** Fix migrate test that hardcodes migration 005 as the latest `[Model: Haiku]` — [detail](docs/todo/A12-migrate-test-005-hardcodes-latest.md)
 ✅ - **#11.** Read API for articles and categories `[Model: Sonnet]` — [detail](docs/todo/A11-articles-read-api.md)
 ✅ - **#3.** Seed Wikinews articles + DATA_LICENSE `[Model: Sonnet]` — [detail](docs/todo/A03-seed-wikinews-data.md)
 ✅ - **#9.** Fix migrate.js trailing-slash dir argument `[Model: Sonnet]` — [detail](docs/todo/A09-migrate-dir-trailing-slash.md)
