@@ -54,6 +54,38 @@ test('SQL against real DB: users, rotation + reuse detection, role change revoke
     assert.equal((await query('SELECT count(*)::int n FROM refresh_tokens WHERE revoked_at IS NULL')).rows[0].n, 0);
     assert.equal(await repo.setRoles(9999, ['reader']), false);
 
+    // A16: a lost refresh response (navigation abort, two tabs) must not look like token theft.
+    const grace = { expiresAt: future, graceMs: 30_000 };
+    const rotate = (oldT, newT, opts = grace) => repo.rotateRefreshToken({ oldHash: oldT.hash, newHash: newT.hash, ...opts });
+    const liveIn = async (fam) => (await query('SELECT count(*)::int n FROM refresh_tokens WHERE family_id = $1 AND revoked_at IS NULL', [fam])).rows[0].n;
+    const g1 = newRefreshToken();
+    const gFam = await repo.insertRefreshToken({ userId: id, hash: g1.hash, expiresAt: future });
+    const [g2, g3, g4, g5] = [newRefreshToken(), newRefreshToken(), newRefreshToken(), newRefreshToken()];
+    assert.equal((await rotate(g1, g2)).status, 'ok');
+    assert.equal((await rotate(g1, g3)).status, 'ok', 'replay of a just-rotated token within grace re-mints');
+    assert.equal(await liveIn(gFam), 1, 'the unused successor was revoked: one live token per family');
+    assert.equal((await rotate(g2, g4)).status, 'ok', 'out-of-order cookie: the revoked sibling also gets grace');
+    assert.equal((await rotate(g4, g5)).status, 'ok');
+    assert.equal(await liveIn(gFam), 1);
+    // Concurrent replays of one token: both succeed, still one live token.
+    const c1 = newRefreshToken();
+    const cFam = await repo.insertRefreshToken({ userId: id, hash: c1.hash, expiresAt: future });
+    const results = await Promise.all([rotate(c1, newRefreshToken()), rotate(c1, newRefreshToken())]);
+    assert.deepEqual(results.map((r) => r.status), ['ok', 'ok']);
+    assert.equal(await liveIn(cFam), 1);
+    // Outside the window a replay is still theft: whole family revoked.
+    await query("UPDATE refresh_tokens SET used_at = now() - interval '31 seconds' WHERE token_hash = $1", [g1.hash]);
+    assert.equal((await rotate(g1, newRefreshToken())).status, 'reuse');
+    assert.equal(await liveIn(gFam), 0);
+    // Logout (family revoke) is never undone by grace.
+    const l1 = newRefreshToken();
+    const lFam = await repo.insertRefreshToken({ userId: id, hash: l1.hash, expiresAt: future });
+    const l2 = newRefreshToken();
+    assert.equal((await rotate(l1, l2)).status, 'ok');
+    await repo.revokeFamilyByHash(l2.hash);
+    assert.equal((await rotate(l1, newRefreshToken())).status, 'reuse');
+    assert.equal(await liveIn(lFam), 0);
+
     // Bootstrap: creates once, then is a no-op.
     assert.equal(await bootstrapAdmin({ email: ' Boss@X.io ', password: 'correct horse battery' }), 'created');
     assert.equal(await bootstrapAdmin({ email: 'other@x.io', password: 'correct horse battery' }), 'exists');

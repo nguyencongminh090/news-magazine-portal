@@ -52,10 +52,11 @@ function csrfGuard(allowedOrigins) {
 
 /** POST /api/auth/{register,login,refresh,logout}, GET /api/auth/me */
 export function authRouter({
-  repo = defaultRepo, jwt, refreshTtlDays = 14, cookieSecure = false, allowedOrigins = [], limits = defaultLimits(),
+  repo = defaultRepo, jwt, refreshTtlDays = 14, refreshGraceSeconds = 0, cookieSecure = false, allowedOrigins = [],
+  limits = defaultLimits(),
 } = {}) {
   const router = Router();
-  const service = createAuthService({ repo, jwt, refreshTtlDays });
+  const service = createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds });
   const csrf = csrfGuard(allowedOrigins);
   const cookieOpts = { httpOnly: true, secure: cookieSecure, sameSite: 'strict', path: COOKIE_PATH };
 
