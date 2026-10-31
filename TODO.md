@@ -8,5 +8,5 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
 - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
-- **#14.** Auth backend API (register/login/session/me + RBAC); blocks #10 auth wiring, Admin, comments `[Model: Opus]` — [detail](docs/todo/A14-auth-backend-api.md)
 - **#15.** Change/reset password + email verification (after #14) `[Model: Opus]` — [detail](docs/todo/A15-password-reset-email-verification.md)
+- **#16.** Aborted refresh request signs the user out (rotation reuse false positive) `[Model: Opus]` — [detail](docs/todo/A16-refresh-rotation-aborted-request.md)
