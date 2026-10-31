@@ -1,21 +1,29 @@
-import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { PublicLayout } from './layouts/PublicLayout.jsx';
+import { AdminLayout } from './layouts/AdminLayout.jsx';
+import { HomePage } from './pages/HomePage.jsx';
+import { CategoryPage } from './pages/CategoryPage.jsx';
+import { SearchPage } from './pages/SearchPage.jsx';
+import { ArticlePage } from './pages/ArticlePage.jsx';
+import { AuthPage } from './pages/AuthPage.jsx';
+import { AdminArticlesPage } from './pages/AdminArticlesPage.jsx';
+import { NotFoundPage } from './pages/NotFoundPage.jsx';
 
 export function App() {
-  const [api, setApi] = useState('checking…');
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(res.status))))
-      .then((body) => setApi(body.status))
-      .catch(() => setApi('unreachable'));
-  }, []);
-
   return (
-    <main>
-      <h1>News Portal</h1>
-      <p>
-        API status: <strong>{api}</strong>
-      </p>
-    </main>
+    <Routes>
+      <Route element={<PublicLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="category/:slug" element={<CategoryPage />} />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="articles/:slug" element={<ArticlePage />} />
+        <Route path="login" element={<AuthPage mode="login" />} />
+        <Route path="register" element={<AuthPage mode="register" />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+      <Route path="admin" element={<AdminLayout />}>
+        <Route index element={<AdminArticlesPage />} />
+      </Route>
+    </Routes>
   );
 }

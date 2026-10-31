@@ -1,5 +1,5 @@
 # A10 — Implement frontend UI from DESIGN.md and approved mockup
-**Status:** OPEN
+**Status:** IN PROGRESS — foundation done 2026-10-31 (tokens, 2 fonts, router, layouts, auth form shell, Pending views). Remaining: wire Home/Category/Article/Admin to API once endpoints exist; ui-audit; real-browser pass.
 **Area:** `frontend/src/`, `frontend/index.html`, `DESIGN.md`, `features/ui-mockup/mockup.html`
 **From:** UI design session, mockup approved by user 2026-10-31   **Depends:** A05 (API), A03 (seed data) for real content
 
