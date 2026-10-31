@@ -1,5 +1,5 @@
 # A18 — Comments, ratings and reports (API + UI)
-**Status:** OPEN — size L: write `features/comments-ratings-reports/` design and get sign-off before any code
+**Status:** IN PROGRESS — design approved 2026-10-31; backend done on `feature/comments-api` (81 tests incl. real DB); ArticlePage UI + admin reports UI (split, new item) pending
 **Area:** `backend/src/` (new routes), `frontend/src/pages/ArticlePage.jsx`, admin moderation view
 **From:** split out of #10 on 2026-10-31 (user: "tạo item riêng cho comments/rating/report")   **Depends:** A14 (auth), A17 (admin API pattern); schema exists (A02, A04: `comments`, `ratings`, `reports`)
 
