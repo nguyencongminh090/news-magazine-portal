@@ -2,6 +2,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useApi } from '../api/useApi.js';
 import { ArticleResults } from '../components/ArticleResults.jsx';
 import { parsePage } from '../lib/format.js';
+import { NotFoundPage } from './NotFoundPage.jsx';
 
 export function CategoryPage() {
   const { slug } = useParams();
@@ -9,7 +10,10 @@ export function CategoryPage() {
   const page = parsePage(params.get('page'));
   const { data: categories } = useApi('/api/categories');
   const articles = useApi('/api/articles', { category: slug, page });
-  const name = categories?.items?.find((c) => c.slug === slug)?.name ?? slug;
+  const known = categories?.items?.find((c) => c.slug === slug);
+  // Only a loaded list can prove a slug unknown; if it failed to load, keep the slug-based page.
+  if (categories && !known) return <NotFoundPage />;
+  const name = known?.name ?? slug;
 
   return (
     <div className="wrap page">
