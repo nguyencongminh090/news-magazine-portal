@@ -23,3 +23,12 @@ test('still renders Latest when the categories request fails', async () => {
   await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
   expect(screen.getByRole('link', { name: 'Latest' })).toBeInTheDocument();
 });
+
+test('wraps every routed page in exactly one main landmark (skip link target)', () => {
+  mockFetch({ '/api/categories': { items: [] } });
+  const { container } = renderLayout();
+  const mains = screen.getAllByRole('main');
+  expect(mains).toHaveLength(1);
+  expect(mains[0]).toHaveAttribute('id', 'content');
+  expect(container.querySelectorAll('main')).toHaveLength(1);
+});
