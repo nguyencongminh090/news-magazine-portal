@@ -29,7 +29,8 @@ export function createApp(cfg = {}) {
   if (cfg.jwt?.secret) {
     const origins = [cfg.corsOrigin ?? 'http://localhost:5173', cfg.publicBaseUrl].filter(Boolean);
     app.use('/api/auth', authRouter({
-      jwt: cfg.jwt, refreshTtlDays: cfg.refreshTokenTtlDays, cookieSecure: cfg.cookieSecure, allowedOrigins: origins, ...cfg.auth,
+      jwt: cfg.jwt, refreshTtlDays: cfg.refreshTokenTtlDays, refreshGraceSeconds: cfg.refreshReuseGraceSeconds,
+      cookieSecure: cfg.cookieSecure, allowedOrigins: origins, ...cfg.auth,
     }));
     app.use('/api/users', usersRouter({ jwt: cfg.jwt, repo: cfg.auth?.repo }));
   }

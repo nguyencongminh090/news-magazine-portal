@@ -115,4 +115,6 @@ test('loadConfig fails eagerly listing all problems', () => {
   assert.equal(ok.cookieSecure, true);
   assert.equal(ok.jwt.issuer, 'news-portal');
   assert.equal(loadConfig({ DATABASE_URL: 'x' }).nodeEnv, 'development');
+  assert.equal(loadConfig({ DATABASE_URL: 'x' }).refreshReuseGraceSeconds, 30);
+  assert.throws(() => loadConfig({ DATABASE_URL: 'x', REFRESH_REUSE_GRACE_SECONDS: '1.5' }), /REFRESH_REUSE_GRACE_SECONDS/);
 });
