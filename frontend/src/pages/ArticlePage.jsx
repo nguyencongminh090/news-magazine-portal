@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useApi } from '../api/useApi.js';
 import { StateView } from '../components/StateView.jsx';
 import { formatDate } from '../lib/format.js';
+import { Engagement } from '../components/Engagement.jsx';
 import { NotFoundPage } from './NotFoundPage.jsx';
 
 export function ArticlePage() {
@@ -33,10 +34,7 @@ export function ArticlePage() {
       {byline && <p className="muted">{byline}</p>}
       {article.summary && <p><strong>{article.summary}</strong></p>}
       {paragraphs.map((text, i) => <p key={i}>{text}</p>)}
-      <section aria-labelledby="comments-heading">
-        <h2 id="comments-heading">Comments</h2>
-        <p className="hint">Comments are not available yet.</p>
-      </section>
+      <Engagement slug={article.slug} initial={article.engagement} />
     </article>
   );
 }
