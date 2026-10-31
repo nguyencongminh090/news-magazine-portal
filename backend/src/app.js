@@ -6,9 +6,11 @@ import helmet from 'helmet';
 import { healthRouter } from './modules/health/routes.js';
 import { errorHandler, notFound } from './http/errors.js';
 import { articleShellRouter } from './modules/articles/shellRoute.js';
+import { articlesRouter } from './modules/articles/routes.js';
+import { categoriesRouter } from './modules/categories/routes.js';
 import { requireJson } from './http/validate.js';
 
-/** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell? }. Routers needing the DB import their own repo. */
+/** cfg: { corsOrigin, trustProxy, isProd, publicBaseUrl, frontendDist, shell?, articles?, categories? }. Routers needing the DB import their own repo. */
 export function createApp(cfg = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -19,6 +21,8 @@ export function createApp(cfg = {}) {
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api/health', healthRouter);
+  app.use('/api/articles', articlesRouter(cfg.articles));
+  app.use('/api/categories', categoriesRouter(cfg.categories));
 
   app.use('/api', notFound);
 
