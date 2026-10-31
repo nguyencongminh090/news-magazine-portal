@@ -55,6 +55,7 @@ nav.cats a:hover, nav.cats a[aria-current] { border-bottom-color: var(--primary)
 .page .list { max-width: 75ch; } .page .list li { grid-template-columns: 1fr; }
 .summary { margin: 4px 0; }
 .btn[aria-disabled="true"] { border-color: var(--border-strong); color: var(--muted); cursor: default; }
+.btn[aria-disabled="true"]:hover { filter: none; }
 .list .img { aspect-ratio: 4/3; }
 aside h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--text); margin-bottom: 8px; }
 aside ol { margin: 0 0 32px; padding-left: 24px; }
