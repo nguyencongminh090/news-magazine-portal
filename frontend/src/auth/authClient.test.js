@@ -77,6 +77,11 @@ test('204 resolves to null', async () => {
   expect(await createAuthClient().request('/api/x', { method: 'DELETE' })).toBeNull();
 });
 
+test('a 201 with an empty body (report endpoints) resolves to null instead of throwing', async () => {
+  stub(new Response('', { status: 201 }));
+  expect(await createAuthClient().request('/api/articles/x/reports', { method: 'POST' })).toBeNull();
+});
+
 test('logout clears locally even when the network call fails', async () => {
   const onChange = vi.fn();
   stub(json(200, session()));
