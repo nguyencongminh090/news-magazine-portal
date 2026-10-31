@@ -19,7 +19,8 @@ const registerBody = z.object({ email, displayName: z.string().trim().min(1).max
 const loginBody = z.object({ email, password: z.string().min(1).max(128) }).strict();
 const resetRequestBody = z.object({ email }).strict();
 const resetConfirmBody = z.object({ token: z.string().min(1).max(200), newPassword: passwordSchema }).strict();
-const changePasswordBody = z.object({ currentPassword: z.string().min(1).max(128), newPassword: passwordSchema }).strict();
+const verifyConfirmBody = z.object({ token: z.string().min(1).max(200) }).strict();
+const changePasswordBody =z.object({ currentPassword: z.string().min(1).max(128), newPassword: passwordSchema }).strict();
 
 const readCookie = (req, name) => {
   for (const part of (req.headers.cookie ?? '').split(';')) {
@@ -43,6 +44,9 @@ const defaultLimits = () => ({
   resetRequest: [limiter({ windowMs: 60 * 60_000, limit: 3, keyGenerator: loginKey }), limiter({ windowMs: 60 * 60_000, limit: 10 })],
   resetConfirm: limiter({ windowMs: 15 * 60_000, limit: 10 }),
   changePassword: limiter({ windowMs: 15 * 60_000, limit: 5, keyGenerator: (req) => `user:${req.user.id}` }),
+  // Also after requireAuth: caps mail to one's own inbox; per user, so a shared IP does not lock others out.
+  verifyRequest: limiter({ windowMs: 60 * 60_000, limit: 3, keyGenerator: (req) => `user:${req.user.id}` }),
+  verifyConfirm: limiter({ windowMs: 15 * 60_000, limit: 10 }),
 });
 
 /**
@@ -64,7 +68,10 @@ const logBackgroundFailure = (p) => {
   p.catch((err) => console.error(`auth background task failed: ${err?.code ?? err?.name ?? 'Error'}`));
 };
 
-/** POST /api/auth/{register,login,refresh,logout,change-password,password-reset/request,password-reset/confirm}, GET /api/auth/me */
+/**
+ * POST /api/auth/{register,login,refresh,logout,change-password,password-reset/request,password-reset/confirm,
+ * email-verification/request,email-verification/confirm}, GET /api/auth/me
+ */
 export function authRouter({
   repo = defaultRepo, jwt, refreshTtlDays = 14, refreshGraceSeconds = 0, cookieSecure = false, allowedOrigins = [],
   limits = defaultLimits(), mailer = createMailer(), appBaseUrl = allowedOrigins[0], background = logBackgroundFailure,
@@ -124,7 +131,19 @@ export function authRouter({
     res.set('Cache-Control', 'no-store').status(204).end();
   }));
 
-  router.get('/me', authenticated, (req, res) => {
+  // Bearer (no cookie): the address on the account; mail goes out after the 202 like the reset request.
+  router.post('/email-verification/request', authenticated, limits.verifyRequest, (req, res) => {
+    res.set('Cache-Control', 'no-store').status(202).json({ status: 'accepted' });
+    background(service.requestEmailVerification(req.user));
+  });
+
+  // No auth: the link may be opened on another device. Token in the JSON body, no cookie: not CSRF-prone.
+  router.post('/email-verification/confirm', limits.verifyConfirm, validate({ body: verifyConfirmBody }), wrap(async (req, res) => {
+    await service.confirmEmailVerification(req.validated.body);
+    res.set('Cache-Control', 'no-store').status(204).end();
+  }));
+
+  router.get('/me', authenticated,(req, res) => {
     res.set('Cache-Control', 'no-store').json({ user: toUserPayload(req.user) });
   });
 
