@@ -1,4 +1,6 @@
 # DONE — finished items, newest first, one line each
+✅ - **#21.** Frontend: `/verify-email` page + "resend verification email" button `[Model: Sonnet]` — [detail](docs/todo/A21-verify-email-page.md)
+✅ - **#20.** Frontend pages: forgot / reset / change password `[Model: Sonnet]` — [detail](docs/todo/A20-password-pages-frontend.md)
 ✅ - **#19.** Frontend redesign to option E "Warm Illustrated" (images + icons) `[Model: Sonnet]` — [detail](docs/todo/A19-ui-redesign-warm-illustrated.md)
 ✅ - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
 ✅ - **#18.** Comments, ratings and reports: design + API + ArticlePage UI `[Model: Opus]` — [detail](docs/todo/A18-comments-ratings-reports.md)

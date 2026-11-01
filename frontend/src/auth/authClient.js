@@ -73,9 +73,34 @@ export function createAuthClient({ onChange = () => {} } = {}) {
     return text ? JSON.parse(text) : null;
   }
 
+  /** Unauthenticated JSON POST (reset flow); resolves with the parsed body or null. */
+  async function post(path, body) {
+    let res;
+    try {
+      res = await fetch(path, { method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body) });
+    } catch {
+      throw new ApiError(0, 'Network error');
+    }
+    if (!res.ok) throw await toError(res);
+    return null;
+  }
+
   return {
     refresh,
     request,
+    requestPasswordReset: (email) => post('/api/auth/password-reset/request', { email }),
+    confirmPasswordReset: (token, newPassword) => post('/api/auth/password-reset/confirm', { token, newPassword }),
+    confirmEmailVerification: (token) => post('/api/auth/email-verification/confirm', { token }),
+    /** Bearer-authenticated; 202 with no payload. Limited to 3/h per user (429). */
+    requestEmailVerification: () => request('/api/auth/email-verification/request', { method: 'POST', headers: { 'X-Requested-With': 'fetch' } }),
+    /** Backend revokes every session and returns a fresh one for this device. */
+    async changePassword(currentPassword, newPassword) {
+      set(await request('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      }));
+    },
     login: (email, password) => submit('/api/auth/login', { email, password }),
     register: (email, displayName, password) => submit('/api/auth/register', { email, displayName, password }),
     async logout() {
