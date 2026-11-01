@@ -17,3 +17,11 @@ test('shows category, summary and formatted date when present', () => {
   expect(screen.getByText('A summary.')).toBeInTheDocument();
   expect(screen.getByText('31 Oct 2026')).toBeInTheDocument();
 });
+
+test('title heading is h3 by default and follows headingLevel (outline under page h1)', () => {
+  const { unmount } = renderWithRouter(<ul><ArticleListItem article={base} /></ul>);
+  expect(screen.getByRole('heading', { level: 3, name: 'Moon samples' })).toBeInTheDocument();
+  unmount();
+  renderWithRouter(<ul><ArticleListItem article={base} headingLevel={2} /></ul>);
+  expect(screen.getByRole('heading', { level: 2, name: 'Moon samples' })).toBeInTheDocument();
+});
