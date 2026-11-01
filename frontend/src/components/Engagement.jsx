@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { apiGet } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { formatDate } from '../lib/format.js';
+import { Icon } from './Icon.jsx';
 
 const PAGE_SIZE = 20;
 const BODY_MAX = 2000;
@@ -69,13 +70,13 @@ function RatingControl({ slug, summary, onSummary, canWrite }) {
           <button
             key={n}
             type="button"
-            className={`btn secondary star${myRating === n ? ' on' : ''}`}
+            className={`star${myRating >= n ? ' on' : ''}`}
             aria-pressed={myRating === n}
             aria-label={`Rate ${n} of 5`}
             disabled={!canWrite || busy}
             onClick={() => rate(n)}
           >
-            {n} ★
+            <Icon name="star" />
           </button>
         ))}
       </div>
@@ -182,12 +183,15 @@ function CommentList({ slug, canWrite, onTotal, items, setItems }) {
   if (items.length === 0) return <p className="hint">No comments yet</p>;
   return (
     <>
-      <ul className="comments" style={{ listStyle: 'none', padding: 0 }}>
+      <ul className="comments">
         {items.map((c) => (
           <li key={c.id} className="comment">
-            <p className="muted"><strong>{c.author?.displayName ?? 'Deleted user'}</strong> · {formatDate(c.createdAt)}</p>
-            <p style={{ whiteSpace: 'pre-wrap' }}>{c.body}</p>
-            {canWrite && <ReportForm path={`/api/comments/${c.id}/reports`} label={`Report comment by ${c.author?.displayName ?? 'deleted user'}`} />}
+            <span className="avatar" aria-hidden="true">{(c.author?.displayName ?? '?').slice(0, 1).toUpperCase()}</span>
+            <div className="bubble">
+              <p className="muted"><strong>{c.author?.displayName ?? 'Deleted user'}</strong> · {formatDate(c.createdAt)}</p>
+              <p className="body">{c.body}</p>
+              {canWrite && <ReportForm path={`/api/comments/${c.id}/reports`} label={`Report comment by ${c.author?.displayName ?? 'deleted user'}`} />}
+            </div>
           </li>
         ))}
       </ul>
@@ -228,7 +232,7 @@ export function Engagement({ slug, initial }) {
 
   return (
     <>
-      <section aria-labelledby="rating-heading">
+      <section className="box card" aria-labelledby="rating-heading">
         <h2 id="rating-heading">Rating</h2>
         <RatingControl slug={slug} summary={summary} onSummary={setSummary} canWrite={canWrite} />
         {canWrite && <ReportForm path={`/api/articles/${encodeURIComponent(slug)}/reports`} label="Report this article" />}

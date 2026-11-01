@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import { renderWithRouter } from '../test/render.jsx';
 import { mockFetch, respond } from '../test/mockFetch.js';
@@ -11,9 +11,19 @@ afterEach(() => vi.unstubAllGlobals());
 test('nav lists a link per category after Latest', async () => {
   mockFetch({ '/api/categories': { items: [{ slug: 'science', name: 'Science', articleCount: 3 }, { slug: 'health', name: 'Health', articleCount: 1 }] } });
   renderLayout();
-  expect(await screen.findByRole('link', { name: 'Science' })).toHaveAttribute('href', '/category/science');
-  expect(screen.getByRole('link', { name: 'Health' })).toHaveAttribute('href', '/category/health');
-  expect(screen.getByRole('link', { name: 'Latest' })).toBeInTheDocument();
+  const rail = within(screen.getAllByRole('complementary')[0]);
+  expect(await rail.findByRole('link', { name: 'Science' })).toHaveAttribute('href', '/category/science');
+  expect(rail.getByRole('link', { name: 'Health' })).toHaveAttribute('href', '/category/health');
+  expect(rail.getByRole('link', { name: 'Latest' })).toBeInTheDocument();
+});
+
+test('footer lists topics and credits Wikinews under CC BY', async () => {
+  mockFetch({ '/api/categories': { items: [{ slug: 'science', name: 'Science', articleCount: 3 }] } });
+  renderLayout();
+  const foot = within(screen.getByRole('contentinfo'));
+  expect(await foot.findByRole('link', { name: 'Science' })).toHaveAttribute('href', '/category/science');
+  expect(foot.getByRole('link', { name: 'Wikinews' })).toHaveAttribute('href', 'https://en.wikinews.org');
+  expect(foot.getByRole('link', { name: 'CC BY' })).toBeInTheDocument();
 });
 
 test('still renders Latest when the categories request fails', async () => {

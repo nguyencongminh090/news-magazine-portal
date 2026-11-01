@@ -94,3 +94,15 @@ test('reporting a comment: duplicate (409) shows "Reported"', async () => {
   await waitFor(() => expect(screen.getByText('Reported. Thank you.')).toBeInTheDocument());
   expect(request).toHaveBeenCalledWith('/api/comments/1/reports', expect.objectContaining({ method: 'POST' }));
 });
+
+test('rating stars fill up to my rating but only the chosen one is pressed', async () => {
+  mockFetch({ '/api/articles/a-1/comments': comments([]) });
+  renderWithRouter(<Engagement slug="a-1" initial={{ ...summary, myRating: 3 }} />, { auth: { user: verified, request: async () => null } });
+  await screen.findByText('No comments yet');
+  const star = (n) => screen.getByRole('button', { name: `Rate ${n} of 5` });
+  expect([1, 2, 3].every((n) => star(n).classList.contains('on'))).toBe(true);
+  expect([4, 5].some((n) => star(n).classList.contains('on'))).toBe(false);
+  expect(star(3)).toHaveAttribute('aria-pressed', 'true');
+  expect(star(2)).toHaveAttribute('aria-pressed', 'false');
+  expect(star(3).querySelector('svg use')).toHaveAttribute('href', '#i-star');
+});
