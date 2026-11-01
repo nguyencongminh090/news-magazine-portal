@@ -125,9 +125,9 @@ body.drawer-open { overflow: hidden; }
 .lead h1 a:hover { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--terra); }
 .dek { font-size: 18.5px; color: var(--ink-2); margin: 0; line-height: 1.55; }
 .duo { display: grid; gap: 18px; margin: 34px 0 24px; }
-.story { position: relative; display: grid; }
+.story { position: relative; display: grid; grid-template-rows: auto 1fr; }
 .story .fig { aspect-ratio: 16/9; border-bottom: 1px solid var(--line); }
-.story .txt { padding: 16px 20px 18px; display: grid; gap: 10px; }
+.story .txt { padding: 16px 20px 18px; display: grid; gap: 10px; align-content: start; }
 .story h3 { font-size: 22px; line-height: 1.2; }
 .story h3 a, .row h3 a, .topic a { color: var(--ink); text-decoration: none; }
 .story h3 a:hover, .row h3 a:hover, .topic a:hover { text-decoration: underline; text-decoration-color: var(--terra); text-decoration-thickness: 2px; }
@@ -217,9 +217,12 @@ footer.site .wave.flip { display: none; }
 .link-btn.danger { color: var(--danger); }
 
 /* Auth */
-.auth { max-width: 420px; margin: 48px auto; padding: 28px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-m); box-shadow: var(--shadow); }
+.auth { width: calc(100% - 40px); max-width: 420px; margin: 48px auto 80px; padding: 28px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-m); box-shadow: var(--shadow); }
 .auth .state-art { width: 160px; margin: 0 auto 8px; }
 .auth h1 { font-size: 30px; }
+.auth .error { margin: 16px 0 0; }
+.auth .actions { margin: 24px 0 16px; }
+.auth .actions .btn { width: 100%; }
 
 /* Admin (restyled via tokens only; layout unchanged) */
 .admin { display: grid; grid-template-columns: 220px 1fr; min-height: 640px; }
@@ -265,7 +268,14 @@ td a { display: inline-flex; align-items: center; min-height: var(--target); min
   .admin { grid-template-columns: minmax(0, 1fr); }
   .admin nav { border-right: 0; border-bottom: 1px solid var(--border); }
 }
+@media (max-width: 699px) {
+  .cat-head .t { padding: 20px 22px 28px 48px; }
+}
 @media (max-width: 520px) {
+  .topic .t { gap: 8px; padding: 10px; }
+  .topic .dot { width: 34px; height: 34px; }
+  .topic .t > span:last-child { min-width: 0; overflow-wrap: break-word; }
+  .topic a { font-size: 15px; }
   .top { gap: 8px; padding-inline: 12px; }
   .acct { gap: 8px; }
   .acct .btn { padding-inline: 14px; }
