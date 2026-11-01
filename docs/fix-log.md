@@ -15,3 +15,4 @@ Append-only. Detail files: `docs/fix-log/<YYYY-MM-DD>-<slug>.md` (template `docs
 | 2026-10-31 22:49 | #10 admin Status badge icon wrapped onto its own line in narrow table cells; .status is now white-space: nowrap | [detail](fix-log/2026-10-31-status-badge-wrap.md) |
 | 2026-10-31 23:20 | #18 report submit showed JSON parse error though saved; authClient.request now treats any empty body (201 too) as null | [detail](fix-log/2026-10-31-empty-201-json.md) |
 | 2026-11-02 01:54 | #20 reset-password page lost its fragment token under StrictMode (effect ran twice); token now read in lazy useState | [detail](fix-log/2026-11-02-reset-strictmode-token.md) |
+| 2026-11-02 04:04 | #22 mail links had no origin when PUBLIC_BASE_URL= is empty ('' defeats ??); loadConfig now treats empty as unset | [detail](fix-log/2026-11-02-empty-public-base-url.md) |

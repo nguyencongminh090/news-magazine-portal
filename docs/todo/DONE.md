@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#22.** Bug: mail links have no origin when `PUBLIC_BASE_URL=` is empty (`??` keeps `''`) `[Model: Sonnet]` — [detail](docs/todo/A22-mail-link-empty-base-url.md)
 ✅ - **#20.** Frontend pages: forgot / reset / change password `[Model: Sonnet]` — [detail](docs/todo/A20-password-pages-frontend.md)
 ✅ - **#19.** Frontend redesign to option E "Warm Illustrated" (images + icons) `[Model: Sonnet]` — [detail](docs/todo/A19-ui-redesign-warm-illustrated.md)
 ✅ - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
