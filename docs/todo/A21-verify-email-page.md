@@ -1,5 +1,5 @@
 # A21 — Frontend: /verify-email page + resend button
-**Status:** CODE DONE, vitest green (109); real-browser pass pending
+**Status:** ✅ DONE (vitest 109 green; real-browser pass 2026-11-02: resend, superseded link, confirm + session refresh, signed-out reuse, missing token)
 **Area:** `frontend/src/{App.jsx,auth/authClient.js,auth/AuthContext.jsx,pages/VerifyEmailPage.jsx}`, `components/Engagement.jsx` (the "Verify your email" hint)
 **From:** user, 2026-11-02 "tạo item mới cho trang /verify-email + nút gửi lại email xác nhận"   **Depends:** #15 (backend, done), #20
 
