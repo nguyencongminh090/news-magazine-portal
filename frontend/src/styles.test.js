@@ -22,3 +22,20 @@ describe('styles.css status badge', () => {
     expect(rule).toMatch(/white-space:\s*nowrap/);
   });
 });
+
+// DESIGN.md: every colour literal lives in :root (tokens); the rest of the sheet only uses var(--token).
+describe('styles.css tokens', () => {
+  it('has no colour literals outside :root and the data-URI grain', () => {
+    const outside = css.replace(/:root\s*\{[\s\S]*?\n\}/, '').replace(/url\("data:[^"]*"\)/g, '');
+    // category tint pairs (.cat-*) are token definitions too
+    const body = outside.split('\n').filter((l) => !/^\.cat-[a-z]+ \{/.test(l) && !/^\.cat-[a-z]+ \{.*\} \.cat-/.test(l)).join('\n');
+    expect(body.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(/g) ?? []).toEqual([]);
+  });
+  it('declares exactly 2 font families, 4 files', () => {
+    expect(css.match(/@font-face/g)).toHaveLength(4);
+    expect([...css.matchAll(/font-family: "([^"]+)"; font-style/g)].map((m) => m[1]).filter((v, i, a) => a.indexOf(v) === i)).toEqual(['Fraunces', 'Nunito Sans']);
+  });
+  it('honours prefers-reduced-motion', () => {
+    expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*animation: none/);
+  });
+});
