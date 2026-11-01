@@ -1,5 +1,5 @@
 # A22 — Bug: mail links lack an origin when PUBLIC_BASE_URL is empty
-**Status:** OPEN
+**Status:** ✅ DONE
 **Area:** `backend/src/config.js` (publicBaseUrl), `backend/src/app.js:38` (`appBaseUrl: cfg.publicBaseUrl ?? origins[0]`)
 **From:** found during #20 real-browser check, 2026-11-02   **Depends:** —
 
