@@ -62,7 +62,39 @@ export function PublicLayout() {
           </main>
           <footer className="site">
             <Wave />
-            <div className="wrap foot-in">News Portal · Articles from Wikinews, licensed CC BY</div>
+            <div className="wrap foot-in">
+              <div className="foot-grid">
+                <section className="foot-about" aria-labelledby="foot-about-h">
+                  <h2 id="foot-about-h" className="foot-brand">News Portal</h2>
+                  <p>Plain-language news explainers, organised by topic and easy to scan. Every article is open content you can read, share and reuse.</p>
+                </section>
+                <nav aria-labelledby="foot-topics-h">
+                  <h2 id="foot-topics-h" className="foot-h">Topics</h2>
+                  <ul className="foot-list foot-cols">
+                    {items.map((c) => (
+                      <li key={c.slug}><Link to={`/category/${c.slug}`}>{c.name}</Link></li>
+                    ))}
+                  </ul>
+                </nav>
+                <nav aria-labelledby="foot-links-h">
+                  <h2 id="foot-links-h" className="foot-h">Explore</h2>
+                  <ul className="foot-list">
+                    <li><Link to="/">Home</Link></li>
+                    <li><Link to="/search">Search</Link></li>
+                  </ul>
+                </nav>
+              </div>
+              <div className="foot-legal">
+                <p>
+                  Articles come from{' '}
+                  <a href="https://en.wikinews.org" target="_blank" rel="noopener noreferrer">Wikinews</a>
+                  {' '}and are licensed under{' '}
+                  <a href="https://creativecommons.org/licenses/by/2.5/" target="_blank" rel="noopener noreferrer">CC BY</a>.
+                  Attribution is shown on each article.
+                </p>
+                <p>&copy; {new Date().getFullYear()} News Portal</p>
+              </div>
+            </div>
           </footer>
         </div>
       </div>
