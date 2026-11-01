@@ -1,4 +1,5 @@
 # DONE — finished items, newest first, one line each
+✅ - **#19.** Frontend redesign to option E "Warm Illustrated" (images + icons) `[Model: Sonnet]` — [detail](docs/todo/A19-ui-redesign-warm-illustrated.md)
 ✅ - **#10.** Implement frontend UI from DESIGN.md + approved mockup `[Model: Sonnet]` — [detail](docs/todo/A10-frontend-ui-implementation.md)
 ✅ - **#18.** Comments, ratings and reports: design + API + ArticlePage UI `[Model: Opus]` — [detail](docs/todo/A18-comments-ratings-reports.md)
 ✅ - **#17.** Admin articles API for the Admin view (blocks #10) `[Model: Sonnet]` — [detail](docs/todo/A17-admin-articles-api.md)
