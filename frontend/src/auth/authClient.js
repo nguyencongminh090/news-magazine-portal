@@ -90,6 +90,9 @@ export function createAuthClient({ onChange = () => {} } = {}) {
     request,
     requestPasswordReset: (email) => post('/api/auth/password-reset/request', { email }),
     confirmPasswordReset: (token, newPassword) => post('/api/auth/password-reset/confirm', { token, newPassword }),
+    confirmEmailVerification: (token) => post('/api/auth/email-verification/confirm', { token }),
+    /** Bearer-authenticated; 202 with no payload. Limited to 3/h per user (429). */
+    requestEmailVerification: () => request('/api/auth/email-verification/request', { method: 'POST', headers: { 'X-Requested-With': 'fetch' } }),
     /** Backend revokes every session and returns a fresh one for this device. */
     async changePassword(currentPassword, newPassword) {
       set(await request('/api/auth/change-password', {
