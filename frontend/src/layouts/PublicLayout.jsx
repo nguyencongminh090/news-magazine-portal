@@ -39,6 +39,7 @@ export function PublicLayout() {
             <>
               <span className="muted"><Icon name="user" /> {user.displayName}</span>
               {user.roles.some((r) => STAFF_ROLES.includes(r)) && <Link to="/admin">Admin</Link>}
+              <Link to="/account/password">Change password</Link>
               <button className="btn secondary" type="button" onClick={() => logout()}>Sign out</button>
             </>
           ) : (
