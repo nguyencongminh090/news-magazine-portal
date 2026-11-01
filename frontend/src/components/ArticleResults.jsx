@@ -8,7 +8,7 @@ export function ArticleResults({ state: { data, error, loading, reload }, page, 
   return (
     <>
       <StateView loading={loading} error={error} empty={!loading && !error && items.length === 0} onRetry={reload} />
-      {items.length > 0 && <ul className="list">{items.map((a) => <ArticleListItem key={a.slug} article={a} />)}</ul>}
+      {items.length > 0 && <ul className="list results">{items.map((a) => <ArticleListItem key={a.slug} article={a} />)}</ul>}
       {data && <Pagination page={page} total={data.total} pageSize={data.pageSize} buildHref={buildHref} />}
     </>
   );

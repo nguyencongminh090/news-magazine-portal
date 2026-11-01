@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
 import { renderWithRouter } from '../test/render.jsx';
 import { article, mockFetch, respond } from '../test/mockFetch.js';
-import { ArticlePage } from './ArticlePage.jsx';
+import { ArticlePage, keyPoints } from './ArticlePage.jsx';
 
 const renderArticle = (slug = 'a-1') =>
   renderWithRouter(<Routes><Route path="/articles/:slug" element={<ArticlePage />} /></Routes>, { route: `/articles/${slug}` });
@@ -50,4 +50,10 @@ test('missing publishedAt and author render no "Invalid Date"', async () => {
   renderArticle();
   await screen.findByRole('heading', { level: 1 });
   expect(screen.queryByText(/Invalid Date/)).toBeNull();
+});
+
+test('keyPoints: up to 3 sentences from the summary, none when absent', () => {
+  expect(keyPoints('One. Two! Three? Four.')).toEqual(['One.', 'Two!', 'Three?']);
+  expect(keyPoints('No terminator')).toEqual(['No terminator']);
+  expect(keyPoints(null)).toEqual([]);
 });

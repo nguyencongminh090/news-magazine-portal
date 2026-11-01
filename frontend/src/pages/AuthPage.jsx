@@ -39,6 +39,7 @@ export function AuthPage({ mode }) {
 
   return (
     <form className="auth" onSubmit={onSubmit} noValidate>
+      <img className="state-art" src="/art/empty.svg" alt="" width="480" height="320" />
       <h1>{c.title}</h1>
       {mode === 'register' && (
         <>

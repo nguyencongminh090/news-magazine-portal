@@ -7,3 +7,4 @@ Add: detail file from `docs/templates/todo.md`, then ONE line below:
 `- **#N.** title \`[Model: Haiku|Sonnet|Opus]\` — [detail](docs/todo/<CODE>-<slug>.md)`
 Finish: in ONE edit set `**Status:** ✅ DONE|FIXED|CLOSED|VERIFIED` in the detail file and MOVE the line to the top of `DONE.md` prefixed `✅`.
 
+- **#19.** Frontend redesign to option E "Warm Illustrated" (images + icons) `[Model: Sonnet]` — [detail](docs/todo/A19-ui-redesign-warm-illustrated.md)
