@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { apiGet } from '../api/client.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { formatDate } from '../lib/format.js';
+import { ResendVerification } from './ResendVerification.jsx';
 import { Icon } from './Icon.jsx';
 
 const PAGE_SIZE = 20;
@@ -29,7 +30,11 @@ function GateNotice({ user }) {
       </p>
     );
   }
-  if (!user.emailVerified) return <p className="hint" role="note">Verify your email address to rate, comment or report.</p>;
+  if (!user.emailVerified) return (
+      <p className="hint" role="note">
+        Verify your email address to rate, comment or report. <ResendVerification />
+      </p>
+    );
   return null;
 }
 

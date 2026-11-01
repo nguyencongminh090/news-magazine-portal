@@ -10,6 +10,8 @@ import { AdminArticlesPage } from './pages/AdminArticlesPage.jsx';
 import { AdminArticleFormPage } from './pages/AdminArticleFormPage.jsx';
 import { RequireRole } from './auth/RequireRole.jsx';
 import { STAFF_ROLES } from './auth/AuthContext.jsx';
+import { ForgotPasswordPage, ResetPasswordPage, ChangePasswordPage } from './pages/PasswordPages.jsx';
+import { VerifyEmailPage } from './pages/VerifyEmailPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 
 export function App() {
@@ -22,6 +24,10 @@ export function App() {
         <Route path="articles/:slug" element={<ArticlePage />} />
         <Route path="login" element={<AuthPage mode="login" />} />
         <Route path="register" element={<AuthPage mode="register" />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="reset-password" element={<ResetPasswordPage />} />
+        <Route path="verify-email" element={<VerifyEmailPage />} />
+        <Route path="account/password" element={<ChangePasswordPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="admin" element={<RequireRole roles={STAFF_ROLES}><AdminLayout /></RequireRole>}>
