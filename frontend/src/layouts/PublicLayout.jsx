@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useApi } from '../api/useApi.js';
 import { STAFF_ROLES, useAuth } from '../auth/AuthContext.jsx';
+import { ResendVerification } from '../components/ResendVerification.jsx';
 import { Drawer } from '../components/Drawer.jsx';
 import { Icon, IconSprite } from '../components/Icon.jsx';
 import { TopicNav } from '../components/TopicNav.jsx';
@@ -39,6 +40,7 @@ export function PublicLayout() {
             <>
               <span className="muted"><Icon name="user" /> {user.displayName}</span>
               {user.roles.some((r) => STAFF_ROLES.includes(r)) && <Link to="/admin">Admin</Link>}
+              {!user.emailVerified && <ResendVerification />}
               <Link to="/account/password">Change password</Link>
               <button className="btn secondary" type="button" onClick={() => logout()}>Sign out</button>
             </>
