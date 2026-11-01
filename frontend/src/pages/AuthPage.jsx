@@ -53,6 +53,7 @@ export function AuthPage({ mode }) {
       <input id="password" name="password" type="password" autoComplete={c.autocomplete} minLength={mode === 'register' ? 8 : undefined} maxLength={128} required />
       {error && <p className="error" role="alert">{error}</p>}
       <p className="actions"><button className="btn" type="submit" disabled={busy}>{c.cta}</button></p>
+      {mode === 'login' && <p className="muted"><Link to="/forgot-password">Forgot password?</Link></p>}
       <p className="muted">{c.alt[0]} <Link to={c.alt[1]}>{c.alt[2]}</Link></p>
     </form>
   );
