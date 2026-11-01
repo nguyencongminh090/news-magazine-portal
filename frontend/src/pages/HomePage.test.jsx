@@ -14,7 +14,7 @@ test('page 1: lead as h1, 2 secondary, 3 in the list', async () => {
   const { container } = renderHome();
   expect(await screen.findByRole('heading', { level: 1, name: 'Title 1' })).toBeInTheDocument();
   expect(container.querySelectorAll('.lead')).toHaveLength(1);
-  expect(container.querySelectorAll('.duo h3')).toHaveLength(2);
+  expect(container.querySelectorAll('.duo h2')).toHaveLength(2);
   expect(container.querySelectorAll('.list li')).toHaveLength(3);
 });
 

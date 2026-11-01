@@ -66,7 +66,7 @@ export function HomePage() {
                 <div className="fig"><CategoryArt slug={a.category?.slug} /></div>
                 <div className="txt">
                   <Kicker category={a.category} />
-                  <h3><Link to={`/articles/${a.slug}`}>{a.title}</Link></h3>
+                  <h2><Link to={`/articles/${a.slug}`}>{a.title}</Link></h2>
                   <DateMeta iso={a.publishedAt} />
                 </div>
               </article>

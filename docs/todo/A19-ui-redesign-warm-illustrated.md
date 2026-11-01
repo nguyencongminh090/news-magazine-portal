@@ -1,5 +1,5 @@
 # A19 — Frontend redesign: option E "Warm Illustrated Humanist"
-**Status:** OPEN — implemented 2026-11-02 (uncommitted); pending axe run + user review of screenshots
+**Status:** OPEN — implemented + committed; axe 1280/390 run 2026-11-02: Critical/Serious = 0, no h-scroll (1 moderate heading-order h3-after-h1 on card lists); pending user review of screenshots
 **Area:** frontend/src (styles.css, layouts/PublicLayout.jsx, pages/*, components/*), DESIGN.md, public/assets
 **From:** user, 2026-10-31: chose option E from features/ui-redesign (A–F mockups); "Choose E"   **Depends:** —
 
