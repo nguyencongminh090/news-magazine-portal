@@ -36,7 +36,8 @@ export function loadConfig(env = process.env) {
   let trustProxy = false; // set only when behind a reverse proxy: hop count or true
   if (env.TRUST_PROXY !== undefined) trustProxy = /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY === 'true';
 
-  let publicBaseUrl = env.PUBLIC_BASE_URL?.replace(/\/+$/, '');
+  // `PUBLIC_BASE_URL=` (empty, as in .env.example) means unset: '' would defeat `??` fallbacks downstream.
+  let publicBaseUrl = env.PUBLIC_BASE_URL?.trim().replace(/\/+$/, '') || undefined;
   if (publicBaseUrl) {
     try {
       const u = new URL(publicBaseUrl);

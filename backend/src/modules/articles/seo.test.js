@@ -66,3 +66,11 @@ test('production config requires a valid PUBLIC_BASE_URL', () => {
   assert.throws(() => loadConfig({ ...prod, PUBLIC_BASE_URL: 'javascript:alert(1)' }), /PUBLIC_BASE_URL must be/);
   assert.equal(loadConfig({ ...prod, PUBLIC_BASE_URL: 'https://n.example.com/' }).publicBaseUrl, 'https://n.example.com');
 });
+
+test('empty PUBLIC_BASE_URL is unset (dev mail links fall back to the CORS origin, #22)', () => {
+  const dev = { NODE_ENV: 'development', DATABASE_URL: 'postgres://x' };
+  assert.equal(loadConfig({ ...dev, PUBLIC_BASE_URL: '' }).publicBaseUrl, undefined);
+  assert.equal(loadConfig({ ...dev, PUBLIC_BASE_URL: '  ' }).publicBaseUrl, undefined);
+  const prod = { ...dev, NODE_ENV: 'production', JWT_SECRET: 'x'.repeat(32), MAIL_TRANSPORT: 'smtp', SMTP_URL: 'smtp://relay.example:587', MAIL_FROM: 'News <no-reply@n.example.com>' };
+  assert.throws(() => loadConfig({ ...prod, PUBLIC_BASE_URL: '' }), /PUBLIC_BASE_URL is required/);
+});
