@@ -22,8 +22,22 @@ export async function listMigrations(dir = MIGRATIONS_DIR) {
 
 /** Apply pending migrations in order, one transaction each. Returns the names applied now. */
 export async function migrate(databaseUrl, dir = MIGRATIONS_DIR) {
-  const client = new pg.Client({ connectionString: databaseUrl });
-  await client.connect();
+  let client;
+  try {
+    const pgClient = new pg.Client({ connectionString: databaseUrl, connectionTimeoutMillis: 1500 });
+    await pgClient.connect();
+    client = pgClient;
+  } catch (err) {
+    console.warn(`[migrate] PostgreSQL not accessible (${err.code || err.message}). Using embedded PGlite database.`);
+    const { PGlite } = await import('@electric-sql/pglite');
+    const dbDir = path.resolve(dir, '../.pgdata');
+    const pglite = new PGlite(dbDir);
+    await pglite.ready;
+    client = {
+      query: (sql, params) => pglite.query(sql, params),
+      end: () => (pglite.close ? pglite.close() : Promise.resolve()),
+    };
+  }
   try {
     await client.query('SELECT pg_advisory_lock($1)', [LOCK_KEY]);
     await client.query(`

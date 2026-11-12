@@ -4,7 +4,7 @@ import { closePool, initPool } from './db.js';
 import { bootstrapAdmin } from './modules/auth/bootstrap.js';
 
 const config = loadConfig(); // throws listing every problem -> process exits before listening
-initPool(config);
+await initPool(config);
 if (config.bootstrapAdmin) {
   // A bootstrap problem must never stop the API from starting.
   const result = await bootstrapAdmin(config.bootstrapAdmin).catch((err) => `failed (${err?.code ?? err?.name})`);

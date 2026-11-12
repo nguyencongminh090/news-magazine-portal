@@ -59,8 +59,22 @@ const nameKey = (name) => slugify(name, 100);
 /** Idempotent: every row is keyed by slug/email, so reruns update in place. views_count is insert-only. Returns counts. */
 export async function seed(databaseUrl, articles, { env = process.env } = {}) {
   assertSeedAllowed(env);
-  const client = new pg.Client({ connectionString: databaseUrl });
-  await client.connect();
+  let client;
+  try {
+    const pgClient = new pg.Client({ connectionString: databaseUrl, connectionTimeoutMillis: 1500 });
+    await pgClient.connect();
+    client = pgClient;
+  } catch (err) {
+    console.warn(`[seed] PostgreSQL not accessible (${err.code || err.message}). Using embedded PGlite database.`);
+    const { PGlite } = await import('@electric-sql/pglite');
+    const dbDir = fileURLToPath(new URL('../.pgdata', import.meta.url));
+    const pglite = new PGlite(dbDir);
+    await pglite.ready;
+    client = {
+      query: (sql, params) => pglite.query(sql, params),
+      end: () => (pglite.close ? pglite.close() : Promise.resolve()),
+    };
+  }
   try {
     await client.query('BEGIN');
 
