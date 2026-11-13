@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="paper-ink">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>News &amp; Digital Magazine Portal — Full-Stack &amp; IR Presentation Deck</title>
-  
-  <!-- Webfonts: Newsreader (Serif), Plus Jakarta Sans, and JetBrains Mono -->
+
+  <!-- Webfonts for /frontend-slides Editorial Themes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- KaTeX for crisp academic mathematical typography -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
@@ -17,48 +17,17 @@
 
   <style>
     /* ===========================================
-       CSS THEME & CUSTOM PROPERTIES
-       Warm Illustrated Humanist & Academic Palette
+       FIXED 16:9 STAGE: MANDATORY BASE STYLES
+       Include this ENTIRE block in every presentation.
+       Slides are authored at 1920x1080 and scaled as a whole.
        =========================================== */
-    :root {
-      --stage-bg: #0B111E;
-      --slide-bg: #FCF9F2;
-      --paper: #F4EBD9;
-      --paper-2: #EAE0C8;
-      --line: #DECDB0;
-      --line-subtle: #EDE2CD;
-      --card-bg: #FFFFFF;
-      --ink: #152033;
-      --ink-secondary: #485368;
-      --ink-muted: #737E94;
-      --accent-terra: #B84A2B;
-      --accent-terra-bg: #FBECE6;
-      --accent-teal: #145E65;
-      --accent-teal-bg: #E1F0EE;
-      --accent-amber: #C97F1E;
-      --accent-amber-bg: #FDF3E3;
-      --accent-sage: #2C6E49;
-      --accent-sage-bg: #E3F2E9;
-      --accent-navy: #182338;
-      --serif: "Newsreader", "Georgia", "Palatino Linotype", serif;
-      --sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
-      --shadow: 0 16px 40px -18px rgba(21, 32, 51, 0.22), 0 4px 12px -4px rgba(21, 32, 51, 0.08);
-      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
+    html,
+    body {
       width: 100%;
       height: 100%;
       margin: 0;
-      padding: 0;
       overflow: hidden;
       background: var(--stage-bg, #000);
-      color: var(--ink);
-      font-family: var(--sans);
-      user-select: none;
     }
 
     .deck-viewport {
@@ -77,7 +46,6 @@
       overflow: hidden;
       transform-origin: 0 0;
       background: var(--slide-bg, #fff);
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
     }
 
     .slide {
@@ -86,14 +54,11 @@
       width: 1920px;
       height: 1080px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      display: block;
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
       background: var(--slide-bg, #fff);
-      padding: 56px 80px 48px;
-      z-index: 1;
     }
 
     .slide.active,
@@ -101,150 +66,290 @@
       visibility: visible;
       opacity: 1;
       pointer-events: auto;
-      z-index: 2;
+      z-index: 1;
     }
 
-    /* Top Navigation Chrome */
-    .topbar {
+    img,
+    video,
+    canvas,
+    svg {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .deck-controls {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: rgba(11, 17, 30, 0.94);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
       z-index: 1000;
-      color: #FFF;
-      font-size: 15px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: #FCF9F2;
-    }
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent-terra);
-      box-shadow: 0 0 10px var(--accent-terra);
+    @media print {
+      html,
+      body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+      }
+
+      .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+      }
+
+      .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+      }
+
+      .slide {
+        position: relative;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+
+      .deck-controls,
+      .topbar,
+      .progress-bar,
+      .notes-panel,
+      .overview,
+      .edit-hotzone,
+      .edit-toggle,
+      .edit-toolbar,
+      .theme-toast {
+        display: none !important;
+      }
     }
 
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
     }
 
-    .ctrl-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #FCF9F2;
-      padding: 7px 14px;
-      border-radius: 8px;
+    /* ===========================================
+       /frontend-slides EDITORIAL THEMES (4 PRESETS)
+       Switchable at runtime via Keyboard [T]
+       =========================================== */
+
+    /* 1. DEFAULT: Paper & Ink Editorial */
+    :root,
+    html[data-theme="paper-ink"] {
+      --stage-bg: #0E131E;
+      --slide-bg: #FAF7F0;
+      --slide-pattern: radial-gradient(rgba(18, 24, 38, 0.055) 1px, transparent 1px);
+      --slide-pattern-size: 28px 28px;
+      --paper: #F2ECE1;
+      --paper-2: #E7DEC9;
+      --line: #DCCEB3;
+      --line-subtle: #EAE0CB;
+      --card-bg: #FFFFFF;
+      --ink: #121826;
+      --ink-secondary: #3E4A5E;
+      --ink-muted: #687387;
+      --accent-terra: #B83B2A;
+      --accent-terra-bg: #FBECE8;
+      --accent-teal: #0F5C63;
+      --accent-teal-bg: #E0F0EF;
+      --accent-amber: #B86E14;
+      --accent-amber-bg: #FDF2DF;
+      --accent-sage: #246642;
+      --accent-sage-bg: #E1F2E8;
+      --accent-navy: #141D32;
+      --code-bg: #EFE7D6;
+      --code-fg: #A83222;
+      --table-hl-bg: #FBF0EC;
+      --card-radius: 16px;
+      --serif: "Newsreader", "Cormorant Garamond", Georgia, serif;
+      --sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      --shadow: 0 14px 36px -18px rgba(18, 24, 38, 0.2), 0 4px 12px -4px rgba(18, 24, 38, 0.07);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 2. Cobalt Grid — Research Bulletin */
+    html[data-theme="cobalt-grid"] {
+      --stage-bg: #0D1440;
+      --slide-bg: #F0EBDE;
+      --slide-pattern:
+        linear-gradient(to right, rgba(31, 43, 224, 0.075) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(31, 43, 224, 0.075) 1px, transparent 1px);
+      --slide-pattern-size: 40px 40px;
+      --paper: #E8E1CE;
+      --paper-2: #DFD6BF;
+      --line: rgba(31, 43, 224, 0.28);
+      --line-subtle: rgba(31, 43, 224, 0.14);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --ink: #131B54;
+      --ink-secondary: #26317A;
+      --ink-muted: #525DA6;
+      --accent-terra: #1F2BE0;
+      --accent-terra-bg: rgba(31, 43, 224, 0.11);
+      --accent-teal: #0E4DA4;
+      --accent-teal-bg: rgba(14, 77, 164, 0.11);
+      --accent-amber: #1F2BE0;
+      --accent-amber-bg: rgba(31, 43, 224, 0.09);
+      --accent-sage: #185B73;
+      --accent-sage-bg: rgba(24, 91, 115, 0.12);
+      --accent-navy: #131B54;
+      --code-bg: rgba(31, 43, 224, 0.09);
+      --code-fg: #1F2BE0;
+      --table-hl-bg: rgba(31, 43, 224, 0.09);
+      --card-radius: 4px;
+      --shadow: 0 8px 24px -14px rgba(19, 27, 84, 0.18);
+    }
+
+    /* 3. Signal Dark — Executive Navy & Antique Gold */
+    html[data-theme="signal-dark"] {
+      --stage-bg: #0A0F1C;
+      --slide-bg: #141D32;
+      --slide-pattern:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      --slide-pattern-size: 80px 80px;
+      --paper: #1C2744;
+      --paper-2: #243154;
+      --line: #2F3E63;
+      --line-subtle: #253352;
+      --card-bg: #1A2540;
+      --ink: #F0EAE0;
+      --ink-secondary: #C8D0E0;
+      --ink-muted: #8E9AB3;
+      --accent-terra: #D4AF6A;
+      --accent-terra-bg: rgba(212, 175, 106, 0.16);
+      --accent-teal: #5CC4BA;
+      --accent-teal-bg: rgba(92, 196, 186, 0.15);
+      --accent-amber: #E5B95C;
+      --accent-amber-bg: rgba(229, 185, 92, 0.16);
+      --accent-sage: #73C991;
+      --accent-sage-bg: rgba(115, 201, 145, 0.16);
+      --accent-navy: #0E1525;
+      --code-bg: rgba(212, 175, 106, 0.15);
+      --code-fg: #F0C978;
+      --table-hl-bg: rgba(212, 175, 106, 0.14);
+      --card-radius: 8px;
+      --shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.65);
+    }
+
+    /* 4. Swiss Modern — Bauhaus High-Contrast */
+    html[data-theme="swiss-modern"] {
+      --stage-bg: #111111;
+      --slide-bg: #F7F8FA;
+      --slide-pattern: none;
+      --slide-pattern-size: auto;
+      --paper: #ECEEF2;
+      --paper-2: #E1E4EB;
+      --line: #111111;
+      --line-subtle: #D0D4DD;
+      --card-bg: #FFFFFF;
+      --ink: #0D0D0D;
+      --ink-secondary: #2B2F36;
+      --ink-muted: #585F6B;
+      --accent-terra: #FF3300;
+      --accent-terra-bg: #FFEAE5;
+      --accent-teal: #0044FF;
+      --accent-teal-bg: #E5ECFF;
+      --accent-amber: #D97706;
+      --accent-amber-bg: #FEF3C7;
+      --accent-sage: #0F766E;
+      --accent-sage-bg: #CCFBF1;
+      --accent-navy: #0D0D0D;
+      --code-bg: #ECEEF2;
+      --code-fg: #D92600;
+      --table-hl-bg: #FFF1ED;
+      --card-radius: 2px;
+      --shadow: 6px 6px 0px rgba(13, 13, 13, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      color: var(--ink);
       font-family: var(--sans);
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.18s ease;
-    }
-    .ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.28);
-    }
-    .ctrl-btn.active {
-      background: var(--accent-terra);
-      border-color: var(--accent-terra);
-      color: #FFF;
+      user-select: none;
     }
 
-    .counter {
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--accent-amber);
-      min-width: 72px;
-      text-align: center;
-      padding: 4px 10px;
-      background: rgba(201, 127, 30, 0.12);
-      border-radius: 6px;
-      border: 1px solid rgba(201, 127, 30, 0.25);
+    .deck-stage {
+      background-color: var(--slide-bg);
+      background-image: var(--slide-pattern);
+      background-size: var(--slide-pattern-size);
+      box-shadow: 0 0 70px rgba(0, 0, 0, 0.65);
+      transition: background-color 0.25s ease;
+    }
+
+    .slide {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--slide-bg);
+      background-image: var(--slide-pattern);
+      background-size: var(--slide-pattern-size);
+      padding: 52px 76px 42px;
+      color: var(--ink);
+    }
+
+    /* Hidden Top Chrome (Preserved in DOM, completely invisible as requested) */
+    .topbar {
+      display: none !important;
     }
 
     .progress-bar {
       position: fixed;
-      top: 60px;
+      top: 0;
       left: 0;
-      height: 4px;
+      height: 3px;
       background: linear-gradient(90deg, var(--accent-terra), var(--accent-amber), var(--accent-teal));
       transition: width 0.24s ease;
       z-index: 1001;
+      opacity: 0.85;
     }
 
-    /* Slide Elements */
-    .slide-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-      flex: none;
-    }
-
-    .kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: var(--accent-teal-bg);
-      color: var(--accent-teal);
-      font: 800 13px/1 var(--sans);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .kicker.terra { background: var(--accent-terra-bg); color: var(--accent-terra); }
-    .kicker.amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
-    .kicker.sage { background: var(--accent-sage-bg); color: var(--accent-sage); }
-    .kicker.navy { background: #182338; color: #FFF; }
-
-    .slide-num {
-      font: 700 15px var(--mono);
-      color: var(--ink-muted);
-    }
-
+    /* ===========================================
+       TYPOGRAPHY (+10% SCALED FOR EXECUTIVE CLARITY)
+       =========================================== */
     h1.title {
       font-family: var(--serif);
-      font-size: 68px;
-      line-height: 1.08;
-      margin: 0 0 16px;
+      font-size: 75px;
+      line-height: 1.06;
+      margin: 0 0 18px;
       color: var(--ink);
       letter-spacing: -0.025em;
     }
 
     h2.heading {
       font-family: var(--serif);
-      font-size: 44px;
-      line-height: 1.14;
-      margin: 0 0 20px;
+      font-size: 49px;
+      line-height: 1.12;
+      margin: 0 0 22px;
       color: var(--ink);
       letter-spacing: -0.02em;
+      border-left: 6px solid var(--accent-terra);
+      padding-left: 22px;
+      flex: none;
     }
 
     .lead {
-      font-size: 23px;
-      line-height: 1.5;
+      font-size: 26px;
+      line-height: 1.46;
       color: var(--ink-secondary);
       margin: 0 0 24px;
       max-width: 78ch;
@@ -259,28 +364,35 @@
     }
 
     .slide-foot {
-      margin-top: 20px;
+      margin-top: 18px;
       padding-top: 14px;
-      border-top: 1px solid var(--line);
+      border-top: 1.5px solid var(--line);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+      font-size: 15.5px;
+      font-weight: 600;
       color: var(--ink-muted);
       flex: none;
+    }
+    .slide-foot-num {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--accent-terra);
+      letter-spacing: 0.04em;
     }
 
     /* Grids & Cards */
     .cols-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 32px;
+      gap: 30px;
       height: 100%;
     }
     .cols-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
+      gap: 26px;
       height: 100%;
     }
     .cols-4 {
@@ -292,55 +404,62 @@
 
     .card {
       background: var(--card-bg);
-      border-radius: 18px;
-      border: 1px solid var(--line);
+      border-radius: var(--card-radius);
+      border: 1.5px solid var(--line);
       box-shadow: var(--shadow);
-      padding: 30px 32px;
+      padding: 26px 30px;
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
       transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s ease;
     }
     .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 22px 46px -18px rgba(21, 32, 51, 0.3);
+      transform: translateY(-2px);
     }
     .card.paper { background: var(--paper); border-color: var(--line); }
-    .card.teal { background: var(--accent-teal); color: #FFF; border-color: var(--accent-teal); }
-    .card.terra { background: var(--accent-terra); color: #FFF; border-color: var(--accent-terra); }
-    .card.navy { background: #131C2D; color: #FFF; border-color: #24314A; }
 
     .card h3 {
       font-family: var(--serif);
-      font-size: 26px;
-      line-height: 1.25;
+      font-size: 28.5px;
+      line-height: 1.22;
       margin: 0 0 12px;
-      color: inherit;
+      color: var(--ink);
+    }
+    .cols-3 .card h3 {
+      font-size: 27px;
     }
     .card h4 {
       font-family: var(--sans);
-      font-size: 17px;
+      font-size: 19.5px;
       font-weight: 700;
       margin: 0 0 8px;
-      color: inherit;
+      color: var(--ink);
     }
     .card p, .card li {
-      font-size: 17.5px;
-      line-height: 1.55;
+      font-size: 19.5px;
+      line-height: 1.48;
       margin: 0 0 8px;
       color: var(--ink-secondary);
     }
-    .card.teal p, .card.teal li,
-    .card.terra p, .card.terra li,
-    .card.navy p, .card.navy li {
-      color: #E6EDEC;
-    }
     .card ul { margin: 0; padding-left: 24px; }
+    .card li:last-child, .card p:last-child { margin-bottom: 0; }
+
+    .math-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 10px 0 14px;
+      color: var(--ink);
+      font-size: 19.5px;
+      text-align: center;
+    }
 
     .stat-badge {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 5px 13px;
       border-radius: 8px;
-      font: 800 13px var(--mono);
+      font: 800 14.5px var(--mono);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 12px;
@@ -353,7 +472,7 @@
 
     .stat-num {
       font-family: var(--serif);
-      font-size: 42px;
+      font-size: 46px;
       font-weight: 800;
       color: var(--accent-terra);
       line-height: 1;
@@ -364,15 +483,24 @@
       width: 100%;
       border-collapse: collapse;
       background: var(--card-bg);
-      border-radius: 14px;
+      border-radius: var(--card-radius);
       overflow: hidden;
-      border: 1px solid var(--line);
-      font-size: 16px;
+      border: 1.5px solid var(--line);
+      font-size: 18px;
+      box-shadow: var(--shadow);
     }
     table.matrix th, table.matrix td {
-      padding: 12px 18px;
+      padding: 13px 18px;
       text-align: left;
       border-bottom: 1px solid var(--line-subtle);
+      color: var(--ink);
+    }
+    table.matrix td small {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 15.5px;
+      line-height: 1.35;
+      color: var(--ink-secondary);
     }
     table.matrix th {
       background: var(--paper);
@@ -380,11 +508,16 @@
       color: var(--ink);
     }
     table.matrix tr:last-child td { border-bottom: 0; }
+    table.matrix tr.hl-row td {
+      background: var(--table-hl-bg);
+      font-weight: 700;
+    }
+
     .badge {
       display: inline-block;
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
-      font: 700 12.5px var(--sans);
+      font: 700 14px var(--sans);
       background: var(--accent-sage-bg);
       color: var(--accent-sage);
     }
@@ -394,56 +527,195 @@
 
     code {
       font-family: var(--mono);
-      font-size: 14.5px;
-      background: var(--paper);
+      font-size: 16px;
+      background: var(--code-bg);
       padding: 2px 7px;
       border-radius: 6px;
+      color: var(--code-fg);
+    }
+
+    pre.code-block {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 18px 22px;
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 16px;
+      line-height: 1.48;
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    /* ===========================================
+       COLLISION-FREE 3-TIER ARCHITECTURE DIAGRAM
+       =========================================== */
+    .arch-flow {
+      display: grid;
+      grid-template-columns: 1fr 220px 1fr 220px 1fr;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+    }
+    .arch-node {
+      background: var(--card-bg);
+      border: 2.5px solid var(--accent-teal);
+      border-radius: var(--card-radius);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .arch-node.terra {
+      border-color: var(--accent-terra);
+    }
+    .arch-node-title {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .arch-node-sub {
+      font-size: 18px;
+      line-height: 1.45;
+      color: var(--ink-secondary);
+      margin-bottom: 6px;
+    }
+    .arch-node-port {
+      margin-top: 10px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font: 700 15.5px var(--mono);
+      background: var(--accent-teal-bg);
+      color: var(--accent-teal);
+    }
+    .arch-node.terra .arch-node-port {
+      background: var(--accent-terra-bg);
       color: var(--accent-terra);
     }
-    .card.navy code {
-      background: rgba(255, 255, 255, 0.15);
-      color: var(--accent-amber);
+    .arch-conn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      gap: 10px;
+    }
+    .arch-conn-top {
+      font: 700 16px var(--mono);
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: var(--accent-terra-bg);
+      color: var(--accent-terra);
+      white-space: nowrap;
+    }
+    .arch-conn.teal .arch-conn-top {
+      background: var(--accent-teal-bg);
+      color: var(--accent-teal);
+    }
+    .arch-arrow-line {
+      width: 100%;
+      height: 3.5px;
+      background: var(--accent-terra);
+      position: relative;
+      border-radius: 2px;
+    }
+    .arch-arrow-line::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 12px solid var(--accent-terra);
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+    }
+    .arch-conn.teal .arch-arrow-line {
+      background: var(--accent-teal);
+    }
+    .arch-conn.teal .arch-arrow-line::after {
+      border-left-color: var(--accent-teal);
+    }
+    .arch-conn-bot {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 4px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
     }
 
     /* Cover Slide Styling */
     .cover-wrap {
       display: grid;
-      grid-template-columns: 1.35fr 0.85fr;
-      gap: 40px;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 44px;
       align-items: center;
       height: 100%;
     }
-    .cover-art {
-      background: var(--accent-teal-bg);
-      border: 1px solid var(--line);
-      border-radius: 40px 120px 40px 40px;
-      padding: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .cover-metrics-card {
+      background: var(--paper);
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      padding: 32px;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .cover-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .cover-kpi {
+      background: var(--card-bg);
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+    .cover-kpi-val {
+      font-family: var(--serif);
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--accent-terra);
+      line-height: 1.05;
+      margin-bottom: 4px;
+    }
+    .cover-kpi.teal .cover-kpi-val {
+      color: var(--accent-teal);
+    }
+    .cover-kpi-lbl {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
     .pill {
-      padding: 7px 15px;
+      padding: 8px 16px;
       border-radius: 999px;
       background: var(--paper);
       border: 1px solid var(--line);
-      font: 700 13.5px var(--sans);
+      font: 700 15.5px var(--sans);
       color: var(--ink);
     }
 
-    /* Speaker Notes Drawer */
+    /* Speaker Notes Drawer (Toggle via N or S) */
     .notes-panel {
       position: fixed;
       right: 28px;
       bottom: 24px;
-      width: min(520px, calc(100vw - 56px));
+      width: min(560px, calc(100vw - 56px));
       background: #111929;
       color: #FCF9F2;
       border: 1px solid rgba(252, 249, 242, 0.22);
       border-radius: 18px;
-      padding: 20px 24px;
+      padding: 22px 26px;
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
       z-index: 2000;
       display: none;
@@ -451,25 +723,25 @@
     .notes-panel.open { display: block; animation: slideUp 0.2s ease-out; }
     .notes-panel h4 {
       margin: 0 0 10px;
-      font-size: 13.5px;
+      font-size: 14.5px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--accent-amber);
+      color: #E5B95C;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .notes-panel p {
       margin: 0;
-      font-size: 15.5px;
+      font-size: 17px;
       line-height: 1.55;
       color: #E2ECF0;
     }
 
-    /* Grid Overview Modal */
+    /* Grid Overview Modal (Toggle via G or O) */
     .overview {
       position: fixed;
-      inset: 60px 0 0 0;
+      inset: 0;
       background: rgba(11, 17, 30, 0.96);
       backdrop-filter: blur(14px);
       z-index: 1500;
@@ -480,16 +752,16 @@
     .overview.open { display: block; animation: fadeIn 0.18s ease-out; }
     .overview-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
-      max-width: 1600px;
+      max-width: 1640px;
       margin: 0 auto;
     }
     .overview-grid .thumb {
       background: #192338;
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 12px;
-      padding: 16px;
+      padding: 18px;
       color: #FCF9F2;
       cursor: pointer;
       text-align: left;
@@ -508,23 +780,23 @@
       background: #202D45;
     }
     .overview-grid .thumb small {
-      font: 700 12px var(--mono);
-      color: var(--accent-amber);
+      font: 700 13px var(--mono);
+      color: #E5B95C;
       text-transform: uppercase;
     }
     .overview-grid .thumb strong {
       font-family: var(--serif);
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1.3;
     }
 
-    /* Inline Editing Toolbar */
+    /* Hidden Top-Left Inline Editing Hotzone + Shortcuts */
     .edit-hotzone {
       position: fixed;
       top: 0;
       left: 0;
-      width: 80px;
-      height: 80px;
+      width: 72px;
+      height: 72px;
       z-index: 10002;
       cursor: pointer;
     }
@@ -538,9 +810,9 @@
       border: none;
       padding: 8px 14px;
       border-radius: 8px;
-      font: 700 13px var(--sans);
+      font: 700 14px var(--sans);
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(184, 74, 43, 0.4);
+      box-shadow: 0 4px 14px rgba(184, 59, 42, 0.4);
       opacity: 0;
       pointer-events: none;
       transform: translateY(-4px);
@@ -555,36 +827,36 @@
     }
     .edit-toolbar {
       position: fixed;
-      top: 60px;
+      top: 0;
       left: 0;
       right: 0;
       background: #192338;
       border-bottom: 2px solid var(--accent-terra);
-      padding: 10px 28px;
+      padding: 12px 28px;
       display: none;
       align-items: center;
       gap: 16px;
-      z-index: 10001;
+      z-index: 10004;
       color: #FFF;
-      font-size: 14px;
+      font-size: 15px;
     }
     .edit-toolbar.open { display: flex; animation: slideUp 0.15s ease-out; }
     .edit-badge {
       background: var(--accent-terra);
       color: #FFF;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 6px;
-      font: 700 12px var(--mono);
+      font: 700 13px var(--mono);
       text-transform: uppercase;
     }
-    .edit-hint { color: #A6B4C9; font-size: 13px; }
+    .edit-hint { color: #A6B4C9; font-size: 14px; }
     .edit-btn {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #FFF;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 6px;
-      font: 600 13px var(--sans);
+      font: 600 14px var(--sans);
       cursor: pointer;
     }
     .edit-btn:hover { background: rgba(255, 255, 255, 0.2); }
@@ -596,6 +868,28 @@
       border-radius: 4px;
     }
 
+    /* Transient Theme Switch Toast */
+    .theme-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #121826;
+      color: #FAF7F0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font: 700 14px var(--mono);
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s ease;
+    }
+    .theme-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
@@ -604,145 +898,113 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
-    @media print {
-      html, body {
-        width: 1920px;
-        height: auto;
-        overflow: visible;
-        background: #FFF;
-      }
-      .topbar, .progress-bar, .notes-panel, .overview, .edit-hotzone, .edit-toggle, .edit-toolbar {
-        display: none !important;
-      }
-      .deck-viewport {
-        position: static;
-        overflow: visible;
-        background: #FFF;
-      }
-      .deck-stage {
-        position: static;
-        width: 1920px;
-        height: auto;
-        transform: none !important;
-        box-shadow: none;
-      }
-      .slide {
-        position: relative !important;
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        width: 1920px;
-        height: 1080px;
-        page-break-after: always;
-        break-after: page;
-        padding: 48px 64px;
-      }
-      .slide:last-child {
-        page-break-after: auto;
-        break-after: auto;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- Inline Editing UI -->
+  <!-- Hidden Top-Left Hover Trigger & Inline Editing UI (E) -->
   <div class="edit-hotzone" title="Hover top-left corner or press E for Inline Editing"></div>
-  <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️ Edit Deck</button>
+  <button class="edit-toggle" id="editToggle" title="Edit mode (E)">Edit Deck</button>
   <div class="edit-toolbar" id="editToolbar">
-    <span class="edit-badge">✏️ Edit Mode Active</span>
+    <span class="edit-badge">Edit Mode Active</span>
     <span class="edit-hint">Click text to edit · Auto-saves to storage</span>
-    <button class="edit-btn" id="btn-save-html" title="Download updated presentation file">💾 Download HTML</button>
-    <button class="edit-btn" id="btn-reset-edits" title="Clear saved edits">↺ Reset</button>
-    <button class="edit-btn" id="btn-exit-edit" title="Exit edit mode (Esc)">✕ Exit</button>
+    <button class="edit-btn" id="btn-save-html" title="Download updated presentation file">Download HTML</button>
+    <button class="edit-btn" id="btn-reset-edits" title="Clear saved edits">Reset</button>
+    <button class="edit-btn" id="btn-exit-edit" title="Exit edit mode (Esc)">Exit</button>
   </div>
 
-  <!-- Header Chrome -->
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-dot"></span> News &amp; Digital Magazine Portal
-    </div>
+  <!-- Hidden Topbar Chrome (Controls preserved in JS shortcuts: Arrows/Space, N/S, G/O, F, P, E, T) -->
+  <header class="topbar" aria-hidden="true">
+    <div class="brand">News &amp; Digital Magazine Portal</div>
     <div class="controls">
-      <button class="ctrl-btn" id="btn-prev" title="Previous slide (Left Arrow / PageUp)">← Prev</button>
+      <button class="ctrl-btn" id="btn-prev">Prev</button>
       <span class="counter" id="counter">01 / 20</span>
-      <button class="ctrl-btn" id="btn-next" title="Next slide (Right Arrow / Space / Wheel)">Next →</button>
-      <button class="ctrl-btn" id="btn-notes" title="Toggle Speaker Notes (N)">Notes (N)</button>
-      <button class="ctrl-btn" id="btn-grid" title="Slide Overview Grid (G/O)">Grid (G)</button>
-      <button class="ctrl-btn" id="btn-fullscreen" title="Fullscreen (F)">Full (F)</button>
-      <button class="ctrl-btn" id="btn-print" title="Print to PDF (Ctrl+P)">Print</button>
+      <button class="ctrl-btn" id="btn-next">Next</button>
+      <button class="ctrl-btn" id="btn-notes">Notes (N/S)</button>
+      <button class="ctrl-btn" id="btn-grid">Grid (G/O)</button>
+      <button class="ctrl-btn" id="btn-theme">Theme (T)</button>
+      <button class="ctrl-btn" id="btn-fullscreen">Full (F)</button>
+      <button class="ctrl-btn" id="btn-print">Print (P)</button>
     </div>
   </header>
   <div class="progress-bar" id="progress"></div>
+  <div class="theme-toast" id="themeToast">Theme: Paper &amp; Ink</div>
 
   <!-- Fixed 16:9 Viewport & Stage -->
   <div class="deck-viewport" id="viewport">
     <div class="deck-stage" id="stage">
 
       <!-- SLIDE 1: COVER -->
-      <section class="slide active" data-slide="0" data-notes="Welcome to the capstone presentation for the News and Digital Magazine Portal. This project demonstrates a production-grade full-stack web application integrated with an in-memory custom Information Retrieval search engine built from mathematical first principles.">
-        <div class="cover-wrap">
-          <div>
-            <span class="kicker terra" style="margin-bottom: 22px;">Capstone Project · Information Retrieval &amp; Web Systems</span>
-            <h1 class="title">News &amp; Digital Magazine Portal</h1>
-            <p class="lead" style="font-size: 26px; color: var(--ink-secondary); margin-bottom: 24px;">
-              A High-Performance Digital Publishing Platform with First-Principles Information Retrieval Search Engine
-            </p>
-            <div style="display: flex; gap: 32px; font-size: 17px; color: var(--ink-muted); margin-bottom: 26px;">
-              <span><strong>Course:</strong> SEG301m · Software Engineering Project</span>
-              <span><strong>Scope:</strong> Phase 1 (Web Platform) + Phase 2 (Custom IR Engine)</span>
+      <section class="slide active" data-slide="0" data-notes="Welcome to the capstone presentation for the News and Digital Magazine Portal. This project integrates a decoupled full-stack web platform with an in-memory custom Information Retrieval search engine built from first principles. Press T anytime to switch themes, G/O for grid overview, N/S for speaker notes, or E to edit.">
+        <div class="content">
+          <div class="cover-wrap">
+            <div>
+              <h1 class="title">News &amp; Digital Magazine Portal</h1>
+              <p class="lead" style="font-size: 28.5px; margin-bottom: 24px;">
+                A High-Performance Digital Publishing Platform with First-Principles Information Retrieval Search Engine
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: 28px; font-size: 19px; color: var(--ink-muted); margin-bottom: 24px;">
+                <span><strong>Course:</strong> SEG301m · Software Engineering Project</span>
+                <span><strong>Architecture:</strong> Phase 1 (Web &amp; RBAC) + Phase 2 (Custom IR)</span>
+              </div>
+              <div class="pill-row">
+                <span class="pill">Node.js 24 ESM</span>
+                <span class="pill">Express 5</span>
+                <span class="pill">React 19 SPA</span>
+                <span class="pill">PostgreSQL 16</span>
+                <span class="pill">Enterprise RBAC (4 Roles)</span>
+                <span class="pill">Inverted Index &amp; V-Byte</span>
+                <span class="pill">Okapi BM25F</span>
+                <span class="pill">Dirichlet LM</span>
+                <span class="pill">RM3 PRF</span>
+              </div>
             </div>
-            <div class="pill-row">
-              <span class="pill">Node.js 24 ESM</span>
-              <span class="pill">Express 5</span>
-              <span class="pill">React 19 SPA</span>
-              <span class="pill">PostgreSQL 16</span>
-              <span class="pill">Enterprise RBAC (4 Roles)</span>
-              <span class="pill">Inverted Index &amp; V-Byte</span>
-              <span class="pill">Okapi BM25F</span>
-              <span class="pill">Dirichlet LM</span>
-              <span class="pill">RM3 PRF</span>
+            <div class="cover-metrics-card">
+              <div class="stat-badge teal" style="margin-bottom: 0;">Verified Engineering Metrics</div>
+              <div class="cover-kpi-grid">
+                <div class="cover-kpi">
+                  <div class="cover-kpi-val">95.0%</div>
+                  <div class="cover-kpi-lbl">BM25F Precision@5 (16 Queries)</div>
+                </div>
+                <div class="cover-kpi teal">
+                  <div class="cover-kpi-val">4,418</div>
+                  <div class="cover-kpi-lbl">Search Queries / Sec (0.226 ms)</div>
+                </div>
+                <div class="cover-kpi teal">
+                  <div class="cover-kpi-val">75.0%</div>
+                  <div class="cover-kpi-lbl">RAM Saved via V-Byte + Delta</div>
+                </div>
+                <div class="cover-kpi">
+                  <div class="cover-kpi-val">18 / 4</div>
+                  <div class="cover-kpi-lbl">SQL Tables &amp; RBAC Staff Roles</div>
+                </div>
+                <div class="cover-kpi">
+                  <div class="cover-kpi-val">0.9228</div>
+                  <div class="cover-kpi-lbl">Mean Average Precision (MAP)</div>
+                </div>
+                <div class="cover-kpi teal">
+                  <div class="cover-kpi-val">222</div>
+                  <div class="cover-kpi-lbl">Automated Unit &amp; UI Tests</div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="cover-art">
-            <svg viewBox="0 0 380 260" width="100%" aria-label="News Portal Platform Illustration">
-              <rect x="15" y="15" width="350" height="42" rx="20" fill="#152033"/>
-              <circle cx="42" cy="36" r="7" fill="#C97F1E"/>
-              <circle cx="64" cy="36" r="7" fill="#B84A2B"/>
-              <circle cx="86" cy="36" r="7" fill="#2C6E49"/>
-              <rect x="35" y="75" width="140" height="95" rx="12" fill="#FBECE6" stroke="#B84A2B" stroke-width="2"/>
-              <circle cx="105" cy="115" r="24" fill="#C97F1E"/>
-              <path d="M50 160 Q105 125 160 160" fill="#145E65"/>
-              <rect x="195" y="78" width="150" height="16" rx="8" fill="#152033"/>
-              <rect x="195" y="104" width="130" height="11" rx="5" fill="#737E94"/>
-              <rect x="195" y="124" width="140" height="11" rx="5" fill="#737E94"/>
-              <rect x="195" y="146" width="100" height="24" rx="12" fill="#B84A2B"/>
-              <rect x="35" y="190" width="310" height="55" rx="14" fill="#F4EBD9" stroke="#DECDB0" stroke-width="1.5"/>
-              <circle cx="62" cy="217" r="12" fill="#145E65"/>
-              <rect x="85" y="211" width="180" height="12" rx="6" fill="#485368"/>
-              <rect x="278" y="208" width="52" height="18" rx="9" fill="#E3F2E9"/>
-            </svg>
           </div>
         </div>
         <div class="slide-foot">
           <span>News &amp; Digital Magazine Portal · Capstone Defense</span>
-          <span>Phase 1: Web Platform &amp; RBAC · Phase 2: Custom IR Engine</span>
+          <span class="slide-foot-num">01 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 2: EXECUTIVE SUMMARY -->
-      <section class="slide" data-slide="1" data-notes="This executive summary frames the two integrated halves of the project: Phase 1 constructs the multi-role publishing foundation, and Phase 2 implements a custom Information Retrieval search engine that completely eliminates SQL bottlenecks.">
-        <div class="slide-top">
-          <span class="kicker teal">01 · Project Overview</span>
-          <span class="slide-num">02 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 2: PROJECT OVERVIEW -->
+      <section class="slide" data-slide="1" data-notes="This overview frames the two integrated halves of the project: Phase 1 constructs the multi-role publishing foundation, and Phase 2 implements a custom Information Retrieval search engine that eliminates relational SQL bottlenecks.">
         <h2 class="heading">Project Overview: Dual-Phase Engineering Scope</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card" style="border-top: 5px solid var(--accent-terra);">
               <div class="stat-badge terra">Phase 1</div>
-              <h3 style="font-size: 26px; margin: 12px 0 10px;">Production Web Platform &amp; RBAC</h3>
-              <p style="color: var(--ink-secondary); margin-bottom: 14px;"><strong>Objective:</strong> Engineer a secure, high-concurrency digital magazine platform with multi-role staff governance and engaging reader interactions.</p>
+              <h3>Production Web Platform &amp; RBAC</h3>
+              <p style="margin-bottom: 14px;"><strong>Objective:</strong> Engineer a secure, high-concurrency digital magazine platform with multi-role staff governance and engaging reader interactions.</p>
               <ul>
                 <li><strong>Decoupled 3-Tier Architecture:</strong> Node.js 24 ESM, Express 5, React 19 SPA, and PostgreSQL 16 database.</li>
                 <li><strong>Relational Schema &amp; Storage:</strong> 11 sequential SQL migrations (001–011) and 18 normalized tables with connection pooling.</li>
@@ -753,8 +1015,8 @@
             </div>
             <div class="card" style="border-top: 5px solid var(--accent-teal);">
               <div class="stat-badge teal">Phase 2</div>
-              <h3 style="font-size: 26px; margin: 12px 0 10px;">Custom Information Retrieval Engine</h3>
-              <p style="color: var(--ink-secondary); margin-bottom: 14px;"><strong>Objective:</strong> Replace naive relational SQL searches with a custom-engineered in-memory Information Retrieval engine built from mathematical first principles.</p>
+              <h3>Custom Information Retrieval Engine</h3>
+              <p style="margin-bottom: 14px;"><strong>Objective:</strong> Replace naive relational SQL searches with a custom-engineered in-memory Information Retrieval engine built from first principles.</p>
               <ul>
                 <li><strong>Linguistic Text Pipeline:</strong> Unicode normalization, stopword removal, 5-phase Porter Stemmer, and 3-shingle Jaccard fingerprinting.</li>
                 <li><strong>Compressed Inverted Index:</strong> Fielded posting lists (Title, Tags, SEO, Summary, Content) compressed via Delta + Variable-Byte (75.0% RAM reduction).</li>
@@ -766,24 +1028,21 @@
           </div>
         </div>
         <div class="slide-foot">
-          <span>Project Overview</span>
-          <span>Clear Structural Boundary: Enterprise Web Platform (Phase 1) vs Custom IR Engine (Phase 2)</span>
+          <span>Project Overview · Dual-Phase Scope</span>
+          <span class="slide-foot-num">02 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 3: PRESENTATION ROADMAP (THE 3 CORE PILLARS) -->
-      <section class="slide" data-slide="2" data-notes="The roadmap outlines our three core presentation pillars: we first examine the full-stack web platform and RBAC architecture, then explore the algorithmic design of the custom IR search engine, and finally inspect the empirical benchmark results and system hardening.">
-        <div class="slide-top">
-          <span class="kicker amber">02 · Presentation Roadmap</span>
-          <span class="slide-num">03 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 3: PRESENTATION ROADMAP -->
+      <section class="slide" data-slide="2" data-notes="The roadmap outlines our three core presentation pillars: the full-stack web platform and RBAC architecture, the algorithmic design of the custom IR search engine, and empirical benchmarking plus production hardening.">
         <h2 class="heading">Presentation Roadmap: Three Core Architectural Pillars</h2>
         <div class="content">
           <div class="cols-3">
             <div class="card" style="border-left: 5px solid var(--accent-terra);">
               <div class="stat-badge terra">Pillar 1</div>
-              <h3 style="font-size: 24px; margin-bottom: 14px;">Enterprise Web Platform &amp; Governance</h3>
-              <p style="color: var(--ink-secondary); margin-bottom: 16px;">The full-stack publishing and management foundation supporting portal operations:</p>
+              <h3>Enterprise Web Platform &amp; Governance</h3>
+              <p style="margin-bottom: 14px;">The full-stack publishing and management foundation supporting portal operations:</p>
               <ul>
                 <li><strong>3-Tier Architecture:</strong> Node.js 24 ESM, Express 5, React 19, and PostgreSQL 16 relational store.</li>
                 <li><strong>Role-Based Access Control:</strong> 4 distinct staff roles with dedicated admin portals.</li>
@@ -793,10 +1052,10 @@
             </div>
             <div class="card" style="border-left: 5px solid var(--accent-teal);">
               <div class="stat-badge teal">Pillar 2</div>
-              <h3 style="font-size: 24px; margin-bottom: 14px;">Custom Information Retrieval Engine</h3>
-              <p style="color: var(--ink-secondary); margin-bottom: 16px;">Algorithmic search engine eliminating relational search bottlenecks:</p>
+              <h3>Custom Information Retrieval Engine</h3>
+              <p style="margin-bottom: 14px;">Algorithmic search engine eliminating relational search bottlenecks:</p>
               <ul>
-                <li><strong>Linguistic Text Processing:</strong> Normalization, Porter Stemmer, and Shingling.</li>
+                <li><strong>Linguistic Text Processing:</strong> Normalization, Porter Stemmer, and 3-shingle deduplication.</li>
                 <li><strong>Compressed Inverted Index:</strong> Multi-field storage with Delta + V-Byte (75% RAM savings).</li>
                 <li><strong>Query Acceleration:</strong> Skip pointers with stride $L = \lfloor\sqrt{P}\rfloor$ for fast AND intersections.</li>
                 <li><strong>Production Ranking:</strong> Fielded Okapi BM25F, Query Likelihood Dirichlet LM, and RM3 PRF.</li>
@@ -804,95 +1063,87 @@
             </div>
             <div class="card" style="border-left: 5px solid var(--accent-sage);">
               <div class="stat-badge sage">Pillar 3</div>
-              <h3 style="font-size: 24px; margin-bottom: 14px;">Empirical Benchmarking &amp; Validation</h3>
-              <p style="color: var(--ink-secondary); margin-bottom: 16px;">Rigorous statistical validation demonstrating search engine performance:</p>
+              <h3>Empirical Benchmarking &amp; Validation</h3>
+              <p style="margin-bottom: 14px;">Rigorous statistical validation demonstrating search engine performance:</p>
               <ul>
                 <li><strong>16-Query Benchmark Matrix:</strong> Evaluating Precision@5, Recall@10, MAP, MRR, and NDCG@10.</li>
                 <li><strong>Scientific Significance:</strong> Paired Sign Test ($p < 0.001$) and Kendall's $\tau$ rank correlation.</li>
-                <li><strong>Component Ablations:</strong> Quantifying the contribution of weights, stemmer, and V-Byte.</li>
-                <li><strong>Search Telemetry:</strong> Production click logs (`search_click_log`) and IEEE references.</li>
+                <li><strong>Component Ablations:</strong> Quantifying the contribution of field weights, stemmer, and V-Byte.</li>
+                <li><strong>Search Telemetry:</strong> Production click logs (<code>search_click_log</code>) and automated QA.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Presentation Roadmap</span>
-          <span>High-Level Project Architecture &middot; Three Thematic Defense Pillars</span>
+          <span>Presentation Roadmap · Three Thematic Defense Pillars</span>
+          <span class="slide-foot-num">03 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 4: PHASE 1 ARCHITECTURE -->
-      <section class="slide" data-slide="3" data-notes="Phase 1 implements a production 3-tier decoupled architecture: a modern React 19 single-page application communicating with an Express 5 REST API using strict JSON and RFC 9457 error contracts, backed by PostgreSQL 16.">
-        <div class="slide-top">
-          <span class="kicker terra">03 · Web Platform</span>
-          <span class="slide-num">04 / 20</span>
-        </div>
+      <section class="slide" data-slide="3" data-notes="Phase 1 implements a production 3-tier decoupled architecture: a modern React 19 SPA communicating with an Express 5 REST API via strict JSON and RFC 9457 error contracts, backed by PostgreSQL 16.">
         <h2 class="heading">Phase 1: System Topology &amp; Tier Decoupling</h2>
         <div class="content">
-          <div class="card paper" style="margin-bottom: 24px; padding: 22px;">
-            <svg viewBox="0 0 960 170" width="100%" aria-label="System Architecture Diagram">
-              <defs>
-                <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#B84A2B"/>
-                </marker>
-                <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#145E65"/>
-                </marker>
-              </defs>
-              <rect x="16" y="22" width="250" height="126" rx="16" fill="#FFFFFF" stroke="#145E65" stroke-width="2.5"/>
-              <text x="141" y="56" text-anchor="middle" font-family="Newsreader,serif" font-weight="700" font-size="20" fill="#152033">Frontend Client (SPA)</text>
-              <text x="141" y="82" text-anchor="middle" font-size="14.5" fill="#485368">React 19 &middot; React Router 7 &middot; Vite</text>
-              <text x="141" y="104" text-anchor="middle" font-size="14.5" fill="#485368">Glassmorphism UI &middot; WCAG 2.2 AA</text>
-              <text x="141" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="#145E65">Port 5173 (Dev Proxy)</text>
-              
-              <line x1="266" y1="85" x2="350" y2="85" stroke="#B84A2B" stroke-width="2.5" marker-end="url(#arr)"/>
-              <text x="308" y="72" text-anchor="middle" font-size="12.5" font-family="JetBrains Mono,monospace" fill="#B84A2B">/api/*</text>
-              <text x="308" y="102" text-anchor="middle" font-size="11.5" fill="#737E94">JSON / RFC 9457</text>
+          <div class="arch-flow" style="margin-bottom: 26px;">
+            <div class="arch-node">
+              <div class="arch-node-title">Frontend Client (SPA)</div>
+              <div class="arch-node-sub">React 19 &middot; React Router 7 &middot; Vite</div>
+              <div class="arch-node-sub">Editorial UI &middot; WCAG 2.2 AA</div>
+              <div class="arch-node-port">Port 5173 (Dev Proxy)</div>
+            </div>
 
-              <rect x="354" y="22" width="250" height="126" rx="16" fill="#FFFFFF" stroke="#B84A2B" stroke-width="2.5"/>
-              <text x="479" y="56" text-anchor="middle" font-family="Newsreader,serif" font-weight="700" font-size="20" fill="#152033">Application Server</text>
-              <text x="479" y="82" text-anchor="middle" font-size="14.5" fill="#485368">Node.js 24 ESM &middot; Express 5</text>
-              <text x="479" y="104" text-anchor="middle" font-size="14.5" fill="#485368">RBAC Guards &middot; Custom IR Engine</text>
-              <text x="479" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="#B84A2B">Port 4000 (REST API)</text>
+            <div class="arch-conn">
+              <span class="arch-conn-top">/api/*</span>
+              <div class="arch-arrow-line"></div>
+              <span class="arch-conn-bot">JSON &middot; RFC 9457</span>
+            </div>
 
-              <line x1="604" y1="85" x2="688" y2="85" stroke="#145E65" stroke-width="2.5" marker-end="url(#arr-teal)"/>
-              <text x="646" y="72" text-anchor="middle" font-size="12.5" font-family="JetBrains Mono,monospace" fill="#145E65">SQL / pg</text>
-              <text x="646" y="102" text-anchor="middle" font-size="11.5" fill="#737E94">Connection Pool</text>
+            <div class="arch-node terra">
+              <div class="arch-node-title">Application Server</div>
+              <div class="arch-node-sub">Node.js 24 ESM &middot; Express 5</div>
+              <div class="arch-node-sub">RBAC Guards &middot; Custom IR Engine</div>
+              <div class="arch-node-port">Port 4000 (REST API)</div>
+            </div>
 
-              <rect x="692" y="22" width="252" height="126" rx="16" fill="#FFFFFF" stroke="#145E65" stroke-width="2.5"/>
-              <text x="818" y="56" text-anchor="middle" font-family="Newsreader,serif" font-weight="700" font-size="20" fill="#152033">Data Tier</text>
-              <text x="818" y="82" text-anchor="middle" font-size="14.5" fill="#485368">PostgreSQL 16 (18 Tables)</text>
-              <text x="818" y="104" text-anchor="middle" font-size="14.5" fill="#485368">Embedded PGlite Auto-Fallback</text>
-              <text x="818" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="#145E65">11 Plain SQL Migrations</text>
-            </svg>
+            <div class="arch-conn teal">
+              <span class="arch-conn-top">SQL / pg</span>
+              <div class="arch-arrow-line"></div>
+              <span class="arch-conn-bot">Connection Pool</span>
+            </div>
+
+            <div class="arch-node">
+              <div class="arch-node-title">Relational Data Tier</div>
+              <div class="arch-node-sub">PostgreSQL 16 (18 Tables)</div>
+              <div class="arch-node-sub">Embedded PGlite Auto-Fallback</div>
+              <div class="arch-node-port">11 SQL Migrations</div>
+            </div>
           </div>
-          <div class="cols-3">
+
+          <div class="cols-3" style="height: auto;">
             <div class="card">
               <h4>Modern ESM &amp; Express 5</h4>
-              <p>Native ECMAScript modules with native top-level await, strict Zod request schema validation, and helmet HTTP security headers.</p>
+              <p>Native ECMAScript modules with top-level await, strict Zod request schema validation, and Helmet HTTP security headers.</p>
             </div>
             <div class="card">
               <h4>Dual-Engine Database Layer</h4>
-              <p>Primary connection to PostgreSQL 16 via pooled <code>pg</code> client with automatic seamless fallback to local embedded <code>PGlite</code> when offline.</p>
+              <p>Primary connection to PostgreSQL 16 via pooled <code>pg</code> client with automatic seamless fallback to local embedded <code>PGlite</code>.</p>
             </div>
             <div class="card">
-              <h4>Standardized Error Protocols</h4>
-              <p>Strict RFC 9457 <code>application/problem+json</code> error responses that prevent stack trace leakage and mask internal system exceptions.</p>
+              <h4>Standardized Error Contracts</h4>
+              <p>Strict RFC 9457 <code>application/problem+json</code> error responses that prevent stack trace leakage and mask internal exceptions.</p>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Phase 1 Architecture</span>
-          <span>React 19 &middot; Express 5 &middot; PostgreSQL 16 &middot; RFC 9457 Contracts</span>
+          <span>Phase 1 Architecture · React 19 · Express 5 · PostgreSQL 16</span>
+          <span class="slide-foot-num">04 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 5: DATABASE SCHEMA & SECURITY -->
       <section class="slide" data-slide="4" data-notes="The database schema is organized across 18 normalized tables created through 11 versioned migrations. Security follows ADR-002 with Argon2id password hashing and secure refresh token rotation.">
-        <div class="slide-top">
-          <span class="kicker terra">04 · Database &amp; Security</span>
-          <span class="slide-num">05 / 20</span>
-        </div>
         <h2 class="heading">Phase 1: Relational Schema &amp; Defense-in-Depth Security</h2>
         <div class="content">
           <div class="cols-2">
@@ -910,33 +1161,30 @@
             </div>
             <div class="card">
               <div class="stat-badge teal">Security Architecture</div>
-              <h3>Defense-in-Depth Token Lifecycle (ADR-002)</h3>
+              <h3>Defense-in-Depth Token Lifecycle</h3>
               <p>Hardened authentication eliminating session hijacking and credential theft:</p>
               <ul>
-                <li><strong>Argon2id Hashing:</strong> State-of-the-art password hashing protecting against GPU and ASIC attacks.</li>
+                <li><strong>Argon2id Hashing:</strong> Memory-hard password hashing protecting against GPU and ASIC brute-force attacks.</li>
                 <li><strong>Ephemeral Access Tokens:</strong> 15-minute signed JWTs stored exclusively in client memory (no localStorage XSS risk).</li>
                 <li><strong>Refresh Token Rotation:</strong> 30-day HttpOnly, SameSite cookies with cryptographic token family lineage.</li>
-                <li><strong>Family Revocation:</strong> Immediate invalidation of all sessions if an old, rotated refresh token is replayed.</li>
-                <li><strong>Audit Trails:</strong> Centralized logging of all administrative and authentication events.</li>
+                <li><strong>Family Revocation:</strong> Immediate invalidation of all sessions if a previously rotated refresh token is replayed.</li>
+                <li><strong>Audit Trails:</strong> Centralized logging of all administrative and authentication state changes.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Database &amp; Security</span>
-          <span>11 SQL Migrations &middot; 18 Tables &middot; Argon2id &middot; Token Family Rotation</span>
+          <span>Database &amp; Security · 11 Migrations · 18 Tables · Argon2id · Token Rotation</span>
+          <span class="slide-foot-num">05 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 6: ENTERPRISE RBAC MATRIX -->
       <section class="slide" data-slide="5" data-notes="We implement four distinct administrative staff roles. Permissions are enforced at the database and API middleware levels, ensuring rigorous role separation and auditability.">
-        <div class="slide-top">
-          <span class="kicker amber">05 · Enterprise RBAC</span>
-          <span class="slide-num">06 / 20</span>
-        </div>
         <h2 class="heading">Phase 1: Role-Based Access Control (4 Staff Roles Matrix)</h2>
         <div class="content">
-          <table class="matrix" style="margin-bottom: 20px;">
+          <table class="matrix" style="margin-bottom: 22px;">
             <thead>
               <tr>
                 <th>Functional Domain</th>
@@ -984,29 +1232,26 @@
               </tr>
             </tbody>
           </table>
-          <div class="cols-2">
+          <div class="cols-2" style="height: auto;">
             <div class="card paper" style="padding: 18px 24px;">
               <h4>Server-Side RBAC Middleware (<code>requireRole</code>)</h4>
-              <p style="font-size: 16px; margin: 0;">Roles are fetched live from the database on each request, guaranteeing that role revocations or modifications take effect immediately without waiting for token expiration.</p>
+              <p>Roles are fetched live from PostgreSQL on each request, ensuring immediate role revocation without waiting for JWT expiration.</p>
             </div>
             <div class="card paper" style="padding: 18px 24px;">
               <h4>Client-Side Route Guards (<code>&lt;RequireRole&gt;</code>)</h4>
-              <p style="font-size: 16px; margin: 0;">React 19 routes verify the active user profile, redirecting unauthorized users while exposing role-specific navigation pills and administrative dashboards.</p>
+              <p>React Router guards validate the authenticated profile and render tailored workspaces per staff role.</p>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Enterprise RBAC</span>
-          <span>4 Staff Roles &middot; Live DB-Backed Verification &middot; Granular Administrative Workspaces</span>
+          <span>Enterprise RBAC · 4 Staff Roles · Live DB-Backed Verification</span>
+          <span class="slide-foot-num">06 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 7: CLIENT EXPERIENCE & ENGAGEMENT -->
-      <section class="slide" data-slide="6" data-notes="The reader portal combines an elegant editorial reading experience with interactive community features: idempotent 1 to 5 star ratings, article likes, threaded comments with anti-duplicate protection, and community user tagging.">
-        <div class="slide-top">
-          <span class="kicker terra">06 · Client Experience</span>
-          <span class="slide-num">07 / 20</span>
-        </div>
+      <section class="slide" data-slide="6" data-notes="The reader portal combines an editorial reading experience with interactive community features: idempotent 1 to 5 star ratings, article likes, threaded comments, and community user tagging.">
         <h2 class="heading">Phase 1: Public Reader Experience &amp; Community Engagement</h2>
         <div class="content">
           <div class="cols-3">
@@ -1014,18 +1259,18 @@
               <div class="stat-badge terra">Editorial Reading</div>
               <h3>Modern Magazine UI</h3>
               <ul>
-                <li><strong>Hero &amp; Grid Layout:</strong> Dynamic featured article with paginated category feeds and responsive glassmorphism navigation.</li>
-                <li><strong>Rich Article Metadata:</strong> Author byline, publication timestamp, view counters, read time, and category tags.</li>
-                <li><strong>SEO-Injected Meta:</strong> Canonical URLs, OpenGraph previews, and Twitter Card tags.</li>
+                <li><strong>Hero &amp; Grid Layout:</strong> Dynamic featured article with paginated category feeds and clean navigation.</li>
+                <li><strong>Rich Article Metadata:</strong> Author byline, publication timestamp, buffered view counters, read time, and category badges.</li>
+                <li><strong>SEO-Injected Meta:</strong> Server-injected canonical URLs, OpenGraph previews, and Twitter Card tags.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Community Signals</div>
               <h3>Ratings, Likes &amp; Tags</h3>
               <ul>
-                <li><strong>1–5 Star Rating:</strong> Idempotent upsert with real-time average score recalculation.</li>
-                <li><strong>Article Likes:</strong> Instant toggle with global count tracking in <code>article_likes</code>.</li>
-                <li><strong>Community User Tagging:</strong> Verified readers can attach custom discovery tags to articles and manage their tags.</li>
+                <li><strong>1–5 Star Rating:</strong> Idempotent upsert with real-time average score recalculation across readers.</li>
+                <li><strong>Article Likes:</strong> Instant toggle with deduplicated global count tracking in <code>article_likes</code>.</li>
+                <li><strong>Community User Tagging:</strong> Verified readers attach custom discovery tags to articles and filter feeds by tag.</li>
               </ul>
             </div>
             <div class="card">
@@ -1033,31 +1278,28 @@
               <h3>Comments &amp; Reporting</h3>
               <ul>
                 <li><strong>Threaded Discussions:</strong> Paginated comments with automated duplicate submission protection.</li>
-                <li><strong>Violation Reporting:</strong> Readers can flag abusive content directly to the moderation queue.</li>
-                <li><strong>Anti-Abuse Guards:</strong> Rate limiting and strict sanitization ensuring zero XSS vulnerabilities.</li>
+                <li><strong>Violation Reporting:</strong> Readers can flag abusive articles or comments directly to the moderation queue.</li>
+                <li><strong>Anti-Abuse Guards:</strong> Per-user rate limiting and strict HTML sanitization ensuring zero XSS vectors.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Client Experience</span>
-          <span>Editorial Reader UI &middot; Star Ratings &middot; Likes &middot; User Tags &middot; Moderation Queue</span>
+          <span>Client Experience · Reader Portal · Ratings · Likes · User Tags</span>
+          <span class="slide-foot-num">07 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 8: WHY SQL LIKE FAILS (IR MOTIVATION) -->
-      <section class="slide" data-slide="7" data-notes="Phase 2 is motivated by the inherent failure of relational database search on unstructured news text: SQL LIKE cannot handle word morphology, causes O(N) full-table scans, and is completely blind to document relevance.">
-        <div class="slide-top">
-          <span class="kicker teal">07 · Search Engine Motivation</span>
-          <span class="slide-num">08 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 8: WHY SQL LIKE FAILS -->
+      <section class="slide" data-slide="7" data-notes="Phase 2 is motivated by the inherent failure of relational database search on unstructured news text: SQL LIKE cannot handle word morphology, causes O(N) full-table scans, and ignores relevance.">
         <h2 class="heading">Phase 2 Transition: Why Relational Search Fails for News</h2>
         <div class="content">
           <table class="matrix" style="margin-bottom: 22px;">
             <thead>
               <tr>
-                <th style="width: 25%;">Search Dimension</th>
-                <th style="width: 37%;">Relational DB (SQL <code>LIKE</code> / Regex)</th>
+                <th style="width: 24%;">Search Dimension</th>
+                <th style="width: 38%;">Relational DB (SQL <code>LIKE</code> / Regex)</th>
                 <th style="width: 38%;">Custom Information Retrieval Engine</th>
               </tr>
             </thead>
@@ -1065,41 +1307,38 @@
               <tr>
                 <td><strong>Morphological Variations</strong></td>
                 <td><span class="badge no">Strict Substring Mismatch</span><br><small>Query <code>invest</code> fails to match <code>investing</code> or <code>investor</code>.</small></td>
-                <td><span class="badge ok">Porter Stemmer Normalization</span><br><small>Stems all variants to common root <code>invest</code>.</small></td>
+                <td><span class="badge ok">Porter Stemmer Normalization</span><br><small>Stems all variants to the shared root <code>invest</code>.</small></td>
               </tr>
               <tr>
                 <td><strong>Computational Complexity</strong></td>
-                <td><span class="badge no">$O(N)$ Full Table Scan</span><br><small>Disk I/O saturates as document collection grows.</small></td>
-                <td><span class="badge ok">$O(|Q| \cdot \text{postings})$ Lookup</span><br><small>Instant hash-map term lookup in compressed RAM index.</small></td>
+                <td><span class="badge no">$O(N)$ Full Table Scan</span><br><small>Sequential disk I/O saturates as article volume scales.</small></td>
+                <td><span class="badge ok">$O(|Q| \cdot \text{postings})$ Lookup</span><br><small>Instant hash-map lookup inside compressed RAM index.</small></td>
               </tr>
               <tr>
                 <td><strong>Relevance &amp; Ranking</strong></td>
-                <td><span class="badge no">Binary Match Only (TRUE / FALSE)</span><br><small>No scoring; cannot differentiate headline hits from body mentions.</small></td>
-                <td><span class="badge ok">Probabilistic Scoring (BM25F / Dirichlet)</span><br><small>Field weights, TF saturation, and document length normalization.</small></td>
+                <td><span class="badge no">Binary Match Only (TRUE / FALSE)</span><br><small>Cannot distinguish headline matches from incidental body mentions.</small></td>
+                <td><span class="badge ok">Probabilistic Scoring (BM25F / Dirichlet)</span><br><small>Field weights, TF saturation, and length normalization.</small></td>
               </tr>
               <tr>
                 <td><strong>Conjunctive Intersections</strong></td>
-                <td><span class="badge warn">High SQL JOIN / Scan Overhead</span></td>
-                <td><span class="badge ok">Skip Pointers Acceleration</span><br><small>Stride $L = \lfloor\sqrt{P}\rfloor$ skips non-matching postings.</small></td>
+                <td><span class="badge warn">High SQL JOIN / Scan Overhead</span><br><small>Evaluating multi-word AND/NOT filters requires repeated scans.</small></td>
+                <td><span class="badge ok">Skip Pointers Acceleration</span><br><small>Stride $L = \lfloor\sqrt{P}\rfloor$ bypasses non-matching postings.</small></td>
               </tr>
             </tbody>
           </table>
-          <div class="card paper" style="padding: 16px 24px;">
-            <p style="margin: 0; font-size: 17px; color: var(--ink);"><strong>Core Takeaway:</strong> To deliver sub-millisecond search and high precision across 104 Wikinews articles, we engineered a dedicated in-memory Information Retrieval engine implementing inverted indexing, compression, and probabilistic ranking.</p>
+          <div class="card paper" style="padding: 18px 26px;">
+            <p><strong>Engineering Conclusion:</strong> To deliver sub-millisecond latency and high ranking precision across our Wikinews corpus, we built a dedicated in-memory Information Retrieval engine directly inside the Node.js application tier.</p>
           </div>
         </div>
         <div class="slide-foot">
-          <span>IR Motivation</span>
-          <span>Relational Bottlenecks: Morphological Mismatch &middot; O(N) Table Scans &middot; Relevance Blindness</span>
+          <span>IR Motivation · Eliminating $O(N)$ Table Scans &amp; Relevance Blindness</span>
+          <span class="slide-foot-num">08 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 9: LINGUISTIC TEXT PIPELINE -->
-      <section class="slide" data-slide="8" data-notes="The text pipeline transforms raw article HTML into normalized, stemmed index tokens: removing boilerplate, stripping stopwords, executing the 5-phase Porter stemmer, and calculating 3-shingle fingerprints for near-duplicate detection.">
-        <div class="slide-top">
-          <span class="kicker teal">08 · Text Processing</span>
-          <span class="slide-num">09 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 9: TEXT PROCESSING PIPELINE -->
+      <section class="slide" data-slide="8" data-notes="The text pipeline transforms raw article HTML into normalized, stemmed index tokens: removing boilerplate, stripping stopwords, executing the 5-phase Porter stemmer, and computing 3-shingle fingerprints.">
         <h2 class="heading">Phase 2: Text Processing Pipeline &amp; Porter Stemming</h2>
         <div class="content">
           <div class="cols-3">
@@ -1108,170 +1347,162 @@
               <h3>HTML &amp; Tokenization</h3>
               <ul>
                 <li><strong>Markup Sanitization:</strong> Strips HTML tags, decodes XML entities, and removes script boilerplate.</li>
-                <li><strong>Unicode &amp; Diacritics:</strong> NFKD normalization flattening diacritics and accented characters.</li>
-                <li><strong>Token Boundary Regex:</strong> Splits text on non-alphanumeric boundaries while preserving compound terms.</li>
-                <li><strong>Case Folding:</strong> Converts all tokens to lowercase representation.</li>
+                <li><strong>Unicode &amp; Diacritics:</strong> NFKD normalization flattening accents and non-ASCII glyphs.</li>
+                <li><strong>Token Boundary Regex:</strong> Splits on non-alphanumeric boundaries while keeping meaningful tokens.</li>
+                <li><strong>Case &amp; Stopwords:</strong> Lowercases terms and removes high-frequency noise words.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Stage 2: Stemming</div>
               <h3>5-Phase Porter Stemmer</h3>
               <ul>
-                <li><strong>Suffix Stripping:</strong> Algorithmic morphological reduction matching English grammar rules.</li>
-                <li><strong>Step 1:</strong> Plurals and verb participles (<code>caresses</code> &rarr; <code>caress</code>, <code>ponies</code> &rarr; <code>poni</code>).</li>
+                <li><strong>Suffix Stripping:</strong> Algorithmic morphological conflation matching English inflection rules.</li>
+                <li><strong>Step 1:</strong> Plurals and participles (<code>caresses</code> &rarr; <code>caress</code>, <code>ponies</code> &rarr; <code>poni</code>).</li>
                 <li><strong>Steps 2–4:</strong> Derivational suffixes (<code>relational</code> &rarr; <code>relat</code>, <code>elections</code> &rarr; <code>elect</code>).</li>
-                <li><strong>Step 5:</strong> Clean-up and double consonant elimination (<code>fished</code> &rarr; <code>fish</code>).</li>
+                <li><strong>Step 5:</strong> Final vowel-consonant cleanup (<code>fished</code> &rarr; <code>fish</code>).</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge sage">Stage 3: Fingerprinting</div>
-              <h3>3-Shingle Jaccard Detection</h3>
+              <h3>3-Shingle Jaccard Filter</h3>
               <ul>
-                <li><strong>Syndicated News Clones:</strong> News agencies often republish identical wire articles with slight headline edits.</li>
-                <li><strong>3-Word Shingles:</strong> Computes sliding 3-gram sets across document text: $S(D) = \{w_i, w_{i+1}, w_{i+2}\}$.</li>
+                <li><strong>Syndicated News Clones:</strong> Wire agencies republish near-identical articles with minor headline tweaks.</li>
+                <li><strong>3-Word Shingles:</strong> Extracts sliding 3-gram windows: $S(D) = \{w_i, w_{i+1}, w_{i+2}\}$.</li>
                 <li><strong>Jaccard Similarity:</strong> $J(S_1, S_2) = \frac{|S_1 \cap S_2|}{|S_1 \cup S_2|}$.</li>
-                <li><strong>Near-Duplicate Filter:</strong> Flags articles with $J > 0.50$ to avoid redundant search results.</li>
+                <li><strong>Duplicate Flagging:</strong> Flags pairs with $J > 0.50$ to preserve search diversity.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Text Processing Pipeline</span>
-          <span>Sanitization &middot; Tokenization &middot; Porter Stemmer &middot; 3-Shingle Jaccard Fingerprinting</span>
+          <span>Text Processing Pipeline · Sanitization · Porter Stemmer · 3-Shingle Jaccard</span>
+          <span class="slide-foot-num">09 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 10: CORPUS DYNAMICS (ZIPF & HEAPS) -->
-      <section class="slide" data-slide="9" data-notes="We analyze corpus linguistics on the 104 Wikinews documents: Zipf's law demonstrates the inverse relationship between term rank and frequency, while Heaps' law models sublinear vocabulary growth with k=8.299 and beta=0.627.">
-        <div class="slide-top">
-          <span class="kicker amber">09 · Corpus Linguistics</span>
-          <span class="slide-num">10 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 10: CORPUS DYNAMICS -->
+      <section class="slide" data-slide="9" data-notes="We validate corpus linguistics directly on our 104 Wikinews articles: Zipf's law confirms inverse rank-frequency scaling, and Heaps' law models sublinear vocabulary growth with under 0.6% prediction error.">
         <h2 class="heading">Phase 2: Corpus Dynamics &mdash; Zipf's Law &amp; Heaps' Law Growth</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card">
               <div class="stat-badge amber">Zipf's Law of Word Frequency</div>
               <h3>Inverse Rank-Frequency Scaling</h3>
-              <p>$$\text{Frequency}(r) \propto \frac{C}{r^s} \implies r \cdot f \approx \text{Constant}$$</p>
+              <div class="math-box">
+                $$\text{Frequency}(r) \propto \frac{C}{r^s} \implies r \cdot f \approx \text{Constant}$$
+              </div>
               <ul>
-                <li><strong>Empirical Corpus Fitting:</strong> Evaluated over 37,443 tokens across 104 Wikinews articles.</li>
+                <li><strong>Empirical Corpus Fitting:</strong> Measured over $37,443$ tokens across $104$ Wikinews articles.</li>
                 <li><strong>Top Frequency Term:</strong> Root <code>state</code> at rank $r=1$ with $f=257$ ($r \cdot f = 257$).</li>
-                <li><strong>Heavy-Tail Distribution:</strong> Over 48% of unique terms are hapax legomena (appear exactly once).</li>
-                <li><strong>IR Implication:</strong> High-frequency words contribute minimal discrimination; low-frequency words carry immense informational value.</li>
+                <li><strong>Heavy-Tail Distribution:</strong> Over $48\%$ of unique stems are <em>hapax legomena</em> (appear only once).</li>
+                <li><strong>IR Implication:</strong> Justifies stopword removal and Inverse Document Frequency (IDF) term weighting.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Heaps' Law of Vocabulary Growth</div>
               <h3>Sublinear Vocabulary Scaling</h3>
-              <p>$$V = k \cdot N^\beta$$</p>
+              <div class="math-box">
+                $$V = k \cdot N^\beta$$
+              </div>
               <ul>
-                <li><strong>Corpus Parameters:</strong> Total tokens $N = 37,443$, Unique vocabulary $V_{\text{actual}} = 5,950$ stems.</li>
-                <li><strong>Empirical Log-Linear Fit:</strong> Fitted parameters $k = 8.299$, $\beta = 0.627$.</li>
+                <li><strong>Observed Totals:</strong> Collection length $N = 37,443$ tokens, vocabulary $V_{\text{actual}} = 5,950$ stems.</li>
+                <li><strong>Log-Linear Regression Fit:</strong> Calibrated parameters $k = 8.299$ and $\beta = 0.627$.</li>
                 <li><strong>Predicted Vocabulary:</strong> $V_{\text{pred}} = 8.299 \times (37,443)^{0.627} \approx 5,984$ stems.</li>
-                <li><strong>High Accuracy:</strong> Error is under 0.6% ($R^2 > 0.99$), proving the index vocabulary grows sublinearly with corpus size.</li>
+                <li><strong>High Predictive Fidelity:</strong> Prediction error is under $0.6\%$, confirming sublinear index dictionary growth.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Corpus Linguistics</span>
-          <span>104 Articles &middot; 37,443 Tokens &middot; Zipf r&middot;f=257 &middot; Heaps' Law k=8.299, &beta;=0.627</span>
+          <span>Corpus Linguistics · 104 Articles · Zipf $r \cdot f = 257$ · Heaps $k=8.299, \beta=0.627$</span>
+          <span class="slide-foot-num">10 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 11: MULTI-FIELD INVERTED INDEX -->
-      <section class="slide" data-slide="10" data-notes="The core data structure is an in-memory multi-field inverted index. Each posting record stores the document ID, total term frequency, field-level term frequencies across five distinct article fields, and exact word positions.">
-        <div class="slide-top">
-          <span class="kicker teal">10 · Index Architecture</span>
-          <span class="slide-num">11 / 20</span>
-        </div>
+      <section class="slide" data-slide="10" data-notes="The core data structure is an in-memory multi-field inverted index. Each posting stores document ID, total TF, field-level TFs across five fields, and exact word positions.">
         <h2 class="heading">Phase 2: Multi-Field Inverted Index &amp; Positional Storage</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card">
               <div class="stat-badge terra">Data Structure Design</div>
               <h3>Field-Aware Positional Postings</h3>
-              <p>Maps each stemmed term to an ordered array of rich posting records:</p>
-              <pre style="background: var(--paper); padding: 16px; border-radius: 10px; font-family: var(--mono); font-size: 14px; line-height: 1.5; color: var(--ink);">
-term "elect" &rarr; [
+              <p style="margin-bottom: 12px;">Maps each stemmed term to an ordered posting array:</p>
+              <pre class="code-block">term "elect" &rarr; [
   {
     docId: 14,
     tf: 5,
     fieldTf: {
-      title: 1,        // Field Weight: 3.0
-      tags: 1,         // Field Weight: 2.2
-      seoKeywords: 1,  // Field Weight: 2.0
-      summary: 1,      // Field Weight: 1.5
-      content: 1       // Field Weight: 1.0
+      title: 1,        // Weight: 3.0
+      tags: 1,         // Weight: 2.2
+      seoKeywords: 1,  // Weight: 2.0
+      summary: 1,      // Weight: 1.5
+      content: 1       // Weight: 1.0
     },
     positions: [2, 18, 45, 92, 130]
-  },
-  ...
+  }, ...
 ]</pre>
             </div>
             <div class="card">
               <div class="stat-badge teal">Engineering Benefits</div>
               <h3>Architectural Advantages</h3>
               <ul>
-                <li><strong>Field Dominance Scoring:</strong> Captures whether a query term appears in the headline vs the body text without re-reading documents.</li>
-                <li><strong>Positional Storage:</strong> Enables exact phrase verification (<code>"Green Party"</code>) and word proximity window scoring.</li>
-                <li><strong>Zero-Allocation Lookups:</strong> Maintained in Node.js V8 heap memory as contiguous typed records for sub-millisecond retrieval.</li>
-                <li><strong>Dynamic Updatability:</strong> Fully synchronized with PostgreSQL; new published articles are automatically indexed in RAM.</li>
+                <li><strong>Field Dominance Scoring:</strong> Captures whether a term appears in the headline or tags versus body prose without re-scanning raw text.</li>
+                <li><strong>Positional Storage:</strong> Enables exact phrase verification (<code>"Green Party"</code>) via contiguous offset checks ($\text{pos}_2 - \text{pos}_1 = 1$).</li>
+                <li><strong>Zero-I/O Lookups:</strong> Held in Node.js V8 memory for sub-millisecond retrieval and real-time score explainability.</li>
+                <li><strong>Live DB Synchronization:</strong> Automatically refreshes when editors publish or update articles in PostgreSQL.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Index Architecture</span>
-          <span>Multi-Field Postings &middot; Positional Offsets &middot; Field Weights &middot; In-Memory Architecture</span>
+          <span>Index Architecture · Multi-Field Postings · Positional Offsets</span>
+          <span class="slide-foot-num">11 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 12: INDEX OPTIMIZATION (V-BYTE & SKIP POINTERS) -->
-      <section class="slide" data-slide="11" data-notes="We optimize index storage and query execution: Delta Variable-Byte compression reduces memory consumption by 75%, while Skip Pointers with stride L=sqrt(P) accelerate conjunctive Boolean AND merges to sub-linear time.">
-        <div class="slide-top">
-          <span class="kicker sage">11 · Index Optimization</span>
-          <span class="slide-num">12 / 20</span>
-        </div>
-        <h2 class="heading">Phase 2: Storage Compression (V-Byte) &amp; Query Acceleration</h2>
+
+
+      <!-- SLIDE 12: INDEX OPTIMIZATION -->
+      <section class="slide" data-slide="11" data-notes="We optimize index storage and query execution: Delta Variable-Byte compression reduces memory footprint by 75%, while Skip Pointers with stride L=sqrt(P) accelerate conjunctive Boolean AND merges.">
+        <h2 class="heading">Phase 2: Storage Compression (V-Byte) &amp; Skip Pointers</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card">
               <div class="stat-badge teal">Delta + Variable-Byte Compression</div>
               <h3>75.0% RAM Reduction (4.0:1 Ratio)</h3>
               <ul>
-                <li><strong>Delta Gaps ($d$-gaps):</strong> Rather than storing large raw IDs $\{104, 108, 115\}$, we store differences: $\{104, 4, 7\}$.</li>
-                <li><strong>Variable-Byte Encoding:</strong> Small integers ($\le 127$) fit into a single byte; bit 7 serves as the continuation indicator.</li>
-                <li><strong>Raw Storage:</strong> 21,316 postings $\times$ 4 bytes (Int32) $= 85,264$ bytes.</li>
-                <li><strong>Compressed Storage:</strong> **21,316 bytes** (exactly 1.00 byte per posting average).</li>
-                <li><strong>Impact:</strong> Massive cache locality improvement and 4x memory savings.</li>
+                <li><strong>Delta Gaps ($d$-gaps):</strong> Stores incremental document gaps $\{104, 4, 7\}$ instead of raw sorted IDs $\{104, 108, 115\}$.</li>
+                <li><strong>Variable-Byte Encoding:</strong> Integers $\le 127$ pack into 1 byte; bit 7 acts as the continuation flag for multi-byte gaps.</li>
+                <li><strong>Uncompressed Raw Size:</strong> $21,316$ postings $\times$ $4$ bytes (Int32) $= 85,264$ bytes.</li>
+                <li><strong>Compressed Size:</strong> <strong>21,316 bytes</strong> (1.00 byte per posting average).</li>
+                <li><strong>Impact:</strong> 4x memory savings and stronger CPU L1/L2 cache locality.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge sage">Conjunctive Skip Pointers</div>
               <h3>Sub-Linear Postings Intersection</h3>
+              <div class="math-box">
+                $$\text{Skip Stride } L = \lfloor\sqrt{P}\rfloor$$
+              </div>
               <ul>
-                <li><strong>Skip Stride Formula:</strong> $L = \lfloor\sqrt{P}\rfloor$ where $P$ is posting list length.</li>
-                <li><strong>Conjunctive Merging:</strong> In multi-term AND queries, skip pointers allow the cursor to bypass non-matching blocks without inspecting every element.</li>
-                <li><strong>Worst-Case Complexity:</strong> Reduced from $O(P_1 + P_2)$ linear scan to $O(\sqrt{P_1} + \sqrt{P_2})$.</li>
-                <li><strong>Empirical Speedup:</strong> **3.8x fewer comparisons** on multi-term conjunctive news queries.</li>
+                <li><strong>Skip-Assisted Merging:</strong> In multi-term Boolean <code>AND</code> queries, cursors jump over entire non-matching posting blocks at once.</li>
+                <li><strong>Complexity Reduction:</strong> Improves intersection from $O(P_1 + P_2)$ linear traversal to sub-linear skip jumps.</li>
+                <li><strong>Empirical Speedup:</strong> Achieves <strong>3.8x fewer comparisons</strong> on conjunctive multi-term queries.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Index Optimization</span>
-          <span>Delta + V-Byte (75.0% RAM Savings) &middot; Skip Pointers Stride L=&lfloor;&radic;P&rfloor; &middot; 3.8x Faster AND</span>
+          <span>Index Optimization · V-Byte Compression (75% Saved) · Skip Pointers $L=\lfloor\sqrt{P}\rfloor$</span>
+          <span class="slide-foot-num">12 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 13: QUERY PROCESSING -->
-      <section class="slide" data-slide="12" data-notes="Our query intelligence layer processes complex search intents: parsing Boolean operators AND, OR, and NOT, verifying positional phrase contiguity, and applying the Noisy Channel Model for automatic spelling correction.">
-        <div class="slide-top">
-          <span class="kicker amber">12 · Query Intelligence</span>
-          <span class="slide-num">13 / 20</span>
-        </div>
+      <section class="slide" data-slide="12" data-notes="Our query intelligence layer processes complex search intents: parsing Boolean operators AND, OR, and NOT, verifying positional phrase contiguity, and applying the Noisy Channel Model for automatic spell correction.">
         <h2 class="heading">Phase 2: Query Processing, Boolean Logic &amp; Spell Correction</h2>
         <div class="content">
           <div class="cols-3">
@@ -1279,161 +1510,153 @@ term "elect" &rarr; [
               <div class="stat-badge terra">Structured Parsing</div>
               <h3>Boolean &amp; Phrase Syntax</h3>
               <ul>
-                <li><strong>Conjunctive AND:</strong> <code>Manchester AND Green</code> requires both terms via skip intersection.</li>
-                <li><strong>Negation NOT:</strong> <code>Obama -Biden</code> excludes documents matching the term <code>biden</code>.</li>
-                <li><strong>Quoted Phrases:</strong> <code>"World Passport"</code> requires adjacent word positions: $\text{pos}_2 - \text{pos}_1 = 1$.</li>
+                <li><strong>Conjunctive AND:</strong> <code>Manchester AND Green</code> intersects posting lists using skip pointers.</li>
+                <li><strong>Negation NOT:</strong> <code>Obama -Biden</code> subtracts documents matching excluded terms.</li>
+                <li><strong>Quoted Phrases:</strong> <code>"World Passport"</code> enforces adjacent word offsets ($\text{pos}_2 - \text{pos}_1 = 1$).</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Spell Correction</div>
               <h3>Noisy Channel Model</h3>
+              <div class="math-box">
+                $$\hat{w} = \arg\max_w P(w) \cdot P(e|w)$$
+              </div>
               <ul>
-                <li><strong>Damerau-Levenshtein:</strong> Computes edit distance $\le 2$ (insertions, deletions, substitutions, transpositions).</li>
-                <li><strong>Bayesian Formulation:</strong>
-                  $$\hat{w} = \arg\max_w P(w) \cdot P(e|w)$$
-                </li>
-                <li><strong>Prior $P(w)$:</strong> Unigram frequency from the 104-article corpus.</li>
-                <li><strong>Error Model $P(e|w)$:</strong> Penalizes edits based on keyboard distance.</li>
+                <li><strong>Damerau-Levenshtein:</strong> Enumerates candidate edits within distance $\le 2$ (insert, delete, substitute, transpose).</li>
+                <li><strong>Prior $P(w)$:</strong> Unigram likelihood derived from our 104-article corpus vocabulary.</li>
+                <li><strong>Channel $P(e|w)$:</strong> Ranks closer spelling edits higher.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge sage">User Experience</div>
               <h3>Interactive Suggestions</h3>
               <ul>
-                <li><strong>Did-You-Mean:</strong> Automatically suggests corrections for misspelled terms (e.g., <code>afirca</code> &rarr; <code>africa</code>).</li>
-                <li><strong>Prefix Autocomplete:</strong> Fast trie-like prefix search matching article tags and headlines as users type.</li>
-                <li><strong>Zero-Result Fallback:</strong> Gracefully falls back to relaxed queries when strict conjunction yields no documents.</li>
+                <li><strong>Did-You-Mean:</strong> Proposes corrected queries automatically for typos (<code>afirca</code> &rarr; <code>africa</code>).</li>
+                <li><strong>Prefix Autocomplete:</strong> Fast prefix lookup over article titles and tags as the user types.</li>
+                <li><strong>Zero-Result Fallback:</strong> Gracefully relaxes strict conjunctions when zero exact hits match.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Query Intelligence</span>
-          <span>Boolean Parsing &middot; Positional Phrase Matching &middot; Noisy Channel Spell Correction</span>
+          <span>Query Intelligence · Boolean Logic · Positional Phrases · Noisy Channel</span>
+          <span class="slide-foot-num">13 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 14: RETRIEVAL MODELS: BM25F -->
-      <section class="slide" data-slide="13" data-notes="BM25F is our primary ranking algorithm. It calculates pseudo-frequencies across five document fields with length normalization, completely eliminating the linear term-frequency distortion of baseline TF-IDF.">
-        <div class="slide-top">
-          <span class="kicker terra">13 · Retrieval Models</span>
-          <span class="slide-num">14 / 20</span>
-        </div>
+      <section class="slide" data-slide="13" data-notes="BM25F is our primary production ranking algorithm. It aggregates weighted pseudo-frequencies across five fields with TF saturation and length normalization, outperforming linear TF-IDF.">
         <h2 class="heading">Phase 2: Primary Ranking Model &mdash; Fielded Okapi BM25F</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card" style="border-top: 5px solid var(--accent-terra);">
               <div class="stat-badge terra">Mathematical Formulation</div>
               <h3>Fielded BM25F Ranking Formula</h3>
-              <p>$$\text{Score}(D, Q) = \sum_{t \in Q} \text{IDF}(t) \cdot \frac{\tilde{\text{tf}}(t, D) \cdot (k_1 + 1)}{\tilde{\text{tf}}(t, D) + k_1 \cdot \left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}$$</p>
-              <p>Where pseudo-frequency $\tilde{\text{tf}}$ aggregates field weights $w_f$:</p>
-              <p>$$\tilde{\text{tf}}(t, D) = \sum_{f \in \text{fields}} w_f \cdot \text{tf}_f(t, D)$$</p>
-              <p>$$\text{IDF}(t) = \ln\left(\frac{N - \text{df}(t) + 0.5}{\text{df}(t) + 0.5} + 1\right)$$</p>
+              <div class="math-box">
+                $$\text{Score}(D, Q) = \sum_{t \in Q} \text{IDF}(t) \cdot \frac{\tilde{\text{tf}}(t, D) \cdot (k_1 + 1)}{\tilde{\text{tf}}(t, D) + k_1 \cdot \left(1 - b + b \cdot \frac{|D|}{\text{avgdl}}\right)}$$
+              </div>
+              <div class="math-box" style="margin-top: 0;">
+                $$\tilde{\text{tf}}(t, D) = \sum_{f \in \text{fields}} w_f \cdot \text{tf}_f(t, D), \quad \text{IDF}(t) = \ln\left(\frac{N - \text{df}(t) + 0.5}{\text{df}(t) + 0.5} + 1\right)$$
+              </div>
             </div>
             <div class="card">
               <div class="stat-badge teal">Production Tuning</div>
               <h3>Calibrated Parameters &amp; Field Weights</h3>
               <ul>
-                <li><strong>Title Weight ($w_{\text{title}} = 3.0$):</strong> High signal; terms in the headline indicate primary article subject.</li>
-                <li><strong>Tags Weight ($w_{\text{tags}} = 2.2$):</strong> Curated taxonomic metadata.</li>
-                <li><strong>Summary Weight ($w_{\text{summary}} = 1.5$):</strong> Lead sentence information density.</li>
-                <li><strong>Body Weight ($w_{\text{content}} = 1.0$):</strong> Full narrative context.</li>
-                <li><strong>Saturation Parameter ($k_1 = 1.2$):</strong> Prevents spam; sublinearly caps extreme term repetitions.</li>
-                <li><strong>Length Normalization ($b = 0.75$):</strong> Fairly balances long news features against short breaking bulletins.</li>
+                <li><strong>Title Weight ($w_{\text{title}} = 3.0$):</strong> Strongest signal; headline terms define core news topics.</li>
+                <li><strong>Tags Weight ($w_{\text{tags}} = 2.2$):</strong> Curated taxonomic metadata boost.</li>
+                <li><strong>SEO Keywords ($w_{\text{seo}} = 2.0$):</strong> Editorial search keyword enrichment.</li>
+                <li><strong>Summary ($w_{\text{summary}} = 1.5$) &amp; Body ($1.0$):</strong> Hierarchical prose weighting.</li>
+                <li><strong>Saturation ($k_1 = 1.2$):</strong> Sublinear TF cap neutralizing keyword stuffing.</li>
+                <li><strong>Length Norm ($b = 0.75$):</strong> Fairly balances long features against brief news bulletins.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Retrieval Models</span>
-          <span>Fielded Okapi BM25F &middot; Field Weights &middot; Length Normalization &middot; Sublinear TF Saturation</span>
+          <span>Retrieval Models · Fielded Okapi BM25F · Multi-Field Calibration</span>
+          <span class="slide-foot-num">14 / 20</span>
         </div>
       </section>
-\n
-      <!-- SLIDE 15: LANGUAGE MODELING: DIRICHLET LM -->
-      <section class="slide" data-slide="14" data-notes="We also implement the Query Likelihood Language Model with Bayesian Dirichlet Smoothing. Dirichlet smoothing sets mu to 1500, balancing document unigram frequencies against global collection frequencies.">
-        <div class="slide-top">
-          <span class="kicker teal">14 · Language Modeling</span>
-          <span class="slide-num">15 / 20</span>
-        </div>
+
+
+      <!-- SLIDE 15: DIRICHLET LANGUAGE MODEL -->
+      <section class="slide" data-slide="14" data-notes="We also implement the Query Likelihood Language Model with Bayesian Dirichlet Smoothing. Setting mu to 1500 dynamically balances document unigram likelihood against collection background probability.">
         <h2 class="heading">Phase 2: Probabilistic Retrieval &mdash; Query Likelihood Dirichlet LM</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card" style="border-top: 5px solid var(--accent-teal);">
               <div class="stat-badge teal">Mathematical Formulation</div>
               <h3>Query Likelihood with Dirichlet Prior</h3>
-              <p>Scores documents by the probability that query $Q$ was generated by document language model $\theta_D$:</p>
-              <p>$$\log P(Q|D) = \sum_{t \in Q} qf(t) \cdot \log \left( \frac{\text{tf}(t, D) + \mu \cdot P(t|C)}{|D| + \mu} \right)$$</p>
-              <p>Where background collection unigram language model is:</p>
-              <p>$$P(t|C) = \frac{\text{cf}(t) + 0.5}{\sum_{w} \text{cf}(w) + 0.5 \cdot |V|}$$</p>
+              <p>Scores documents by the log probability that query $Q$ was sampled from document model $\theta_D$:</p>
+              <div class="math-box">
+                $$\log P(Q|D) = \sum_{t \in Q} \text{qf}(t) \cdot \log \left( \frac{\text{tf}(t, D) + \mu \cdot P(t|C)}{|D| + \mu} \right)$$
+              </div>
+              <div class="math-box" style="margin-top: 0;">
+                $$P(t|C) = \frac{\text{cf}(t) + 0.5}{\sum_{w} \text{cf}(w) + 0.5 \cdot |V|}$$
+              </div>
             </div>
             <div class="card">
               <div class="stat-badge amber">Algorithmic Advantages</div>
               <h3>Why Dirichlet Smoothing Works</h3>
               <ul>
-                <li><strong>Zero-Frequency Prevention:</strong> Avoids zero probability when a document is missing one non-essential query term.</li>
-                <li><strong>Document Length Sensitivity:</strong> The smoothing coefficient $\frac{\mu}{|D| + \mu}$ dynamically applies stronger smoothing to short bulletins and weaker smoothing to long investigative articles.</li>
-                <li><strong>Optimal Parameter:</strong> Calibrated at $\mu = 1500$ based on the corpus average document length ($360$ tokens).</li>
-                <li><strong>Empirical Result:</strong> Achieves **91.25% Precision@5** and **0.8987 MAP**, closely tracking BM25F with high statistical fidelity.</li>
+                <li><strong>Zero-Frequency Prevention:</strong> Eliminates zero probabilities when an article omits one non-essential query word.</li>
+                <li><strong>Adaptive Length Smoothing:</strong> Coefficient $\frac{\mu}{|D| + \mu}$ applies heavier background smoothing to short briefs and lighter smoothing to long reports.</li>
+                <li><strong>Optimal Parameter:</strong> Calibrated at $\mu = 1500$ relative to our average document length ($360$ tokens).</li>
+                <li><strong>Empirical Result:</strong> Achieves <strong>91.25% Precision@5</strong> and <strong>0.8987 MAP</strong>, plus highest Recall@10 ($82.26\%$).</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Language Modeling</span>
-          <span>Query Likelihood Model &middot; Bayesian Dirichlet Smoothing &mu;=1500 &middot; P@5: 91.25%</span>
+          <span>Language Modeling · Bayesian Dirichlet Smoothing ($\mu = 1500$)</span>
+          <span class="slide-foot-num">15 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 16: QUERY EXPANSION & CLUSTERING -->
-      <section class="slide" data-slide="15" data-notes="To resolve vocabulary mismatch, we implement RM3 Pseudo-Relevance Feedback and Dice co-occurrence expansion. Furthermore, search results are grouped into semantic topic clusters using K-Means.">
-        <div class="slide-top">
-          <span class="kicker sage">15 · Search Enhancement</span>
-          <span class="slide-num">16 / 20</span>
-        </div>
+      <section class="slide" data-slide="15" data-notes="To resolve vocabulary mismatch, we implement RM3 Pseudo-Relevance Feedback and Dice co-occurrence expansion. Search results are also grouped into semantic topic clusters via K-Means++.">
         <h2 class="heading">Phase 2: Search Enhancement &mdash; RM3 PRF &amp; K-Means Clustering</h2>
         <div class="content">
           <div class="cols-2">
             <div class="card">
               <div class="stat-badge sage">Query Expansion</div>
-              <h3>RM3 PRF &amp; Dice's Co-occurrence</h3>
+              <h3>RM3 PRF &amp; Dice Co-occurrence</h3>
+              <div class="math-box">
+                $$P(w|R) \propto \sum_{D \in \text{top-}k} P(D|Q) \cdot P(w|D)$$
+              </div>
               <ul>
-                <li><strong>Pseudo-Relevance Feedback (RM3):</strong> Assumes top-$k$ initial retrieved documents are relevant ($k=5$). Extracts discriminative expansion terms weighted by relevance:
-                  $$P(w|R) \propto \sum_{D \in \text{top-}k} P(D|Q) \cdot P(w|D)$$
-                </li>
-                <li><strong>Interpolation:</strong> Blends original query ($lpha=0.6$) with feedback expansion ($eta=0.4$).</li>
-                <li><strong>Dice's Co-occurrence Matrix:</strong> $D(w_i, w_j) = \frac{2 \cdot n_{ij}}{n_i + n_j}$ surfaces related terms for one-click query refinement.</li>
-                <li><strong>Impact:</strong> Achieves a perfect **1.0000 MRR** (Mean Reciprocal Rank) on ambiguous entity queries.</li>
+                <li><strong>Pseudo-Relevance Feedback:</strong> Extracts expansion terms from initial top-$5$ documents and interpolates original query ($\alpha = 0.6$) with feedback ($\beta = 0.4$).</li>
+                <li><strong>Dice Coefficient:</strong> $D(w_i, w_j) = \frac{2 \cdot n_{ij}}{n_i + n_j}$ surfaces co-occurring related terms for one-click query refinement.</li>
+                <li><strong>Impact:</strong> Reaches a perfect <strong>1.0000 MRR</strong> (Mean Reciprocal Rank) on ambiguous entity queries.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Result Clustering</div>
-              <h3>K-Means Topic Partitioning</h3>
+              <h3>K-Means++ Topic Partitioning</h3>
               <ul>
-                <li><strong>Post-Retrieval Clustering:</strong> Automatically partitions returned news results into $K=3$ to $K=5$ thematic clusters.</li>
-                <li><strong>Document Vectorization:</strong> Sublinear TF-IDF vectors: $w_{t, D} = (1 + \ln(\text{tf})) \cdot \text{IDF}(t)$.</li>
-                <li><strong>K-Means++ Initialization:</strong> Seeds cluster centroids with maximum distance separation.</li>
-                <li><strong>Centroid Topic Labeling:</strong> Selects the highest-weight distinctive terms to generate human-readable cluster titles (e.g., <em>"Elections / Parliament"</em>).</li>
-                <li><strong>User Benefit:</strong> Allows readers to instantly disambiguate broad search topics.</li>
+                <li><strong>Post-Retrieval Clustering:</strong> Organizes returned articles into $K=3$ to $K=5$ coherent thematic clusters.</li>
+                <li><strong>Sublinear TF-IDF Vectors:</strong> Encodes documents via $w_{t, D} = (1 + \ln(\text{tf})) \cdot \text{IDF}(t)$.</li>
+                <li><strong>K-Means++ Initialization:</strong> Maximizes initial centroid separation to prevent degenerate clusters.</li>
+                <li><strong>Automatic Cluster Labeling:</strong> Extracts highest-weight centroid terms (e.g., <em>"Elections / Parliament"</em>) so readers disambiguate broad queries instantly.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Search Enhancement</span>
-          <span>RM3 Pseudo-Relevance Feedback &middot; Dice Expansion &middot; K-Means++ Clustering &middot; MRR: 1.0000</span>
+          <span>Search Enhancement · RM3 PRF · Dice Co-occurrence · K-Means++</span>
+          <span class="slide-foot-num">16 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 17: EMPIRICAL BENCHMARK MATRIX -->
-      <section class="slide" data-slide="16" data-notes="Here is our master benchmark matrix across 16 TREC-style topic queries on the 104 Wikinews documents. Okapi BM25F achieves 95.00% Precision@5 and 4418 QPS, outperforming baseline TF-IDF by 24.6% with sub-millisecond latency.">
-        <div class="slide-top">
-          <span class="kicker terra">16 · Benchmark Evaluation</span>
-          <span class="slide-num">17 / 20</span>
-        </div>
+      <section class="slide" data-slide="16" data-notes="Here is our master benchmark matrix across 16 topic queries on the 104 Wikinews documents. Okapi BM25F achieves 95.00% Precision@5 and 4,418 QPS, outperforming baseline TF-IDF by +24.6% with 7.3x faster latency.">
         <h2 class="heading">Empirical Evaluation: 16-Query Master Benchmark Matrix</h2>
         <div class="content">
-          <table class="matrix" style="margin-bottom: 22px;">
+          <table class="matrix" style="margin-bottom: 24px;">
             <thead>
               <tr>
                 <th>Retrieval Model</th>
@@ -1446,7 +1669,7 @@ term "elect" &rarr; [
               </tr>
             </thead>
             <tbody>
-              <tr style="background: var(--accent-terra-bg); font-weight: 700;">
+              <tr class="hl-row">
                 <td><strong>Okapi BM25F (Primary)</strong></td>
                 <td><strong>95.00%</strong></td>
                 <td>80.93%</td>
@@ -1465,7 +1688,7 @@ term "elect" &rarr; [
                 <td>1.166 ms (858 QPS)</td>
               </tr>
               <tr>
-                <td><strong>Query Likelihood (Dirichlet &mu;=1500)</strong></td>
+                <td><strong>Query Likelihood (Dirichlet $\mu=1500$)</strong></td>
                 <td>91.25%</td>
                 <td><strong>82.26%</strong></td>
                 <td>0.8987</td>
@@ -1482,8 +1705,8 @@ term "elect" &rarr; [
                 <td>0.9189</td>
                 <td>0.456 ms (2,191 QPS)</td>
               </tr>
-              <tr style="color: var(--ink-muted);">
-                <td>Vector Space TF-IDF (Baseline)</td>
+              <tr>
+                <td style="color: var(--ink-muted);">Vector Space TF-IDF (Baseline)</td>
                 <td>76.25%</td>
                 <td>73.29%</td>
                 <td>0.7883</td>
@@ -1493,33 +1716,30 @@ term "elect" &rarr; [
               </tr>
             </tbody>
           </table>
-          <div class="cols-3">
-            <div class="card paper" style="padding: 16px 20px;">
+          <div class="cols-3" style="height: auto;">
+            <div class="card paper" style="padding: 18px 22px;">
               <div class="stat-num">+24.6%</div>
-              <p style="margin: 0; font-size: 15.5px;"><strong>Precision Gain:</strong> BM25F reaches 95.0% P@5 vs 76.25% for baseline TF-IDF.</p>
+              <p><strong>Precision Gain:</strong> BM25F reaches 95.00% P@5 vs 76.25% for baseline TF-IDF.</p>
             </div>
-            <div class="card paper" style="padding: 16px 20px;">
+            <div class="card paper" style="padding: 18px 22px;">
               <div class="stat-num">7.3x</div>
-              <p style="margin: 0; font-size: 15.5px;"><strong>Speedup:</strong> BM25F executes in 0.226 ms vs 1.661 ms for TF-IDF cosine.</p>
+              <p><strong>Throughput Speedup:</strong> BM25F executes in 0.226 ms vs 1.661 ms for TF-IDF cosine.</p>
             </div>
-            <div class="card paper" style="padding: 16px 20px;">
+            <div class="card paper" style="padding: 18px 22px;">
               <div class="stat-num">1.000</div>
-              <p style="margin: 0; font-size: 15.5px;"><strong>Top-1 Perfection:</strong> RM3 PRF expansion achieves perfect 1.0000 Mean Reciprocal Rank.</p>
+              <p><strong>Top-1 Accuracy:</strong> RM3 PRF achieves perfect 1.0000 Mean Reciprocal Rank.</p>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Benchmark Evaluation</span>
-          <span>16 Topic Queries &middot; 104 Wikinews Articles &middot; BM25F P@5: 95.00% &middot; Latency: 0.226 ms</span>
+          <span>Benchmark Evaluation · 16 Topic Queries · 104 Wikinews Articles</span>
+          <span class="slide-foot-num">17 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 18: HYPOTHESIS TESTING & ABLATION -->
-      <section class="slide" data-slide="17" data-notes="We prove the scientific validity of our results through hypothesis testing: a Paired Sign Test proves BM25F superiority is statistically significant with p < 0.001, while component ablations reveal the exact performance cost of removing weights or stemming.">
-        <div class="slide-top">
-          <span class="kicker amber">17 · Scientific Validation</span>
-          <span class="slide-num">18 / 20</span>
-        </div>
+      <section class="slide" data-slide="17" data-notes="We prove the scientific validity of our results through hypothesis testing: a Paired Sign Test proves BM25F superiority is statistically significant with p < 0.001, while component ablations isolate each module's contribution.">
         <h2 class="heading">Scientific Validation: Hypothesis Testing &amp; Component Ablations</h2>
         <div class="content">
           <div class="cols-2">
@@ -1527,36 +1747,35 @@ term "elect" &rarr; [
               <div class="stat-badge terra">Hypothesis Testing</div>
               <h3>Statistical Significance &amp; Rank Correlation</h3>
               <ul>
-                <li><strong>Paired Sign Test ($p < 0.001$):</strong> Null hypothesis $H_0$: BM25F and TF-IDF perform identically. Across the 16 test queries, BM25F outperformed TF-IDF on 14 queries, tied on 2, and lost on 0. Two-tailed $p$-value $= 0.00012 < 0.001$, firmly rejecting $H_0$.</li>
-                <li><strong>Kendall's Rank Correlation ($\tau = 0.702$):</strong> Measures concordant versus discordant rank pairs between BM25F and human relevance judgments, demonstrating high fidelity.</li>
+                <li><strong>Paired Sign Test ($p < 0.001$):</strong> Null hypothesis $H_0$: BM25F and TF-IDF perform identically across the 16 queries.</li>
+                <li><strong>Observed Win/Loss Record:</strong> BM25F outperformed TF-IDF on <strong>14 queries</strong>, tied on <strong>2</strong>, and lost on <strong>0</strong>.</li>
+                <li><strong>Exact Two-Tailed $p$-value:</strong> $p = 0.00012 < 0.001$, firmly rejecting $H_0$.</li>
+                <li><strong>Kendall's Rank Correlation ($\tau = 0.702$):</strong> Quantifies concordant versus discordant rank pairs between BM25F and human relevance judgments.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Controlled Ablations</div>
               <h3>Component Ablation Analysis</h3>
-              <p>Quantifying the contribution of individual algorithmic modules:</p>
+              <p style="margin-bottom: 12px;">Measuring the exact degradation when disabling individual modules:</p>
               <ul>
-                <li><strong>Disabling Field Weights:</strong> Drops Precision@5 by <strong>-13.2%</strong> (headline hits lose priority).</li>
-                <li><strong>Disabling Stemmer:</strong> Drops MAP by <strong>-12.2%</strong> due to morphological query mismatches.</li>
-                <li><strong>Disabling Length Normalization ($b=0$):</strong> Drops MAP by <strong>-10.8%</strong> (long news features dominate).</li>
-                <li><strong>Disabling V-Byte Compression:</strong> Memory explodes <strong>4.0x</strong> from 21.3 KB to 85.2 KB.</li>
-                <li><strong>Disabling Skip Pointers:</strong> Requires <strong>3.8x more comparisons</strong> during conjunctive AND merges.</li>
+                <li><strong>Removing Field Weights:</strong> Precision@5 drops by <strong>-13.2%</strong> (headline hits lose priority).</li>
+                <li><strong>Removing Porter Stemmer:</strong> MAP drops by <strong>-12.2%</strong> due to morphological mismatches.</li>
+                <li><strong>Disabling Length Norm ($b = 0$):</strong> MAP drops by <strong>-10.8%</strong> as long articles dominate scores.</li>
+                <li><strong>Disabling V-Byte Compression:</strong> Index RAM expands <strong>4.0x</strong> ($21.3\text{ KB} \rightarrow 85.2\text{ KB}$).</li>
+                <li><strong>Disabling Skip Pointers:</strong> Requires <strong>3.8x more comparisons</strong> on conjunctive AND merges.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Scientific Validation</span>
-          <span>Paired Sign Test p < 0.001 &middot; Kendall's &tau;=0.702 &middot; Controlled Component Ablations</span>
+          <span>Scientific Validation · Paired Sign Test ($p < 0.001$) · Kendall's $\tau = 0.702$</span>
+          <span class="slide-foot-num">18 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 19: TELEMETRY & PRODUCTION HARDENING -->
-      <section class="slide" data-slide="18" data-notes="Production search requires telemetry logging and testing: we record query and click telemetry in PostgreSQL to capture user behavior, provide an interactive Search Lab for administrators, and verify the platform via 222 automated tests.">
-        <div class="slide-top">
-          <span class="kicker sage">18 · Telemetry &amp; Production</span>
-          <span class="slide-num">19 / 20</span>
-        </div>
+      <section class="slide" data-slide="18" data-notes="Production search requires telemetry logging and testing: we record query and click telemetry in PostgreSQL, provide an interactive Admin Search Lab, and verify the full stack via 222 automated tests.">
         <h2 class="heading">Production Hardening: Search Telemetry &amp; Quality Assurance</h2>
         <div class="content">
           <div class="cols-3">
@@ -1564,44 +1783,41 @@ term "elect" &rarr; [
               <div class="stat-badge sage">Search Telemetry</div>
               <h3>Query &amp; Click Logging</h3>
               <ul>
-                <li><strong><code>search_query_log</code>:</strong> Logs timestamp, query string, chosen model, latency in milliseconds, and total results count.</li>
+                <li><strong><code>search_query_log</code>:</strong> Logs timestamp, query string, active model, latency (ms), and total hit count.</li>
                 <li><strong><code>search_click_log</code>:</strong> Captures user ID, clicked article ID, and clicked rank position (1–20).</li>
-                <li><strong>Live CTR Telemetry:</strong> Calculates Click-Through Rate per rank position to measure ranking relevance in production.</li>
+                <li><strong>Live CTR Telemetry:</strong> Tracks Click-Through Rate per rank position to validate relevance in live usage.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge teal">Admin Search Lab</div>
               <h3>Interactive Diagnostics</h3>
               <ul>
-                <li><strong>Model Playground:</strong> SEO Specialists can test queries live across BM25F, Language Model, TF-IDF, and Hybrid models.</li>
-                <li><strong>Score Explainability:</strong> Inspects exact IDF, TF saturation, field weights, and length normalization per document hit.</li>
-                <li><strong>Live Index Stats:</strong> Monitors RAM consumption, compression ratio, vocabulary growth, and posting list lengths.</li>
+                <li><strong>Model Playground:</strong> SEO staff test queries live across BM25F, Dirichlet LM, TF-IDF, and Hybrid models.</li>
+                <li><strong>Score Explainability:</strong> Inspects exact IDF, TF saturation, field weights, and length normalization per document.</li>
+                <li><strong>Live Index Telemetry:</strong> Monitors RAM footprint, V-Byte compression ratio, and Zipf/Heaps vocabulary metrics.</li>
               </ul>
             </div>
             <div class="card">
               <div class="stat-badge terra">Quality Assurance</div>
               <h3>222 Automated Tests</h3>
               <ul>
-                <li><strong>Backend Test Suite:</strong> 100 tests (89 unit/API tests passed, 0 failures, 11 DB integration tests).</li>
-                <li><strong>Frontend Test Suite:</strong> 24 test files, 122/122 passed in Vitest.</li>
-                <li><strong>Production Bundle:</strong> Frontend builds in 260 ms with 0 warnings.</li>
-                <li><strong>Security Hardening:</strong> Audited against OWASP Top 10 vulnerabilities.</li>
+                <li><strong>Backend Test Suite:</strong> 100 tests total (89 unit &amp; API tests passed cleanly, 11 DB integration suites).</li>
+                <li><strong>Frontend Test Suite:</strong> 24 Vitest files, 122/122 UI &amp; RBAC tests passing.</li>
+                <li><strong>Production Build:</strong> Vite production bundle compiles in 260 ms with zero warnings.</li>
+                <li><strong>Security Hardening:</strong> Audited against OWASP Top 10 vectors.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Production Hardening</span>
-          <span>Click Logs &middot; Live CTR Telemetry &middot; Admin Search Lab &middot; 222 Automated Tests Passing</span>
+          <span>Production Hardening · Search Telemetry · Admin Lab · 222 Automated Tests</span>
+          <span class="slide-foot-num">19 / 20</span>
         </div>
       </section>
-\n
+
+
       <!-- SLIDE 20: CONCLUSIONS & REFERENCES -->
-      <section class="slide" data-slide="19" data-notes="In conclusion, the project successfully bridges enterprise full-stack engineering with first-principles information retrieval. We close with formal academic references from the foundational literature.">
-        <div class="slide-top">
-          <span class="kicker navy">19 · Conclusions &amp; References</span>
-          <span class="slide-num">20 / 20</span>
-        </div>
+      <section class="slide" data-slide="19" data-notes="In conclusion, the project bridges enterprise full-stack engineering with first-principles information retrieval. We close with formal academic references from the foundational literature.">
         <h2 class="heading">Key Engineering Deliverables &amp; Academic References</h2>
         <div class="content">
           <div class="cols-2">
@@ -1609,42 +1825,42 @@ term "elect" &rarr; [
               <div class="stat-badge terra">Project Deliverables</div>
               <h3>Comprehensive Engineering Achievements</h3>
               <ul>
-                <li><strong>Production Web Platform (Phase 1):</strong> Fully realized digital magazine portal with React 19, Express 5, 18 PostgreSQL tables, and 4-role enterprise RBAC.</li>
-                <li><strong>Custom IR Search Engine (Phase 2):</strong> Native in-memory engine featuring Porter stemming, V-Byte Delta compression (75% savings), skip pointers, and 5 retrieval models.</li>
-                <li><strong>Empirical Superiority:</strong> BM25F achieves 95.0% P@5, 0.9228 MAP, and 4,418 QPS (0.226 ms latency), validated via Paired Sign Test ($p < 0.001$).</li>
-                <li><strong>Production Readiness:</strong> Complete automated test suite, interactive slide deck, and comprehensive documentation.</li>
+                <li><strong>Production Web Platform (Phase 1):</strong> Full-stack digital magazine portal with React 19, Express 5, 18 PostgreSQL tables, and 4-role enterprise RBAC.</li>
+                <li><strong>Custom IR Search Engine (Phase 2):</strong> In-memory search engine featuring Porter stemming, V-Byte compression (75% RAM savings), skip pointers, and 5 ranking models.</li>
+                <li><strong>Empirical Superiority:</strong> BM25F reaches 95.00% P@5, 0.9228 MAP, and 4,418 QPS (0.226 ms), validated via Paired Sign Test ($p < 0.001$).</li>
+                <li><strong>Operational Readiness:</strong> 222 automated tests, Admin Search Lab diagnostics, and search telemetry pipelines.</li>
               </ul>
             </div>
             <div class="card paper">
               <div class="stat-badge teal">Academic Literature</div>
               <h3>Formal Academic References (IEEE)</h3>
-              <ul style="font-size: 14.5px; line-height: 1.45;">
+              <ul style="font-size: 16.5px; line-height: 1.44;">
                 <li><strong>[1] Robertson, S., &amp; Zaragoza, H. (2009).</strong> The probabilistic relevance framework: BM25 and beyond. <em>Foundations and Trends in Information Retrieval</em>, 3(4), 333-389.</li>
                 <li><strong>[2] Salton, G., Wong, A., &amp; Yang, C. S. (1975).</strong> A vector space model for automatic indexing. <em>Communications of the ACM</em>, 18(11), 613-620.</li>
                 <li><strong>[3] Zhai, C., &amp; Lafferty, J. (2001).</strong> A study of smoothing methods for language models applied to ad hoc information retrieval. <em>ACM SIGIR</em>, 334-342.</li>
                 <li><strong>[4] Lavrenko, V., &amp; Croft, W. B. (2001).</strong> Relevance-based language models. <em>ACM SIGIR</em>, 120-127.</li>
                 <li><strong>[5] Porter, M. F. (1980).</strong> An algorithm for suffix stripping. <em>Program: electronic library and information systems</em>, 14(3), 130-137.</li>
-                <li><strong>[6] Manning, C. D., Raghavan, P., &amp; Schütze, H. (2008).</strong> <em>Introduction to Information Retrieval</em>. Cambridge University Press.</li>
+                <li><strong>[6] Manning, C. D., Raghavan, P., &amp; Sch&uuml;tze, H. (2008).</strong> <em>Introduction to Information Retrieval</em>. Cambridge University Press.</li>
               </ul>
             </div>
           </div>
         </div>
         <div class="slide-foot">
-          <span>Conclusions &amp; References</span>
-          <span>Capstone Submission &middot; 20-Slide Comprehensive Project Defense</span>
+          <span>Conclusions &amp; References · News &amp; Digital Magazine Portal</span>
+          <span class="slide-foot-num">20 / 20</span>
         </div>
       </section>
 
     </div>
   </div>
 
-  <!-- Speaker Notes Panel -->
+  <!-- Speaker Notes Panel (N / S) -->
   <aside class="notes-panel" id="notes-panel">
-    <h4>Speaker Notes (Press N to close) <span style="font-size: 11px; color: var(--accent-amber);">SPEAKER GUIDE</span></h4>
+    <h4>Speaker Notes (Press N or S to close) <span style="font-size: 12px; color: #E5B95C;">PRESENTER GUIDE</span></h4>
     <p id="notes-text">Welcome to the presentation.</p>
   </aside>
 
-  <!-- Slide Overview Grid Modal -->
+  <!-- Slide Overview Grid Modal (G / O) -->
   <div class="overview" id="overview">
     <div class="overview-grid" id="overview-grid"></div>
   </div>
@@ -1659,28 +1875,55 @@ term "elect" &rarr; [
       const notesText = document.getElementById('notes-text');
       const overview = document.getElementById('overview');
       const overviewGrid = document.getElementById('overview-grid');
-      const btnNotes = document.getElementById('btn-notes');
-      const btnGrid = document.getElementById('btn-grid');
-      const btnFullscreen = document.getElementById('btn-fullscreen');
-      const btnEditMode = document.getElementById('editToggle');
+      const themeToast = document.getElementById('themeToast');
+
+      const themes = [
+        { id: 'paper-ink', label: 'Paper & Ink Editorial' },
+        { id: 'cobalt-grid', label: 'Cobalt Grid Bulletin' },
+        { id: 'signal-dark', label: 'Signal Navy & Gold' },
+        { id: 'swiss-modern', label: 'Swiss Modern Bauhaus' }
+      ];
+      let themeIdx = 0;
+      let toastTimer = null;
       let current = 0;
 
       function pad(num) {
         return num < 10 ? '0' + num : String(num);
       }
 
-      // Responsive Stage Scaling (1920x1080 fixed canvas)
+      // Apply saved theme if present
+      try {
+        const savedTheme = localStorage.getItem('news_portal_deck_theme');
+        const foundIdx = themes.findIndex(t => t.id === savedTheme);
+        if (foundIdx >= 0) {
+          themeIdx = foundIdx;
+          document.documentElement.setAttribute('data-theme', themes[themeIdx].id);
+        }
+      } catch (e) {}
+
+      function cycleTheme() {
+        themeIdx = (themeIdx + 1) % themes.length;
+        const t = themes[themeIdx];
+        document.documentElement.setAttribute('data-theme', t.id);
+        try {
+          localStorage.setItem('news_portal_deck_theme', t.id);
+        } catch (e) {}
+        themeToast.textContent = 'Theme: ' + t.label + ' (Press T to switch)';
+        themeToast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => themeToast.classList.remove('show'), 1800);
+      }
+
+      // Fixed 1920x1080 Full-Viewport Stage Scaling (Topbar hidden)
       function resizeStage() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const targetW = 1920;
         const targetH = 1080;
-        const scale = Math.min(vw / targetW, (vh - 60) / targetH);
+        const scale = Math.min(vw / targetW, vh / targetH);
         const left = Math.max(0, (vw - targetW * scale) / 2);
-        const top = Math.max(60, 60 + (vh - 60 - targetH * scale) / 2);
-        stage.style.transform = `scale(${scale})`;
-        stage.style.left = `${left}px`;
-        stage.style.top = `${top}px`;
+        const top = Math.max(0, (vh - targetH * scale) / 2);
+        stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
       }
       window.addEventListener('resize', resizeStage);
       resizeStage();
@@ -1708,11 +1951,11 @@ term "elect" &rarr; [
         overviewGrid.innerHTML = '';
         slides.forEach((s, i) => {
           const titleEl = s.querySelector('h1, h2');
-          const kickerEl = s.querySelector('.kicker');
+          const footEl = s.querySelector('.slide-foot span');
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'thumb' + (i === current ? ' current' : '');
-          btn.innerHTML = `<small>${pad(i + 1)} · ${kickerEl ? kickerEl.textContent : ''}</small><strong>${titleEl ? titleEl.textContent : 'Slide ' + (i + 1)}</strong>`;
+          btn.innerHTML = `<small>Slide ${pad(i + 1)} / ${pad(slides.length)} · ${footEl ? footEl.textContent : ''}</small><strong>${titleEl ? titleEl.textContent : 'Slide ' + (i + 1)}</strong>`;
           btn.addEventListener('click', () => {
             goTo(i);
             toggleGrid(false);
@@ -1728,7 +1971,7 @@ term "elect" &rarr; [
           s.classList.toggle('active', isTarget);
           s.classList.toggle('visible', isTarget);
         });
-        counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+        if (counter) counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
         progress.style.width = `${((current + 1) / slides.length) * 100}%`;
         notesText.textContent = slides[current].dataset.notes || 'No speaker notes for this slide.';
         if (location.hash !== `#${current + 1}`) {
@@ -1741,13 +1984,11 @@ term "elect" &rarr; [
       function toggleNotes(force) {
         const open = force !== undefined ? force : !notesPanel.classList.contains('open');
         notesPanel.classList.toggle('open', open);
-        btnNotes.classList.toggle('active', open);
       }
 
       function toggleGrid(force) {
         const open = force !== undefined ? force : !overview.classList.contains('open');
         overview.classList.toggle('open', open);
-        btnGrid.classList.toggle('active', open);
       }
 
       function toggleFullscreen() {
@@ -1758,21 +1999,15 @@ term "elect" &rarr; [
         }
       }
 
-      document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
-      document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
-      btnNotes.addEventListener('click', () => toggleNotes());
-      btnGrid.addEventListener('click', () => toggleGrid());
-      btnFullscreen.addEventListener('click', toggleFullscreen);
-      document.getElementById('btn-print').addEventListener('click', () => window.print());
-
-      // Keyboard navigation
+      // Keyboard navigation (All hidden shortcuts preserved)
       document.addEventListener('keydown', (e) => {
         if (e.target.getAttribute('contenteditable') === 'true' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
+        const key = e.key.toLowerCase();
         if (e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !overview.classList.contains('open'))) {
           e.preventDefault();
           goTo(current + 1);
-        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
           e.preventDefault();
           goTo(current - 1);
         } else if (e.key === 'Home') {
@@ -1781,12 +2016,21 @@ term "elect" &rarr; [
         } else if (e.key === 'End') {
           e.preventDefault();
           goTo(slides.length - 1);
-        } else if (e.key.toLowerCase() === 'n') {
+        } else if (key === 'n' || key === 's') {
+          e.preventDefault();
           toggleNotes();
-        } else if (e.key.toLowerCase() === 'g' || e.key.toLowerCase() === 'o') {
+        } else if (key === 'g' || key === 'o') {
+          e.preventDefault();
           toggleGrid();
-        } else if (e.key.toLowerCase() === 'f') {
+        } else if (key === 'f') {
+          e.preventDefault();
           toggleFullscreen();
+        } else if (key === 'p') {
+          e.preventDefault();
+          window.print();
+        } else if (key === 't') {
+          e.preventDefault();
+          cycleTheme();
         } else if (e.key === 'Escape') {
           toggleGrid(false);
           toggleNotes(false);
@@ -1799,17 +2043,12 @@ term "elect" &rarr; [
         if (overview.classList.contains('open') || notesPanel.classList.contains('open')) return;
         if (wheelTimeout) return;
         if (Math.abs(e.deltaY) < 30) return;
-        if (e.deltaY > 0) {
-          goTo(current + 1);
-        } else {
-          goTo(current - 1);
-        }
-        wheelTimeout = setTimeout(() => {
-          wheelTimeout = null;
-        }, 350);
+        if (e.deltaY > 0) goTo(current + 1);
+        else goTo(current - 1);
+        wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 350);
       }, { passive: true });
 
-      // Swipe support
+      // Touch swipe navigation
       let touchStartX = 0;
       window.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -1822,15 +2061,15 @@ term "elect" &rarr; [
         }
       }, { passive: true });
 
-      // Inline Editing Implementation
+      // Inline Editing (Hidden top-left hover trigger + E shortcut)
       class InlineEditor {
         constructor() {
           this.isActive = false;
-          this.storageKey = 'news_portal_presentation_edits_20_v1';
+          this.storageKey = 'news_portal_presentation_edits_clean_20_v1';
           this.editToggle = document.getElementById('editToggle');
           this.editToolbar = document.getElementById('editToolbar');
           this.hotzone = document.querySelector('.edit-hotzone');
-          this.editableSelector = 'h1, h2, h3, h4, p, li, td, th, .lead, .kicker';
+          this.editableSelector = 'h1, h2, h3, h4, p, li, td, th, .lead';
           this.initHover();
           this.initActions();
           this.restoreEdits();
@@ -1847,9 +2086,7 @@ term "elect" &rarr; [
               if (!this.isActive) this.editToggle.classList.remove('show');
             }, 400);
           });
-          this.editToggle.addEventListener('mouseenter', () => {
-            clearTimeout(hideTimeout);
-          });
+          this.editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
           this.editToggle.addEventListener('mouseleave', () => {
             hideTimeout = setTimeout(() => {
               if (!this.isActive) this.editToggle.classList.remove('show');
@@ -1905,19 +2142,12 @@ term "elect" &rarr; [
               el.removeAttribute('spellcheck');
             }
           });
-          if (!this.isActive) {
-            this.saveEdits();
-          }
+          if (!this.isActive) this.saveEdits();
         }
 
         saveEdits() {
-          const slideData = [];
-          slides.forEach((s, idx) => {
-            slideData.push({ idx, html: s.innerHTML });
-          });
-          try {
-            localStorage.setItem(this.storageKey, JSON.stringify(slideData));
-          } catch (e) {}
+          const slideData = slides.map((s, idx) => ({ idx, html: s.innerHTML }));
+          try { localStorage.setItem(this.storageKey, JSON.stringify(slideData)); } catch (e) {}
         }
 
         restoreEdits() {
@@ -1926,9 +2156,7 @@ term "elect" &rarr; [
             if (!saved) return;
             const slideData = JSON.parse(saved);
             slideData.forEach(item => {
-              if (slides[item.idx]) {
-                slides[item.idx].innerHTML = item.html;
-              }
+              if (slides[item.idx]) slides[item.idx].innerHTML = item.html;
             });
           } catch (e) {}
         }
