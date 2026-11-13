@@ -13,16 +13,33 @@ const isHttps = (u) => typeof u === 'string' && /^https:\/\/\S+$/.test(u);
 export function buildMetaTags(row, baseUrl) {
   const title = clip((row.meta_title || row.title || '').trim(), TITLE_MAX);
   const description = clip((row.meta_description || row.summary || '').trim(), DESC_MAX);
+  const keywords = (row.seo_keywords || '').trim();
   const url = `${baseUrl}/articles/${row.slug}`;
   const tags = [`<title>${escapeHtml(title)}</title>`];
   const meta = (attr, name, content) => tags.push(`<meta ${attr}="${name}" content="${escapeHtml(content)}" />`);
   if (description) meta('name', 'description', description);
+  if (keywords) meta('name', 'keywords', keywords);
   meta('property', 'og:type', 'article');
   meta('property', 'og:title', title);
   if (description) meta('property', 'og:description', description);
   meta('property', 'og:url', url);
-  if (isHttps(row.og_image_url)) meta('property', 'og:image', row.og_image_url);
+  if (isHttps(row.og_image_url)) {
+    meta('property', 'og:image', row.og_image_url);
+    if (row.image_alt) meta('property', 'og:image:alt', String(row.image_alt).trim());
+  }
   tags.push(`<link rel="canonical" href="${escapeHtml(url)}" />`);
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: title,
+    description: description || undefined,
+    url,
+    datePublished: row.published_at || undefined,
+    dateModified: row.updated_at || undefined,
+    image: isHttps(row.og_image_url) ? [row.og_image_url] : undefined,
+    keywords: keywords || undefined,
+  };
+  tags.push(`<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`);
   return tags.join('\n    ');
 }
 

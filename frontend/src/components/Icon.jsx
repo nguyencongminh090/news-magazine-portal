@@ -28,6 +28,14 @@ export function IconSprite() {
       <symbol id='i-sun' viewBox='0 0 24 24'><circle cx='12' cy='12' r='4'/><path d='M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.500 1.500M17.500 17.500 19 19M19 5l-1.500 1.500M6.500 17.500 5 19'/></symbol>
       <symbol id='i-bookmarks' viewBox='0 0 24 24'><path d='M6 3h12v18l-6-4-6 4z'/></symbol>
       <symbol id='i-plus' viewBox='0 0 24 24'><path d='M12 5v14M5 12h14'/></symbol>
+      <symbol id='i-tag' viewBox='0 0 24 24'><path d='M20 13.5 11.5 22a2 2 0 0 1-2.8 0l-6-6a2 2 0 0 1 0-2.8L11.2 4.7A2 2 0 0 1 12.6 4H19a1 1 0 0 1 1 1z'/><circle cx='15.5' cy='8.5' r='1.2'/></symbol>
+      <symbol id='i-sliders' viewBox='0 0 24 24'><path d='M4 7h16M4 17h16M9 4v6M15 14v6'/></symbol>
+      <symbol id='i-shield' viewBox='0 0 24 24'><path d='M12 3 4 6v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z'/></symbol>
+      <symbol id='i-chart' viewBox='0 0 24 24'><path d='M4 20h16M7 16v-5m5 5V7m5 9v-8'/></symbol>
+      <symbol id='i-settings' viewBox='0 0 24 24'><circle cx='12' cy='12' r='3'/><path d='M12 2v3m0 14v3M4.9 4.9l2.1 2.1m10 10 2.1 2.1M2 12h3m14 0h3M4.9 19.1 7 17m10-10 2.1-2.1'/></symbol>
+      <symbol id='i-users' viewBox='0 0 24 24'><circle cx='9' cy='8' r='3.5'/><path d='M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5'/><circle cx='17.5' cy='9.5' r='2.5'/><path d='M16.5 15c2.8.3 5 1.8 5.5 5'/></symbol>
+      <symbol id='i-check' viewBox='0 0 24 24'><path d='m5 12 4.5 4.5L19 7'/></symbol>
+      <symbol id='i-trash' viewBox='0 0 24 24'><path d='M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13'/></symbol>
       </defs>
     </svg>
   );

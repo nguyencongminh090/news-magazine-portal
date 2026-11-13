@@ -50,7 +50,7 @@ test('seed is idempotent', { skip: !testDb }, async () => {
       await count('SELECT count(*) n FROM user_roles'),
     ];
     assert.deepEqual(after, before);
-    assert.deepEqual(before, [2, 2, 3, 4]); // duplicate title got a distinct slug
+    assert.deepEqual(before, [2, 2, 3, 5]); // duplicate title got a distinct slug
   } finally {
     await client.end();
   }

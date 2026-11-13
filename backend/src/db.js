@@ -256,8 +256,14 @@ export function initPool(cfg) {
   return initPromise;
 }
 
+<<<<<<< Updated upstream
 async function need() {
   if (initPromise) await initPromise;
+=======
+export const hasPool = () => Boolean(pool);
+
+function need() {
+>>>>>>> Stashed changes
   if (!pool) throw new Error('DB pool not initialised (call initPool at boot)');
   return pool;
 }

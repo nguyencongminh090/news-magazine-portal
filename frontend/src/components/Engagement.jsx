@@ -38,6 +38,48 @@ function GateNotice({ user }) {
   return null;
 }
 
+function LikeControl({ slug, likes, onLikes, canWrite }) {
+  const { request } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function toggle() {
+    if (busy) return;
+    const prev = likes;
+    const nextLiked = !likes.likedByMe;
+    setBusy(true);
+    setError('');
+    onLikes({ count: Math.max(0, likes.count + (nextLiked ? 1 : -1)), likedByMe: nextLiked });
+    try {
+      const res = await request(`/api/articles/${encodeURIComponent(slug)}/like`, {
+        method: nextLiked ? 'PUT' : 'DELETE',
+      });
+      if (res) onLikes({ count: res.likeCount, likedByMe: res.likedByMe });
+    } catch (err) {
+      onLikes(prev);
+      setError(engagementMessage(err, 'like'));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="like-control">
+      <button
+        type="button"
+        className={`btn secondary like-btn${likes.likedByMe ? ' liked' : ''}`}
+        aria-pressed={likes.likedByMe}
+        disabled={!canWrite || busy}
+        onClick={toggle}
+      >
+        <Icon name="heart" />
+        <span>{likes.likedByMe ? 'Liked' : 'Like'} ({likes.count})</span>
+      </button>
+      {error && <p className="error" role="alert">{error}</p>}
+    </div>
+  );
+}
+
 function RatingControl({ slug, summary, onSummary, canWrite }) {
   const { request } = useAuth();
   const [error, setError] = useState('');
@@ -209,25 +251,43 @@ function CommentList({ slug, canWrite, onTotal, items, setItems }) {
 }
 
 const EMPTY = { ratingAvg: null, ratingCount: 0, commentCount: 0, myRating: null };
+const EMPTY_LIKES = { count: 0, likedByMe: false };
 
-/** Rating, comments and reports for one article. `initial` = `article.engagement` (anonymous view of the counts). */
-export function Engagement({ slug, initial }) {
+/** Rating, likes, comments and reports for one article. `initial` = `article.engagement`. */
+export function Engagement({ slug, initial, initialLikes, skipAuthSync = false, commentsAllowed = true }) {
   const { user, request } = useAuth();
   const [summary, setSummary] = useState({ ...EMPTY, ...initial });
+  const [likes, setLikes] = useState({ ...EMPTY_LIKES, ...initialLikes });
   const [items, setItems] = useState([]);
   const canWrite = Boolean(user?.emailVerified);
   const userId = user?.id ?? null;
 
-  // The public article fetch is anonymous; with a session, re-read it once to learn the caller's own rating.
   useEffect(() => {
-    if (userId === null) return undefined;
+    if (initial?.myRating !== undefined) {
+      setSummary((s) => ({ ...s, myRating: initial.myRating }));
+    }
+  }, [initial?.myRating]);
+
+  useEffect(() => {
+    if (initialLikes) {
+      setLikes({ count: initialLikes.count ?? 0, likedByMe: Boolean(initialLikes.likedByMe) });
+    }
+  }, [initialLikes?.count, initialLikes?.likedByMe]);
+
+  // Standalone usage: when not synced by ArticlePage, re-read once (view=0) to learn myRating + likedByMe.
+  useEffect(() => {
+    if (skipAuthSync || userId === null) return undefined;
     let live = true;
-    request(`/api/articles/${encodeURIComponent(slug)}`).then(
-      (a) => live && a?.engagement && setSummary((s) => ({ ...s, myRating: a.engagement.myRating })),
+    request(`/api/articles/${encodeURIComponent(slug)}?view=0`).then(
+      (a) => {
+        if (!live || !a) return;
+        if (a.engagement) setSummary((s) => ({ ...s, myRating: a.engagement.myRating }));
+        if (a.likes) setLikes({ count: a.likes.count ?? 0, likedByMe: Boolean(a.likes.likedByMe) });
+      },
       () => {},
     );
     return () => { live = false; };
-  }, [slug, userId, request]);
+  }, [skipAuthSync, slug, userId, request]);
 
   const onTotal = useCallback((total) => setSummary((s) => ({ ...s, commentCount: total })), []);
   const onPosted = (comment) => {
@@ -239,14 +299,21 @@ export function Engagement({ slug, initial }) {
     <>
       <section className="box card" aria-labelledby="rating-heading">
         <h2 id="rating-heading">Rating</h2>
-        <RatingControl slug={slug} summary={summary} onSummary={setSummary} canWrite={canWrite} />
+        <div className="engagement-row">
+          <RatingControl slug={slug} summary={summary} onSummary={setSummary} canWrite={canWrite} />
+          <LikeControl slug={slug} likes={likes} onLikes={setLikes} canWrite={canWrite} />
+        </div>
         {canWrite && <ReportForm path={`/api/articles/${encodeURIComponent(slug)}/reports`} label="Report this article" />}
       </section>
       <section aria-labelledby="comments-heading">
         <h2 id="comments-heading">Comments ({summary.commentCount})</h2>
-        <GateNotice user={user} />
+        {!commentsAllowed ? (
+          <p className="hint" role="note">Commenting is currently disabled by site administrators.</p>
+        ) : (
+          <GateNotice user={user} />
+        )}
         <CommentList slug={slug} canWrite={canWrite} onTotal={onTotal} items={items} setItems={setItems} />
-        {canWrite && <CommentForm slug={slug} onPosted={onPosted} />}
+        {canWrite && commentsAllowed && <CommentForm slug={slug} onPosted={onPosted} />}
       </section>
     </>
   );

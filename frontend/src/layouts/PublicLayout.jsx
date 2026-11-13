@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { apiGet } from '../api/client.js';
 import { useApi } from '../api/useApi.js';
 import { STAFF_ROLES, useAuth } from '../auth/AuthContext.jsx';
 import { ResendVerification } from '../components/ResendVerification.jsx';
@@ -12,9 +13,21 @@ export function PublicLayout() {
   const navigate = useNavigate();
   const { user, status, logout } = useAuth();
   const { data: categories } = useApi('/api/categories');
+  const [settings, setSettings] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef(null);
   const items = categories?.items ?? [];
+  const siteName = settings?.site_name || 'News Portal';
+  const siteTagline = settings?.site_tagline || 'Plain-language news explainers, organised by topic and easy to scan. Every article is open content you can read, share and reuse.';
+
+  useEffect(() => {
+    let live = true;
+    apiGet('/api/settings').then(
+      (d) => { if (live && d?.settings) setSettings(d.settings); },
+      () => {},
+    );
+    return () => { live = false; };
+  }, []);
 
   function onSearch(event) {
     event.preventDefault();
@@ -30,7 +43,7 @@ export function PublicLayout() {
         <button type="button" className="icon-btn menu-btn" ref={menuButton} aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
           <Icon name="menu" />
         </button>
-        <Link className="brand" to="/">News Portal</Link>
+        <Link className="brand" to="/">{siteName}</Link>
         <form className="search" role="search" onSubmit={onSearch}>
           <input type="search" name="q" aria-label="Search articles" placeholder="Search articles" />
           <button type="submit" aria-label="Search"><Icon name="search" /></button>
@@ -41,6 +54,7 @@ export function PublicLayout() {
               <span className="muted"><Icon name="user" /> {user.displayName}</span>
               {user.roles.some((r) => STAFF_ROLES.includes(r)) && <Link to="/admin">Admin</Link>}
               {!user.emailVerified && <ResendVerification />}
+              <Link to="/account/profile">Profile</Link>
               <Link to="/account/password">Change password</Link>
               <button className="btn secondary" type="button" onClick={() => logout()}>Sign out</button>
             </>
@@ -60,16 +74,21 @@ export function PublicLayout() {
       <div className="shell">
         <aside className="rail"><TopicNav categories={items} /></aside>
         <div className="col">
+          {settings?.maintenance_mode && (
+            <div className="maint-banner" role="status">
+              Maintenance mode is active. Some features may be temporarily restricted.
+            </div>
+          )}
           <main id="content">
-            <Outlet />
+            <Outlet context={{ categories: items, settings }} />
           </main>
           <footer className="site">
             <Wave />
             <div className="wrap foot-in">
               <div className="foot-grid">
                 <section className="foot-about" aria-labelledby="foot-about-h">
-                  <h2 id="foot-about-h" className="foot-brand">News Portal</h2>
-                  <p>Plain-language news explainers, organised by topic and easy to scan. Every article is open content you can read, share and reuse.</p>
+                  <h2 id="foot-about-h" className="foot-brand">{siteName}</h2>
+                  <p>{siteTagline}</p>
                 </section>
                 <nav aria-labelledby="foot-topics-h">
                   <h2 id="foot-topics-h" className="foot-h">Topics</h2>
@@ -95,7 +114,7 @@ export function PublicLayout() {
                   <a href="https://creativecommons.org/licenses/by/2.5/" target="_blank" rel="noopener noreferrer">CC BY</a>.
                   Attribution is shown on each article.
                 </p>
-                <p>&copy; {new Date().getFullYear()} News Portal</p>
+                <p>&copy; {new Date().getFullYear()} {siteName}</p>
               </div>
             </div>
           </footer>

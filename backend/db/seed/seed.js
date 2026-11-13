@@ -11,6 +11,7 @@ export const DEV_PASSWORD = 'DevPassw0rd!';
 export const DEMO_USERS = [
   { email: 'admin@example.test', displayName: 'Demo Admin', role: 'admin' },
   { email: 'editor@example.test', displayName: 'Demo Editor', role: 'editor' },
+  { email: 'moderator@example.test', displayName: 'Demo Moderator', role: 'moderator' },
   { email: 'seo@example.test', displayName: 'Demo SEO', role: 'seo' },
   { email: 'reader@example.test', displayName: 'Demo Reader', role: 'reader' },
 ];
@@ -82,13 +83,14 @@ export async function seed(databaseUrl, articles, { env = process.env } = {}) {
     for (const user of DEMO_USERS) {
       // DO NOTHING: argon2 hashes are salted, so updating would make every rerun a change.
       const { rows } = await client.query(
-        `INSERT INTO users (email, password_hash, display_name) VALUES ($1, $2, $3)
-         ON CONFLICT (lower(email)) DO NOTHING RETURNING id`,
+        `INSERT INTO users (email, password_hash, display_name, email_verified_at) VALUES ($1, $2, $3, now())
+         ON CONFLICT (lower(email)) DO UPDATE SET email_verified_at = COALESCE(users.email_verified_at, now())
+         RETURNING id`,
         [user.email, passwordHash, user.displayName],
       );
       if (rows.length) {
         await client.query(
-          `INSERT INTO user_roles (user_id, role_id) SELECT $1, id FROM roles WHERE name = $2`,
+          `INSERT INTO user_roles (user_id, role_id) SELECT $1, id FROM roles WHERE name = $2 ON CONFLICT DO NOTHING`,
           [rows[0].id, user.role],
         );
       }

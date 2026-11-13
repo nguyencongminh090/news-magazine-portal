@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
 
 const COPY = {
@@ -17,10 +17,12 @@ function messageFor(err) {
 export function AuthPage({ mode }) {
   const c = COPY[mode];
   const auth = useAuth();
+  const outlet = useOutletContext();
   const navigate = useNavigate();
   const from = useLocation().state?.from;
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const registrationDisabled = mode === 'register' && outlet?.settings?.allow_registration === false;
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -41,6 +43,9 @@ export function AuthPage({ mode }) {
     <form className="auth" onSubmit={onSubmit} noValidate>
       <img className="state-art" src="/art/empty.svg" alt="" width="480" height="320" />
       <h1>{c.title}</h1>
+      {registrationDisabled && (
+        <p className="error" role="alert">New user registration is currently disabled by site administrators.</p>
+      )}
       {mode === 'register' && (
         <>
           <label htmlFor="displayName">Display name</label>
@@ -52,7 +57,7 @@ export function AuthPage({ mode }) {
       <label htmlFor="password">Password</label>
       <input id="password" name="password" type="password" autoComplete={c.autocomplete} minLength={mode === 'register' ? 8 : undefined} maxLength={128} required />
       {error && <p className="error" role="alert">{error}</p>}
-      <p className="actions"><button className="btn" type="submit" disabled={busy}>{c.cta}</button></p>
+      <p className="actions"><button className="btn" type="submit" disabled={busy || registrationDisabled}>{c.cta}</button></p>
       {mode === 'login' && <p className="muted"><Link to="/forgot-password">Forgot password?</Link></p>}
       <p className="muted">{c.alt[0]} <Link to={c.alt[1]}>{c.alt[2]}</Link></p>
     </form>

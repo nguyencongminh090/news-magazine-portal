@@ -8,6 +8,7 @@ import { validate } from '../../http/validate.js';
 import { requireAuth } from './middleware.js';
 import { passwordSchema } from './password.js';
 import * as defaultRepo from './repo.js';
+import { getPublicSettings } from '../settings/repo.js';
 import { createAuthService, toUserPayload } from './service.js';
 
 const COOKIE = 'refresh_token';
@@ -75,6 +76,7 @@ const logBackgroundFailure = (p) => {
 export function authRouter({
   repo = defaultRepo, jwt, refreshTtlDays = 14, refreshGraceSeconds = 0, cookieSecure = false, allowedOrigins = [],
   limits = defaultLimits(), mailer = createMailer(), appBaseUrl = allowedOrigins[0], background = logBackgroundFailure,
+  getSettings = getPublicSettings,
 } = {}) {
   const router = Router();
   const service = createAuthService({ repo, jwt, refreshTtlDays, refreshGraceSeconds, mailer, appBaseUrl });
@@ -95,7 +97,12 @@ export function authRouter({
   };
 
   router.post('/register', limits.register, validate({ body: registerBody }),
-    wrap(async (req, res) => sendSession(res, 201, await service.register(req.validated.body))));
+    wrap(async (req, res) => {
+      if ((await getSettings()).allow_registration === false) {
+        throw new HttpError(403, 'Forbidden', { detail: 'Registration is currently disabled' });
+      }
+      sendSession(res, 201, await service.register(req.validated.body));
+    }));
 
   router.post('/login', limits.login, validate({ body: loginBody }),
     wrap(async (req, res) => sendSession(res, 200, await service.login(req.validated.body))));

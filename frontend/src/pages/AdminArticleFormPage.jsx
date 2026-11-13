@@ -29,6 +29,11 @@ function ArticleForm({ article, categories }) {
       tags: f.get('tags').toString().split(',').map((t) => t.trim()).filter(Boolean),
       status: f.get('status').toString(),
     };
+    const ogImageUrl = f.get('ogImageUrl')?.toString().trim() ?? '';
+    const imageAlt = f.get('imageAlt')?.toString().trim() ?? '';
+    if (ogImageUrl || article?.ogImageUrl) body.ogImageUrl = ogImageUrl || null;
+    if (imageAlt || article?.imageAlt) body.imageAlt = imageAlt || null;
+
     const slug = f.get('slug').toString().trim();
     if (article) Object.assign(body, { slug: slug || article.slug, updatedAt: article.updatedAt });
     else if (slug) body.slug = slug;
@@ -65,6 +70,10 @@ function ArticleForm({ article, categories }) {
       </select>
       <label htmlFor="tags">Tags <span className="muted">(comma separated)</span></label>
       <input id="tags" name="tags" defaultValue={(article?.tags ?? []).join(', ')} />
+      <label htmlFor="ogImageUrl">Hero image URL <span className="muted">(optional, https:// only)</span></label>
+      <input id="ogImageUrl" name="ogImageUrl" type="url" maxLength={500} defaultValue={article?.ogImageUrl ?? ''} placeholder="https://..." />
+      <label htmlFor="imageAlt">Image alt text <span className="muted">(optional, describes the hero image)</span></label>
+      <input id="imageAlt" name="imageAlt" maxLength={250} defaultValue={article?.imageAlt ?? ''} />
       <label htmlFor="status">Status</label>
       <select id="status" name="status" defaultValue={article?.status ?? 'draft'}>
         <option value="draft">Draft</option>

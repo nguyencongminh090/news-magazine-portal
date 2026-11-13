@@ -2,6 +2,7 @@ import { createApp } from './app.js';
 import { loadConfig } from './config.js';
 import { closePool, initPool } from './db.js';
 import { bootstrapAdmin } from './modules/auth/bootstrap.js';
+import { flushViews } from './modules/articles/views.js';
 
 const config = loadConfig(); // throws listing every problem -> process exits before listening
 await initPool(config);
@@ -22,6 +23,7 @@ function shutdown(signal) {
   console.log(`${signal}: shutting down`);
   setTimeout(() => process.exit(1), 10_000).unref();
   server.close(async () => {
+    await flushViews().catch(() => {});
     await closePool().catch(() => {});
     process.exit(0);
   });

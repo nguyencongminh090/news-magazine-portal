@@ -3,6 +3,7 @@ import { HttpError } from '../../http/errors.js';
 import { slugify } from './slug.js';
 
 const COLUMNS = `d.id, d.slug, d.title, d.summary, d.published_at, d.author_name, d.status, d.views_count, d.updated_at,
+       d.og_image_url, d.image_alt, d.seo_keywords,
        c.slug AS category_slug, c.name AS category_name,
        COALESCE((SELECT array_agg(t.name ORDER BY t.name) FROM document_tags dt JOIN tags t ON t.id = dt.tag_id
                   WHERE dt.document_id = d.id), '{}') AS tags`;
@@ -36,14 +37,17 @@ async function categoryId(c, slug) {
 }
 
 async function setTags(c, documentId, names) {
-  await c.query('DELETE FROM document_tags WHERE document_id = $1', [documentId]);
+  await c.query('DELETE FROM document_tags WHERE document_id = $1 AND is_user_tag = false', [documentId]);
   for (const name of names) {
     const { rows } = await c.query(
       `INSERT INTO tags (name, slug) VALUES ($1, $2)
        ON CONFLICT (slug) DO UPDATE SET slug = EXCLUDED.slug RETURNING id`,
       [name, tagSlug(name)],
     );
-    await c.query('INSERT INTO document_tags (document_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [documentId, rows[0].id]);
+    await c.query(
+      'INSERT INTO document_tags (document_id, tag_id, is_user_tag) VALUES ($1, $2, false) ON CONFLICT DO NOTHING',
+      [documentId, rows[0].id],
+    );
   }
 }
 
@@ -66,9 +70,9 @@ export function create(data, author) {
       if ((await c.query('SELECT 1 FROM documents WHERE slug = $1', [slug])).rowCount) throw new HttpError(409, 'Conflict', { detail: 'Slug already in use' });
     } else slug = await freeSlug(c, slugify(data.title));
     const { rows } = await c.query(
-      `INSERT INTO documents (title, slug, summary, content, category_id, author_name, author_id, status, published_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $8 = 'published' THEN now() END) RETURNING id`,
-      [data.title, slug, data.summary, data.body, catId, author.name, author.id, data.status],
+      `INSERT INTO documents (title, slug, summary, content, category_id, author_name, author_id, status, og_image_url, image_alt, published_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CASE WHEN $8 = 'published' THEN now() END) RETURNING id`,
+      [data.title, slug, data.summary, data.body, catId, author.name, author.id, data.status, data.ogImageUrl ?? null, data.imageAlt ?? null],
     );
     await setTags(c, rows[0].id, data.tags);
     return findById(rows[0].id, c);
@@ -78,7 +82,7 @@ export function create(data, author) {
 /** Full replace of editable fields. null = unknown id; 409 when `expectedUpdatedAt` is stale. */
 export function update(id, data, expectedUpdatedAt) {
   return withTransaction(async (c) => {
-    const { rows } = await c.query('SELECT status, published_at, updated_at FROM documents WHERE id = $1 FOR UPDATE', [id]);
+    const { rows } = await c.query('SELECT status, published_at, updated_at, og_image_url, image_alt FROM documents WHERE id = $1 FOR UPDATE', [id]);
     const cur = rows[0];
     if (!cur) return null;
     if (new Date(cur.updated_at).getTime() !== new Date(expectedUpdatedAt).getTime()) {
@@ -90,10 +94,12 @@ export function update(id, data, expectedUpdatedAt) {
     }
     // published_at is set once, on the first publish, and kept afterwards.
     const publishedAt = cur.published_at ?? (data.status === 'published' ? new Date() : null);
+    const ogImageUrl = data.ogImageUrl === undefined ? cur.og_image_url : data.ogImageUrl;
+    const imageAlt = data.imageAlt === undefined ? cur.image_alt : data.imageAlt;
     await c.query(
-      `UPDATE documents SET title = $1, slug = $2, summary = $3, content = $4, category_id = $5, status = $6, published_at = $7
-        WHERE id = $8`,
-      [data.title, data.slug, data.summary, data.body, catId, data.status, publishedAt, id],
+      `UPDATE documents SET title = $1, slug = $2, summary = $3, content = $4, category_id = $5, status = $6, published_at = $7, og_image_url = $8, image_alt = $9
+        WHERE id = $10`,
+      [data.title, data.slug, data.summary, data.body, catId, data.status, publishedAt, ogImageUrl, imageAlt, id],
     );
     await setTags(c, id, data.tags);
     return findById(id, c);

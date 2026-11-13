@@ -3,7 +3,11 @@ import { createAuthClient } from './authClient.js';
 
 export const AuthContext = createContext(null);
 
-export const STAFF_ROLES = ['admin', 'editor', 'seo'];
+export const STAFF_ROLES = ['admin', 'editor', 'moderator', 'seo'];
+export const ADMIN_ROLES = ['admin'];
+export const CONTENT_ROLES = ['admin', 'editor'];
+export const MOD_ROLES = ['admin', 'moderator'];
+export const SEO_ROLES = ['admin', 'seo'];
 
 /** status: 'loading' until the silent refresh on page load settles, then 'ready'. */
 export function AuthProvider({ children }) {

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News &amp; Digital Magazine Portal — Presentation Deck</title>
+  <style>
+    :root {
+      --cream: #FBF6EC;
+      --paper: #F3EAD7;
+      --sand: #E8D8B9;
+      --line: #E0CFAC;
+      --card: #FFFCF5;
+      --white: #FFFFFF;
+      --ink: #1E2A44;
+      --ink-2: #464F66;
+      --ink-3: #5C6479;
+      --terra: #B4492A;
+      --terra-d: #923818;
+      --terra-t: #F6DDD0;
+      --teal: #1B5E63;
+      --teal-d: #124549;
+      --teal-t: #CFE3DF;
+      --sage: #3F6B4C;
+      --sage-t: #DDEBD2;
+      --sun: #E8A33D;
+      --sun-t: #FBE8BC;
+      --serif: "Georgia", "Palatino Linotype", "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+      --shadow: 0 14px 36px -18px rgba(30, 42, 68, 0.25), 0 4px 10px -4px rgba(30, 42, 68, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #172035;
+      color: var(--ink);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    /* Top Chrome */
+    .topbar {
+      height: 54px;
+      background: var(--ink);
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(251, 246, 236, 0.15);
+      gap: 12px;
+      user-select: none;
+    }
+    .topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--sun);
+      display: inline-block;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      background: rgba(251, 246, 236, 0.1);
+      color: var(--cream);
+      border: 1px solid rgba(251, 246, 236, 0.22);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font: 600 13px var(--sans);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .ctrl-btn:hover { background: rgba(251, 246, 236, 0.2); }
+    .ctrl-btn.active { background: var(--terra); border-color: var(--terra); color: var(--white); }
+    .counter {
+      font: 700 13px var(--mono);
+      color: var(--sun-t);
+      min-width: 68px;
+      text-align: center;
+    }
+
+    /* Stage */
+    .stage {
+      height: calc(100vh - 54px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 24px 24px;
+      position: relative;
+    }
+    .progress-bar {
+      position: fixed;
+      top: 54px;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--terra), var(--sun));
+      transition: width 0.25s ease;
+      z-index: 20;
+    }
+
+    /* Slide Frame (16:9 responsive canvas) */
+    .deck {
+      width: min(1240px, 100%);
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 100px);
+      position: relative;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      background: var(--cream);
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 36px 46px 32px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; animation: fadeSlide 0.22s ease-out; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Header & Footer */
+    .slide-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex: none;
+    }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--teal-t);
+      color: var(--teal-d);
+      font: 800 12px/1 var(--sans);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .kicker.terra { background: var(--terra-t); color: var(--terra-d); }
+    .kicker.sun { background: var(--sun-t); color: var(--ink); }
+    .kicker.sage { background: var(--sage-t); color: var(--sage); }
+    .slide-num {
+      font: 700 13px var(--mono);
+      color: var(--ink-3);
+    }
+    h1.title {
+      font-family: var(--serif);
+      font-size: clamp(30px, 3.6vw, 48px);
+      line-height: 1.08;
+      margin: 0 0 14px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    h2.heading {
+      font-family: var(--serif);
+      font-size: clamp(24px, 2.5vw, 34px);
+      line-height: 1.12;
+      margin: 0 0 18px;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+    }
+    .lead {
+      font-size: clamp(15px, 1.35vw, 19px);
+      line-height: 1.5;
+      color: var(--ink-2);
+      margin: 0 0 20px;
+      max-width: 68ch;
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+    .slide-foot {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-3);
+      flex: none;
+    }
+
+    /* Layout Helpers */
+    .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
+    .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
+    .cols-60-40 { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: center; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 16px -12px rgba(30, 42, 68, 0.25);
+    }
+    .card.paper { background: var(--paper); }
+    .card.teal { background: var(--teal-d); color: var(--cream); border-color: var(--teal); }
+    .card.terra { background: var(--terra-t); border-color: var(--terra); }
+    .card.sun { background: var(--sun-t); border-color: var(--sun); }
+    .card h3 {
+      font-family: var(--serif);
+      font-size: 18px;
+      margin: 0 0 8px;
+      color: inherit;
+    }
+    .card p, .card li {
+      font-size: 14px;
+      line-height: 1.48;
+      margin: 0 0 6px;
+    }
+    .card ul { margin: 0; padding-left: 18px; }
+    .card.teal p, .card.teal li { color: #E4EFEE; }
+
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--terra);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .card.teal .stat-num { color: var(--sun); }
+
+    table.matrix {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      font-size: 13.5px;
+    }
+    table.matrix th, table.matrix td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+    table.matrix th {
+      background: var(--paper);
+      font-weight: 800;
+      color: var(--ink);
+    }
+    table.matrix tr:last-child td { border-bottom: 0; }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font: 700 11.5px var(--sans);
+      background: var(--sage-t);
+      color: var(--sage);
+    }
+    .badge.no { background: var(--paper); color: var(--ink-3); }
+    .badge.warn { background: var(--sun-t); color: var(--ink); }
+    code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: var(--paper);
+      padding: 1px 6px;
+      border-radius: 6px;
+      color: var(--terra-d);
+    }
+    .card.teal code {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--sun-t);
+    }
+
+    /* Cover decoration */
+    .cover-wrap {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      height: 100%;
+    }
+    .cover-art {
+      background: var(--teal-t);
+      border: 1px solid var(--line);
+      border-radius: 34px 96px 34px 34px;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .pill {
+      padding: 6px 13px;
+      border-radius: 999px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      font: 700 12.5px var(--sans);
+      color: var(--ink);
+    }
+
+    /* Speaker Notes Drawer */
+    .notes-panel {
+      position: fixed;
+      right: 24px;
+      bottom: 20px;
+      width: min(460px, calc(100vw - 48px));
+      background: var(--ink);
+      color: var(--cream);
+      border: 1px solid rgba(251, 246, 236, 0.25);
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+      z-index: 50;
+      display: none;
+    }
+    .notes-panel.open { display: block; }
+    .notes-panel h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sun); }
+    .notes-panel p { margin: 0; font-size: 14px; line-height: 1.5; color: #E4EFEE; }
+
+    /* Grid Overview */
+    .overview {
+      position: fixed;
+      inset: 54px 0 0 0;
+      background: rgba(23, 32, 53, 0.94);
+      z-index: 40;
+      padding: 28px;
+      overflow-y: auto;
+      display: none;
+    }
+    .overview.open { display: block; }
+    .overview-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .thumb {
+      background: var(--cream);
+      border: 2px solid transparent;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .thumb:hover { transform: translateY(-2px); border-color: var(--sun); }
+    .thumb.current { border-color: var(--terra); background: var(--card); }
+    .thumb small { font: 700 11px var(--mono); color: var(--terra); }
+    .thumb strong { display: block; margin-top: 6px; font-family: var(--serif); font-size: 16px; }
+
+    /* Compact spacing on shorter laptop/720p screens to prevent vertical overflow */
+    @media (max-height: 780px) {
+      .slide { padding: 24px 38px 20px; }
+      .slide-top { margin-bottom: 10px; }
+      h2.heading { margin-bottom: 12px; font-size: clamp(22px, 2.3vw, 30px); }
+      .slide-foot { margin-top: 10px; padding-top: 8px; }
+      .card { padding: 13px 16px; }
+      .card h3 { font-size: 16.5px; margin-bottom: 6px; }
+      .card p, .card li { font-size: 13.5px; line-height: 1.4; margin-bottom: 4px; }
+      .stat-num { font-size: 28px; margin-bottom: 4px; }
+    }
+
+    /* Print to PDF */
+    @media print {
+      html, body { overflow: visible; height: auto; background: #fff; }
+      .topbar, .progress-bar, .notes-panel, .overview { display: none !important; }
+      .stage { display: block; padding: 0; height: auto; }
+      .deck { width: 100%; max-height: none; aspect-ratio: auto; }
+      .slide {
+        position: static;
+        display: flex !important;
+        page-break-after: always;
+        break-after: page;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-dot"></span> News &amp; Digital Magazine Portal</div>
+    <div class="controls">
+      <button class="ctrl-btn" id="btn-prev" title="Previous slide (Left Arrow)">← Prev</button>
+      <span class="counter" id="counter">01 / 12</span>
+      <button class="ctrl-btn" id="btn-next" title="Next slide (Right Arrow)">Next →</button>
+      <button class="ctrl-btn" id="btn-grid" title="All slides (G)">Slides Grid</button>
+      <button class="ctrl-btn" id="btn-notes" title="Speaker notes (N)">Speaker Notes</button>
+      <button class="ctrl-btn" id="btn-print" title="Print / Save as PDF">Print PDF</button>
+    </div>
+  </header>
+  <div class="progress-bar" id="progress"></div>
+
+  <main class="stage">
+    <div class="deck" id="deck">
+
+      <!-- SLIDE 1: COVER -->
+      <section class="slide active" data-notes="Chào mừng thầy/cô và các bạn. Đây là bài thuyết trình tổng quan về dự án News & Digital Magazine Portal — ứng dụng web full-stack hoàn chỉnh cả Giai đoạn 1 (CRUD, Auth, RBAC 4 vai trò) và Giai đoạn 2 (Search Engine theo giáo trình SEG301m: Inverted Index, BM25F/TF-IDF/QL/Boolean/Hybrid, RM3 PRF, đánh giá IR & SEO).">
+        <div class="cover-wrap">
+          <div>
+            <span class="kicker terra">Full-Stack Web Application · Phase 1 &amp; Phase 2 Complete</span>
+            <h1 class="title" style="margin-top: 16px;">News &amp; Digital Magazine Portal</h1>
+            <p class="lead">Cổng thông tin tin tức &amp; tạp chí số hoàn chỉnh với kiến trúc RESTful API, PostgreSQL, xác thực bảo mật cao, phân quyền RBAC 4 vai trò và Search Engine tự xây dựng (BM25F, TF-IDF, Query Likelihood, Boolean, Hybrid, RM3 PRF, Evaluation &amp; SEO).</p>
+            <div class="pill-row">
+              <span class="pill">React 19 + Vite</span>
+              <span class="pill">Node.js + Express 5</span>
+              <span class="pill">PostgreSQL 16 + tsvector</span>
+              <span class="pill">Argon2id + JWT Rotation</span>
+              <span class="pill">104 Wikinews Articles</span>
+              <span class="pill">IR Search Engine (SEG301m)</span>
+            </div>
+          </div>
+          <div class="cover-art">
+            <svg viewBox="0 0 320 260" width="100%" aria-hidden="true">
+              <rect x="20" y="24" width="280" height="212" rx="22" fill="#FFFCF5" stroke="#1E2A44" stroke-width="3"/>
+              <rect x="20" y="24" width="280" height="38" rx="22" fill="#1E2A44"/>
+              <circle cx="44" cy="43" r="6" fill="#E8A33D"/>
+              <circle cx="64" cy="43" r="6" fill="#B4492A"/>
+              <circle cx="84" cy="43" r="6" fill="#CFE3DF"/>
+              <rect x="38" y="80" width="118" height="84" rx="14" fill="#F6DDD0" stroke="#B4492A" stroke-width="2"/>
+              <circle cx="97" cy="112" r="20" fill="#E8A33D"/>
+              <path d="M52 152 Q97 120 142 152" fill="#1B5E63"/>
+              <rect x="172" y="82" width="110" height="14" rx="7" fill="#1E2A44"/>
+              <rect x="172" y="106" width="94" height="10" rx="5" fill="#5C6479"/>
+              <rect x="172" y="124" width="104" height="10" rx="5" fill="#5C6479"/>
+              <rect x="172" y="144" width="76" height="22" rx="11" fill="#B4492A"/>
+              <rect x="38" y="180" width="244" height="36" rx="12" fill="#F3EAD7" stroke="#E0CFAC" stroke-width="1.5"/>
+              <circle cx="60" cy="198" r="9" fill="#1B5E63"/>
+              <rect x="78" y="193" width="140" height="10" rx="5" fill="#464F66"/>
+              <rect x="232" y="190" width="38" height="16" rx="8" fill="#DDEBD2"/>
+            </svg>
+          </div>
+        </div>
+        <div class="slide-foot">
+          <span>News &amp; Digital Magazine Portal · Software Engineering Project</span>
+          <span>Phím tắt: ← / → để chuyển slide · G mở lưới · N mở ghi chú</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: OBJECTIVES -->
+      <section class="slide" data-notes="Mục tiêu dự án gồm 2 giai đoạn và đều đã hoàn thành: Giai đoạn 1 xây dựng Full-stack Portal, Auth và RBAC 4 vai trò; Giai đoạn 2 triển khai hoàn chỉnh Search Engine tự code (Tokenization, Inverted Index, BM25F/TF-IDF/QL/Boolean/Hybrid, RM3 PRF, Evaluation MAP/MRR/NDCG & SEO).">
+        <div class="slide-top">
+          <span class="kicker">01 · Objectives &amp; Scope</span>
+          <span class="slide-num">02 / 12</span>
+        </div>
+        <h2 class="heading">Mục tiêu ngắn hạn (Phase 1) &amp; Dài hạn (Phase 2)</h2>
+        <div class="content">
+          <div class="cols-2">
+            <div class="card">
+              <div class="stat-num">Phase 1</div>
+              <h3>Full-Stack Portal, Auth &amp; RBAC</h3>
+              <ul>
+                <li><strong>Public Portal:</strong> Trang chủ phân trang, chuyên mục, trang chi tiết đầy đủ metadata (ảnh, tác giả, ngày, lượt xem, tags).</li>
+                <li><strong>Lọc &amp; Phân trang nền tảng:</strong> Lọc theo Category, Tag, Date Range, Sort và fallback SQL <code>ILIKE</code> khi truy vấn chỉ gồm stopword.</li>
+                <li><strong>Tương tác người dùng:</strong> Đăng ký, đăng nhập, quản lý hồ sơ, bình luận, đánh giá 1–5 sao, thích bài viết, gắn tag &amp; báo cáo vi phạm.</li>
+                <li><strong>Admin CMS RBAC 4 vai trò:</strong> Super Admin, Content Manager, Moderator, Data &amp; SEO Specialist.</li>
+              </ul>
+            </div>
+            <div class="card teal">
+              <div class="stat-num">Phase 2</div>
+              <h3>Search Engine &amp; IR Pipeline (Đã hoàn thành)</h3>
+              <ul>
+                <li><strong>Document Store &amp; Index:</strong> 104 bài Wikinews (CC BY 4.0), PostgreSQL <code>tsvector</code> GIN + In-memory Fielded Inverted Index (Delta + V-Byte, Skip Pointers).</li>
+                <li><strong>Text &amp; Query Processing:</strong> Tokenizer, Stopwords, Porter Stemmer, Zipf/Heap, Entity Extraction, 3-shingle, Spell Check &amp; Dice Expansion.</li>
+                <li><strong>Retrieval &amp; Clustering:</strong> Okapi BM25F, TF-IDF Cosine, Query Likelihood, Boolean + Phrase, Hybrid, RM3 PRF &amp; K-Means Clustering.</li>
+                <li><strong>Telemetry &amp; Evaluation:</strong> <code>search_query_log</code> + <code>search_click_log</code>, MAP/MRR/NDCG@K, Kendall τ, Sign Test &amp; Search Lab.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Objectives</span><span>Phase 1 &amp; Phase 2 Complete</span></div>
+      </section>
+
+      <!-- SLIDE 3: ARCHITECTURE & TECH STACK -->
+      <section class="slide" data-notes="Kiến trúc 3 tầng rõ ràng: React 19 SPA giao tiếp với Express 5 REST API (kèm module Search Engine tự xây dựng) qua JSON/RFC 9457, kết nối PostgreSQL 16 (18 bảng chuẩn hóa) bằng pool pg và plain SQL migrations đánh số tuần tự 001..011.">
+        <div class="slide-top">
+          <span class="kicker">02 · System Architecture</span>
+          <span class="slide-num">03 / 12</span>
+        </div>
+        <h2 class="heading">Kiến trúc hệ thống &amp; Công nghệ sử dụng</h2>
+        <div class="content">
+          <div class="card paper" style="margin-bottom: 18px; padding: 16px;">
+            <svg viewBox="0 0 960 170" width="100%" aria-label="System Architecture Diagram">
+              <defs>
+                <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#B4492A"/>
+                </marker>
+                <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#1B5E63"/>
+                </marker>
+              </defs>
+              <rect x="16" y="22" width="250" height="126" rx="16" fill="#FFFCF5" stroke="#1B5E63" stroke-width="2.5"/>
+              <text x="141" y="54" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#1E2A44">Frontend SPA</text>
+              <text x="141" y="80" text-anchor="middle" font-size="13" fill="#464F66">React 19 · React Router 7 · Vite</text>
+              <text x="141" y="102" text-anchor="middle" font-size="13" fill="#464F66">Warm Illustrated Humanist UI</text>
+              <text x="141" y="124" text-anchor="middle" font-size="12" fill="#1B5E63" font-weight="700">WCAG 2.2 AA · In-memory JWT</text>
+
+              <path d="M270 85 L344 85" stroke="#B4492A" stroke-width="3" marker-end="url(#arr)"/>
+              <text x="307" y="73" text-anchor="middle" font-size="11.5" font-weight="700" fill="#B4492A">REST / JSON</text>
+
+              <rect x="352" y="14" width="276" height="142" rx="16" fill="#FFFCF5" stroke="#B4492A" stroke-width="2.5"/>
+              <text x="490" y="44" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#1E2A44">Backend API Server</text>
+              <text x="490" y="68" text-anchor="middle" font-size="13" fill="#464F66">Node.js ESM · Express 5 · Zod Strict</text>
+              <text x="490" y="90" text-anchor="middle" font-size="13" fill="#464F66">Helmet · Rate Limiter · RFC 9457</text>
+              <text x="490" y="112" text-anchor="middle" font-size="13" fill="#464F66">Argon2id · Jose JWT · SEO Meta SSR</text>
+              <text x="490" y="136" text-anchor="middle" font-size="12" fill="#B4492A" font-weight="700">Modular Routers · RBAC · IR Engine</text>
+
+              <path d="M632 85 L700 85" stroke="#1B5E63" stroke-width="3" marker-end="url(#arr-teal)"/>
+              <text x="668" y="73" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1B5E63">pg Pool</text>
+
+              <rect x="708" y="22" width="236" height="126" rx="16" fill="#1E2A44"/>
+              <text x="826" y="54" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#FBF6EC">PostgreSQL 16</text>
+              <text x="826" y="80" text-anchor="middle" font-size="13" fill="#E4EFEE">11 Plain SQL Migrations (001–011)</text>
+              <text x="826" y="102" text-anchor="middle" font-size="13" fill="#E4EFEE">18 Normalized Tables + Triggers</text>
+              <text x="826" y="124" text-anchor="middle" font-size="12" fill="#FBE8BC" font-weight="700">GIN tsvector · Query/Click/Audit Logs</text>
+            </svg>
+          </div>
+          <div class="cols-3">
+            <div class="card">
+              <h3>Frontend</h3>
+              <p>Single-page app tối ưu khả năng đọc, responsive mobile drawer, đọc mượt với 2 font tự host (Fraunces + Nunito Sans).</p>
+            </div>
+            <div class="card">
+              <h3>Backend API &amp; IR Engine</h3>
+              <p>Tách rõ Route (validate Zod <code>.strict()</code>), Service (Search Engine IR pipeline) và Repository (SQL parameterized chống SQLi 100%).</p>
+            </div>
+            <div class="card">
+              <h3>SEO Meta, Sitemap &amp; RSS</h3>
+              <p>Inject trực tiếp <code>&lt;title&gt;</code>, <code>og:*</code>, <code>keywords</code>, <code>og:image:alt</code> vào HTML shell, kèm <code>/sitemap.xml</code>, <code>/api/feed.xml</code> &amp; <code>/robots.txt</code>.</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Architecture</span><span>Clean Separation: Routes · IR Services · SQL Repositories</span></div>
+      </section>
+
+      <!-- SLIDE 4: DATABASE SCHEMA -->
+      <section class="slide" data-notes="CSDL gồm 18 bảng chuẩn hóa qua 11 migration (001..011) chia 4 nhóm. Migration 010 bổ sung moderator, user_tags, article_likes, image_alt, seo_keywords, site_settings; migration 011 bổ sung search_query_log và liên kết search_click_log (query_log_id, rank_position, retrieval_model).">
+        <div class="slide-top">
+          <span class="kicker sun">03 · Database Schema &amp; Search Logs</span>
+          <span class="slide-num">04 / 12</span>
+        </div>
+        <h2 class="heading">Thiết kế cơ sở dữ liệu PostgreSQL (11 Migrations · 18 Bảng)</h2>
+        <div class="content">
+          <div class="cols-4">
+            <div class="card">
+              <h3>Auth &amp; RBAC</h3>
+              <ul>
+                <li><code>users</code> (bio, avatar_url, password_changed_at, email_verified_at)</li>
+                <li><code>roles</code> (admin, editor, moderator, seo, reader) &amp; <code>user_roles</code></li>
+                <li><code>refresh_tokens</code> (family_id, reuse detection) &amp; <code>user_tokens</code></li>
+                <li><code>user_tags</code> (sở thích cá nhân)</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Content Store</h3>
+              <ul>
+                <li><code>categories</code> (name, slug)</li>
+                <li><code>tags</code> (name, slug)</li>
+                <li><code>documents</code> (title, content, summary, status, views_count, meta_*, og_image_url, image_alt, seo_keywords)</li>
+                <li><code>document_tags</code> (editorial + user-added tags)</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Engagement</h3>
+              <ul>
+                <li><code>comments</code> (status: visible/hidden, chống duplicate md5)</li>
+                <li><code>ratings</code> (1–5 sao, PK user+doc)</li>
+                <li><code>article_likes</code> (lượt thích)</li>
+                <li><code>reports</code> (1 report / người / mục tiêu)</li>
+              </ul>
+            </div>
+            <div class="card teal">
+              <h3>Logs &amp; Settings</h3>
+              <ul>
+                <li><code>search_query_log</code> (query_string, retrieval_model, result_doc_ids, latency_ms)</li>
+                <li><code>search_click_log</code> (user_id, query_string, clicked_doc_id, query_log_id, rank_position)</li>
+                <li><code>audit_log</code> (actor_id, action, entity, details)</li>
+                <li><code>site_settings</code> (cấu hình toàn hệ thống)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="cols-2" style="margin-top: 16px;">
+            <div class="card paper">
+              <h3>Search Indexing &amp; Query Telemetry (005 &amp; 011)</h3>
+              <p>Cột <code>tsv</code> (<code>GIN</code>, trọng số Title A &gt; Content B) kết hợp In-memory Fielded Inverted Index và cặp bảng <code>search_query_log</code> / <code>search_click_log</code> để đánh giá CTR &amp; IR metrics.</p>
+            </div>
+            <div class="card paper">
+              <h3>Batched View Counter (Anti Hot-Row Lock)</h3>
+              <p><code>GET /api/articles/:slug</code> ghi nhận lượt xem vào bộ đệm RAM (<code>views.js</code>) và đồng bộ hàng loạt vào PostgreSQL mỗi 5 giây bằng <code>unnest()</code> + flush khi tắt server.</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>PostgreSQL Schema</span><span>104 Wikinews Articles · 8 Categories · 192+ Tags</span></div>
+      </section>
+
+      <!-- SLIDE 5: SECURITY & AUTH -->
+      <section class="slide" data-notes="Bảo mật được thiết kế theo chuẩn thực tế: Argon2id cho mật khẩu, JWT ngắn hạn chỉ giữ trong closure RAM (không lưu localStorage), Refresh Token HttpOnly cookie có rotation family và phát hiện token reuse.">
+        <div class="slide-top">
+          <span class="kicker terra">04 · Security &amp; Authentication</span>
+          <span class="slide-num">05 / 12</span>
+        </div>
+        <h2 class="heading">Kiến trúc xác thực &amp; Bảo mật đa lớp</h2>
+        <div class="content">
+          <div class="cols-2">
+            <div class="card">
+              <h3>Vòng đời phiên đăng nhập (ADR-002)</h3>
+              <ul>
+                <li><strong>Password Hashing:</strong> <code>argon2id</code> + kiểm tra danh sách mật khẩu yếu (blocklist), chống timing oracle khi login/reset.</li>
+                <li><strong>Access Token (15m):</strong> JWT ký HS256 (<code>jose</code>), chỉ lưu trong closure JS — miễn nhiễm XSS đánh cắp từ <code>localStorage</code>.</li>
+                <li><strong>Refresh Token Rotation (14d):</strong> Cookie <code>HttpOnly; SameSite=Strict</code>, lưu SHA-256 hash. Dùng lại token cũ sẽ thu hồi toàn bộ <code>family_id</code> (kèm grace window 30s cho multi-tab).</li>
+                <li><strong>CSRF Protection:</strong> Yêu cầu header <code>X-Requested-With: fetch</code> + kiểm tra <code>Origin</code> allowlist.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Kiểm soát truy cập &amp; Chống lạm dụng</h3>
+              <ul>
+                <li><strong>DB-backed Auth Middleware:</strong> Mỗi request kiểm tra lại <code>is_active</code>, <code>roles</code>, và <code>password_changed_at</code> từ DB (thu hồi quyền ngay lập tức).</li>
+                <li><strong>Email Verification Gate:</strong> Token dùng một lần có hạn cho xác thực email &amp; khôi phục mật khẩu; người dùng chưa xác thực bị chặn spam comment/rating/like.</li>
+                <li><strong>Rate Limiting:</strong> Giới hạn theo IP + email cho login/reset và theo từng User ID cho bình luận, đánh giá, báo cáo (trả <code>429 + Retry-After</code>).</li>
+                <li><strong>Strict Validation:</strong> Zod <code>.strict()</code> chặn mass-assignment; lỗi chuẩn <code>application/problem+json</code>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Security</span><span>Zero PII leaks · CSP/Helmet · Parameterized SQL</span></div>
+      </section>
+
+      <!-- SLIDE 6: PUBLIC READER UI -->
+      <section class="slide" data-notes="Giao diện độc giả theo phong cách Warm Illustrated Humanist (DESIGN.md), đạt chuẩn WCAG 2.2 AA về độ tương phản, kích thước vùng chạm >= 44px, hỗ trợ tiếng Việt đầy đủ.">
+        <div class="slide-top">
+          <span class="kicker">05 · Client / User Interface</span>
+          <span class="slide-num">06 / 12</span>
+        </div>
+        <h2 class="heading">Trải nghiệm độc giả &amp; Trang chi tiết bài viết</h2>
+        <div class="content">
+          <div class="cols-60-40">
+            <div class="card">
+              <h3>Trang chủ, Chuyên mục &amp; Trang chi tiết</h3>
+              <ul>
+                <li><strong>Home &amp; Directory:</strong> Tin nổi bật (Lead story) + 2 tin phụ + danh sách tin mới phân trang kèm tóm tắt, chuyên mục và số lượt xem.</li>
+                <li><strong>Detail View đầy đủ Metadata:</strong>
+                  <ul>
+                    <li>Ảnh Hero (<code>ogImageUrl</code> kèm <code>imageAlt</code> chuẩn SEO, tự fallback về minh họa chuyên mục).</li>
+                    <li>Tiêu đề, Kicker chuyên mục, Tác giả, Ngày xuất bản, <strong>Lượt xem (viewsCount)</strong>.</li>
+                    <li>Hộp tóm tắt <strong>Key points</strong>, thanh tiến trình đọc (Reading Progress), nội dung prose chuẩn 66ch.</li>
+                    <li>Danh sách <strong>Tags</strong> bấm để lọc, <strong>TF-IDF Suggested Tags + Key Entities</strong> &amp; <strong>Related Articles</strong> (Cosine Similarity).</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="card paper">
+              <h3>Design System (WCAG 2.2 AA)</h3>
+              <p>Phong cách <strong>Warm Illustrated Humanist</strong>:</p>
+              <ul>
+                <li>Nền giấy kem ấm <code>#FBF6EC</code>, mực xanh đậm <code>#1E2A44</code> (tương phản 13.3:1).</li>
+                <li>Typography: <strong>Fraunces</strong> (tiêu đề) &amp; <strong>Nunito Sans</strong> (nội dung ≥ 17px, hỗ trợ dấu tiếng Việt).</li>
+                <li>Touch target ≥ 44px, drawer menu hỗ trợ focus-trap &amp; Escape, tôn trọng <code>prefers-reduced-motion</code>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Public Portal</span><span>Home · Category · Search · Article Detail</span></div>
+      </section>
+
+      <!-- SLIDE 7: SEARCH ENGINE & TELEMETRY -->
+      <section class="slide" data-notes="Trang /search vận hành trực tiếp trên Search Engine Phase 2 (BM25F, TF-IDF, Query Likelihood, Boolean + Phrase, Hybrid, RM3 PRF, Spell Check, Dice Expansion, K-Means Clustering) và ghi log đầy đủ vào search_query_log + search_click_log để đánh giá CTR và chất lượng xếp hạng.">
+        <div class="slide-top">
+          <span class="kicker sage">06 · Search Engine, Ranking &amp; Telemetry</span>
+          <span class="slide-num">07 / 12</span>
+        </div>
+        <h2 class="heading">Search Engine Phase 2 &amp; Telemetry (Query + Click Logs)</h2>
+        <div class="content">
+          <div class="cols-2">
+            <div class="card">
+              <h3>Truy xuất &amp; Xếp hạng (<code>/api/articles</code> · <code>/api/search</code>)</h3>
+              <ul>
+                <li><strong>5 Retrieval Models:</strong> <code>BM25F</code> (fielded, mặc định), <code>TF-IDF Cosine</code>, <code>Query Likelihood</code> (Dirichlet), <code>Boolean + Phrase</code> (<code>AND/OR/-</code>, <code>"..."</code>), <code>Hybrid</code> (BM25 + Proximity + Freshness).</li>
+                <li><strong>Query Intelligence:</strong> Noisy-channel <strong>Spell Check</strong>, <strong>Dice Expansion</strong>, <strong>RM3 PRF</strong> (<code>prf=1</code>), autocomplete <code>/api/search/suggest</code>.</li>
+                <li><strong>Result Presentation:</strong> Highlight snippet, <code>explain=1</code> score breakdown &amp; <strong>K-Means Clustering</strong>.</li>
+                <li><strong>Bộ lọc &amp; Sort:</strong> Category, Tag, Date Range (<code>from</code>–<code>to</code>), Sort (<code>relevance</code>, <code>latest</code>, <code>views</code>, <code>oldest</code>) + SQL fallback khi chỉ lọc metadata/stopword.</li>
+              </ul>
+            </div>
+            <div class="card terra">
+              <h3>Query &amp; Click Telemetry + Discovery</h3>
+              <ul>
+                <li><strong>Query Log (<code>search_query_log</code>):</strong> Mỗi truy vấn lưu <code>query_string</code>, <code>retrieval_model</code>, <code>filters</code>, <code>result_doc_ids</code>, <code>latency_ms</code> → trả về <code>queryLogId</code>.</li>
+                <li><strong>Click Log (<code>POST /api/search-clicks</code>):</strong> Gửi bất đồng bộ (<code>keepalive: true</code>) <code>{ queryString, slug, queryLogId, rankPosition, retrievalModel }</code> vào <code>search_click_log</code>.</li>
+                <li><strong>Discovery:</strong> <code>/api/search/tag-cloud</code> &amp; gợi ý cá nhân hóa <code>/api/search/recommendations</code> (Collaborative Filtering + User Tags).</li>
+                <li><strong>Phân tích CTR:</strong> Theo dõi truy vấn phổ biến, CTR &amp; hiệu năng trên <strong>Analytics</strong> &amp; <strong>Search Engine Lab</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Search Engine Pipeline</span><span>Query → IR Ranking → search_query_log &amp; search_click_log → Analytics</span></div>
+      </section>
+
+      <!-- SLIDE 8: PROFILE & ENGAGEMENT -->
+      <section class="slide" data-notes="Người dùng có đầy đủ tính năng quản lý hồ sơ cá nhân tại /account/profile, thích bài viết, đánh giá 1-5 sao, bình luận, gắn tag lên bài viết và báo cáo vi phạm.">
+        <div class="slide-top">
+          <span class="kicker">07 · User Profile &amp; Engagement</span>
+          <span class="slide-num">08 / 12</span>
+        </div>
+        <h2 class="heading">Quản lý hồ sơ cá nhân &amp; Tương tác cộng đồng</h2>
+        <div class="content">
+          <div class="cols-3">
+            <div class="card">
+              <h3>Hồ sơ cá nhân (<code>/account/profile</code>)</h3>
+              <ul>
+                <li>Cập nhật <strong>Display name</strong>, <strong>Bio</strong> (tối đa 500 ký tự) và <strong>Avatar URL</strong> (<code>https://</code>).</li>
+                <li>Quản lý <strong>Topic Tags</strong> yêu thích (lưu ở bảng <code>user_tags</code>) và bấm tag để tìm bài liên quan.</li>
+                <li>Thống kê hoạt động cá nhân: số bình luận, lượt đánh giá, lượt thích.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Đánh giá, Thích &amp; User Tagging</h3>
+              <ul>
+                <li><strong>Rating 1–5 sao:</strong> Upsert idempotent, cập nhật điểm trung bình theo thời gian thực.</li>
+                <li><strong>Like bài viết:</strong> Nút Like / Liked kèm tổng lượt thích (<code>article_likes</code>).</li>
+                <li><strong>User Tagging:</strong> Người dùng đã xác thực email có thể gắn thêm tag cộng đồng cho bài viết và tự gỡ tag mình đã thêm.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Bình luận &amp; Báo cáo vi phạm</h3>
+              <ul>
+                <li><strong>Comments:</strong> Phân trang 20 bình luận/lần, có unique guard chống double-submit trùng lặp nội dung.</li>
+                <li><strong>Reports:</strong> Báo cáo bài viết hoặc bình luận vi phạm với lý do cụ thể (chặn báo cáo trùng 409).</li>
+                <li><strong>An toàn:</strong> Render nội dung thuần text trong React, chống XSS tuyệt đối.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>User Engagement</span><span>GET/PATCH /api/users/me · Rating · Like · Comment · Tag · Report</span></div>
+      </section>
+
+      <!-- SLIDE 9: ADMIN RBAC MATRIX -->
+      <section class="slide" data-notes="Hệ thống phân quyền RBAC 4 vai trò nhân sự được kiểm tra chặt chẽ ở tầng API Express (requireRole) chứ không chỉ ẩn nút trên UI.">
+        <div class="slide-top">
+          <span class="kicker sun">08 · Admin RBAC Matrix</span>
+          <span class="slide-num">09 / 12</span>
+        </div>
+        <h2 class="heading">Ma trận phân quyền 4 vai trò quản trị (RBAC)</h2>
+        <div class="content">
+          <table class="matrix">
+            <thead>
+              <tr>
+                <th>Chức năng / Module</th>
+                <th>Super Admin (<code>admin</code>)</th>
+                <th>Content Manager (<code>editor</code>)</th>
+                <th>Moderator (<code>moderator</code>)</th>
+                <th>Data &amp; SEO (<code>seo</code>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Quản lý Bài viết (CRUD, Publish/Archive)</strong></td>
+                <td><span class="badge">Full + Delete</span></td>
+                <td><span class="badge">Create / Edit</span></td>
+                <td><span class="badge no">403</span></td>
+                <td><span class="badge no">403</span></td>
+              </tr>
+              <tr>
+                <td><strong>Quản lý Taxonomy (Categories &amp; Tags)</strong></td>
+                <td><span class="badge">Full CRUD</span></td>
+                <td><span class="badge">Full CRUD</span></td>
+                <td><span class="badge no">403</span></td>
+                <td><span class="badge no">403</span></td>
+              </tr>
+              <tr>
+                <td><strong>Kiểm duyệt Comments, Reports &amp; Spam Control</strong></td>
+                <td><span class="badge">Full Control</span></td>
+                <td><span class="badge warn">Hide Comment</span></td>
+                <td><span class="badge">Full Control</span></td>
+                <td><span class="badge no">403</span></td>
+              </tr>
+              <tr>
+                <td><strong>SEO Metadata, Audit, Analytics &amp; Search Engine Lab</strong></td>
+                <td><span class="badge">Full Access</span></td>
+                <td><span class="badge warn">Chỉ SEO Audit</span></td>
+                <td><span class="badge no">403</span></td>
+                <td><span class="badge">Full Access</span></td>
+              </tr>
+              <tr>
+                <td><strong>Quản lý Tài khoản, Phân quyền Role, Audit Logs, Settings</strong></td>
+                <td><span class="badge">Full Access</span></td>
+                <td><span class="badge no">403</span></td>
+                <td><span class="badge no">403</span></td>
+                <td><span class="badge no">403</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="lead" style="margin-top: 14px; margin-bottom: 0;">Mỗi trang <code>/admin/*</code> có sidebar thích ứng theo vai trò và mọi endpoint đều được bảo vệ phía server bởi middleware <code>requireRole(...)</code> + ghi lại <code>audit_log</code>.</p>
+        </div>
+        <div class="slide-foot"><span>Server-Enforced RBAC</span><span>DB-checked roles on every request</span></div>
+      </section>
+
+      <!-- SLIDE 10: ADMIN DASHBOARDS -->
+      <section class="slide" data-notes="Tổng hợp các màn hình quản trị mới được xây dựng cho từng vai trò.">
+        <div class="slide-top">
+          <span class="kicker">09 · Admin Workspace</span>
+          <span class="slide-num">10 / 12</span>
+        </div>
+        <h2 class="heading">Không gian làm việc cho 4 vai trò trong <code>/admin</code></h2>
+        <div class="content">
+          <div class="cols-2">
+            <div class="card">
+              <h3>1. Super Admin (<code>/admin/users</code>, <code>/admin/logs</code>, <code>/admin/settings</code>)</h3>
+              <ul>
+                <li>Tìm kiếm người dùng, gán/gỡ role (5 vai trò), kích hoạt hoặc khóa tài khoản (tự động thu hồi mọi refresh token).</li>
+                <li>Tra cứu <strong>System Audit Logs</strong> theo hành động &amp; thực thể.</li>
+                <li>Cấu hình <strong>Global Site Settings</strong> (tên site, tagline, bật/tắt đăng ký, bình luận, số bài/trang, bảo trì).</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>2. Content Manager (<code>/admin</code>, <code>/admin/taxonomy</code>)</h3>
+              <ul>
+                <li>Soạn thảo bài viết (kèm kiểm soát xung đột đồng thời <code>409 Stale Update</code> qua <code>updatedAt</code>).</li>
+                <li>Chuyển trạng thái <code>Draft → Published → Archived</code>, quản lý ảnh Hero &amp; Alt text.</li>
+                <li>Quản lý Categories &amp; Tags tập trung với đếm số bài đang sử dụng.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>3. Moderator (<code>/admin/moderation</code>)</h3>
+              <ul>
+                <li>Hàng đợi <strong>Reports Queue</strong> (Open / Resolved / Dismissed), hỗ trợ <em>Resolve &amp; Hide</em> chỉ bằng 1 click.</li>
+                <li>Duyệt toàn bộ bình luận, ẩn/hiện hoặc xóa bình luận vi phạm.</li>
+                <li><strong>Spam Control:</strong> Ẩn toàn bộ bình luận và đình chỉ tài khoản spammer (chặn đình chỉ nhầm tài khoản nhân sự).</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>4. Data &amp; SEO Specialist (<code>/admin/seo</code>, <code>/admin/analytics</code>, <code>/admin/search-engine</code>)</h3>
+              <ul>
+                <li>Lọc bài thiếu metadata, chấm điểm <strong>On-Page SEO Audit</strong>; chỉnh sửa <code>meta_title</code>, <code>meta_description</code>, <code>seo_keywords</code>, <code>og_image_url</code>, <code>image_alt</code>.</li>
+                <li><strong>Analytics &amp; Search Lab:</strong> Theo dõi lượt xem, CTR từ <code>search_query_log</code>/<code>search_click_log</code>, thống kê Zipf/Heap/Index, kiểm tra postings &amp; đánh giá MAP/MRR/NDCG@K.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Admin CMS</span><span>9 Dedicated Admin Views</span></div>
+      </section>
+
+      <!-- SLIDE 11: TESTING & QA -->
+      <section class="slide" data-notes="Dự án được kiểm thử tự động toàn diện ở cả Backend và Frontend, bao gồm kiểm thử tích hợp với PostgreSQL thật.">
+        <div class="slide-top">
+          <span class="kicker sage">10 · Quality Assurance &amp; Testing</span>
+          <span class="slide-num">11 / 12</span>
+        </div>
+        <h2 class="heading">Kiểm thử tự động &amp; Đảm bảo chất lượng</h2>
+        <div class="content">
+          <div class="cols-3" style="margin-bottom: 18px;">
+            <div class="card teal">
+              <div class="stat-num">100</div>
+              <h3>Backend Tests Suite</h3>
+              <p>Chạy bằng <code>node --test</code> gồm unit/API test, bộ Search Engine IR trên 104 bài Wikinews và tích hợp PostgreSQL (89 pass, 11 DB tests cần <code>TEST_DATABASE_URL</code>).</p>
+            </div>
+            <div class="card">
+              <div class="stat-num">122</div>
+              <h3>Frontend Tests Pass</h3>
+              <p>Chạy bằng <code>Vitest</code> + Testing Library kiểm tra UI, Search Engine controls, Admin Lab, focus-trap, XSS safety và CSS design tokens.</p>
+            </div>
+            <div class="card">
+              <div class="stat-num">0</div>
+              <h3>Production Build Errors</h3>
+              <p><code>vite build</code> đóng gói bundle JS/CSS tối ưu, tự host font woff2 và inject SEO metadata động ở runtime.</p>
+            </div>
+          </div>
+          <div class="card paper">
+            <h3>Các kịch bản biên &amp; bảo mật đã kiểm chứng</h3>
+            <ul>
+              <li>Tấn công replay refresh token → tự động thu hồi toàn bộ chuỗi phiên (<code>family_id</code>).</li>
+              <li>Chống SQL injection &amp; XSS (<code>&lt;script&gt;</code> trong bình luận, tìm kiếm và SEO meta tags đều được vô hiệu hóa).</li>
+              <li>Kiểm tra chéo quyền RBAC 401/403 cho cả 5 vai trò (<code>admin</code>, <code>editor</code>, <code>moderator</code>, <code>seo</code>, <code>reader</code>) trên toàn bộ endpoint quản trị.</li>
+              <li>Kiểm tra optimistic concurrency control (<code>409 Conflict</code>) khi 2 biên tập viên cùng sửa một bài viết.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Automated Verification</span><span>Backend (node:test + pg) · Frontend (Vitest + jsdom)</span></div>
+      </section>
+
+      <!-- SLIDE 12: PHASE 2 SEARCH ENGINE & DEMO -->
+      <section class="slide" data-notes="Hoàn thiện đầy đủ Phase 2 Search Engine theo đúng giáo trình SEG301m (Chương 1-12) cùng tài khoản demo chạy thử ngay.">
+        <div class="slide-top">
+          <span class="kicker terra">11 · Phase 2 Search Engine (SEG301m) &amp; Live Demo</span>
+          <span class="slide-num">12 / 12</span>
+        </div>
+        <h2 class="heading">Search Engine Phase 2 (Hoàn chỉnh) &amp; Hướng dẫn Demo</h2>
+        <div class="content">
+          <div class="cols-2">
+            <div class="card">
+              <h3>Các thuật toán IR đã triển khai (SEG301m Ch. 3–12)</h3>
+              <ul>
+                <li><strong>Crawls, Feeds &amp; Text (Ch. 3–4):</strong> <code>/sitemap.xml</code>, <code>/api/feed.xml</code>, <code>/robots.txt</code>, 3-shingle Near-Duplicate, Tokenizer, Stopwords, Porter Stemmer, Zipf &amp; Heap, Entity Extraction.</li>
+                <li><strong>Inverted Index (Ch. 5):</strong> Fielded postings (title/summary/body/tags/seo) + positions, Delta + V-Byte compression, Skip Pointers.</li>
+                <li><strong>Queries, Retrieval &amp; Clustering (Ch. 6–7, 10, 12):</strong> Okapi BM25F, TF-IDF Cosine, Query Likelihood (Dirichlet), Boolean + Phrase, Hybrid (Proximity + Freshness), RM3 PRF, Spell Check, Dice Expansion &amp; K-Means Clustering.</li>
+                <li><strong>SEO, Evaluation &amp; Social (Ch. 8–9, 11):</strong> On-Page SEO Audit, MAP, MRR, NDCG@K, Kendall τ, Sign Test, Query/Click Logs (CTR), TF-IDF Tag Inference, Tag Cloud &amp; Collaborative Filtering.</li>
+              </ul>
+            </div>
+            <div class="card sun">
+              <h3>Tài khoản Demo (Local Dev)</h3>
+              <p>Mật khẩu chung: <code>DevPassw0rd!</code></p>
+              <ul>
+                <li><strong>Super Admin:</strong> <code>admin@example.test</code></li>
+                <li><strong>Content Manager:</strong> <code>editor@example.test</code></li>
+                <li><strong>Moderator:</strong> <code>moderator@example.test</code></li>
+                <li><strong>Data &amp; SEO Specialist:</strong> <code>seo@example.test</code></li>
+                <li><strong>Reader:</strong> <code>reader@example.test</code></li>
+              </ul>
+              <p style="margin-top: 12px;">Khởi chạy nhanh: <code>npm run dev</code> → Web <code>localhost:5173</code> · API <code>localhost:4000</code></p>
+            </div>
+          </div>
+        </div>
+        <div class="slide-foot"><span>Cảm ơn thầy/cô và các bạn đã lắng nghe!</span><span>Q&amp;A · Live Demo Ready</span></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <aside class="notes-panel" id="notes-panel" aria-live="polite">
+    <h4>Speaker Notes (Ghi chú thuyết trình)</h4>
+    <p id="notes-text"></p>
+  </aside>
+
+  <!-- Slides Overview Grid -->
+  <div class="overview" id="overview" role="dialog" aria-label="All slides overview">
+    <div class="overview-grid" id="overview-grid"></div>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const counter = document.getElementById('counter');
+      const progress = document.getElementById('progress');
+      const notesPanel = document.getElementById('notes-panel');
+      const notesText = document.getElementById('notes-text');
+      const overview = document.getElementById('overview');
+      const overviewGrid = document.getElementById('overview-grid');
+      const btnNotes = document.getElementById('btn-notes');
+      const btnGrid = document.getElementById('btn-grid');
+      let current = 0;
+
+      function pad(n) {
+        return String(n).padStart(2, '0');
+      }
+
+      function buildOverview() {
+        overviewGrid.innerHTML = '';
+        slides.forEach((s, i) => {
+          const titleEl = s.querySelector('h1, h2');
+          const kickerEl = s.querySelector('.kicker');
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'thumb' + (i === current ? ' current' : '');
+          btn.innerHTML = `<small>${pad(i + 1)} · ${kickerEl ? kickerEl.textContent : ''}</small><strong>${titleEl ? titleEl.textContent : 'Slide ' + (i + 1)}</strong>`;
+          btn.addEventListener('click', () => {
+            goTo(i);
+            toggleGrid(false);
+          });
+          overviewGrid.appendChild(btn);
+        });
+      }
+
+      function goTo(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        notesText.textContent = slides[current].dataset.notes || 'Không có ghi chú cho slide này.';
+        if (location.hash !== `#${current + 1}`) {
+          history.replaceState(null, '', `#${current + 1}`);
+        }
+        buildOverview();
+      }
+
+      function toggleNotes(force) {
+        const open = force !== undefined ? force : !notesPanel.classList.contains('open');
+        notesPanel.classList.toggle('open', open);
+        btnNotes.classList.toggle('active', open);
+      }
+
+      function toggleGrid(force) {
+        const open = force !== undefined ? force : !overview.classList.contains('open');
+        overview.classList.toggle('open', open);
+        btnGrid.classList.toggle('active', open);
+      }
+
+      document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
+      document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
+      btnNotes.addEventListener('click', () => toggleNotes());
+      btnGrid.addEventListener('click', () => toggleGrid());
+      document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !overview.classList.contains('open'))) {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === 'Home') {
+          goTo(0);
+        } else if (e.key === 'End') {
+          goTo(slides.length - 1);
+        } else if (e.key.toLowerCase() === 'n') {
+          toggleNotes();
+        } else if (e.key.toLowerCase() === 'g') {
+          toggleGrid();
+        } else if (e.key === 'Escape') {
+          toggleGrid(false);
+          toggleNotes(false);
+        }
+      });
+
+      const hashIndex = parseInt(location.hash.replace('#', ''), 10);
+      goTo(!Number.isNaN(hashIndex) && hashIndex >= 1 && hashIndex <= slides.length ? hashIndex - 1 : 0);
+    })();
+  </script>
+</body>
+</html>

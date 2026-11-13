@@ -34,7 +34,7 @@ test('migrate applies on an empty database and is re-runnable', { skip: !testDb 
     assert.deepEqual(await migrate(testDb), []);
 
     const { rows } = await client.query('SELECT name FROM roles ORDER BY id');
-    assert.deepEqual(rows.map((r) => r.name), ['admin', 'editor', 'seo', 'reader']);
+    assert.deepEqual(rows.map((r) => r.name), ['admin', 'editor', 'seo', 'reader', 'moderator']);
 
     // Constraints: published needs published_at; report targets exactly one entity.
     await client.query(`INSERT INTO categories (name, slug) VALUES ('World', 'world')`);
