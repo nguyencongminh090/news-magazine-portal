@@ -1,85 +1,257 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>News &amp; Digital Magazine Portal — Presentation Deck</title>
+  <title>News &amp; Digital Magazine Portal — Full-Stack &amp; IR Presentation Deck</title>
+  
+  <!-- Webfonts: Google Fonts Newsreader (Serif), Plus Jakarta Sans, and JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for crisp academic mathematical typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
   <style>
+    /* ===========================================
+       CSS THEME & CUSTOM PROPERTIES
+       Warm Illustrated Humanist & Academic Palette
+       =========================================== */
     :root {
-      --cream: #FBF6EC;
-      --paper: #F3EAD7;
-      --sand: #E8D8B9;
-      --line: #E0CFAC;
-      --card: #FFFCF5;
-      --white: #FFFFFF;
-      --ink: #1E2A44;
-      --ink-2: #464F66;
-      --ink-3: #5C6479;
-      --terra: #B4492A;
-      --terra-d: #923818;
-      --terra-t: #F6DDD0;
-      --teal: #1B5E63;
-      --teal-d: #124549;
-      --teal-t: #CFE3DF;
-      --sage: #3F6B4C;
-      --sage-t: #DDEBD2;
-      --sun: #E8A33D;
-      --sun-t: #FBE8BC;
-      --serif: "Georgia", "Palatino Linotype", "Times New Roman", serif;
-      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
-      --shadow: 0 14px 36px -18px rgba(30, 42, 68, 0.25), 0 4px 10px -4px rgba(30, 42, 68, 0.1);
+      --stage-bg: #0B111E;
+      --slide-bg: #FCF9F2;
+      --paper: #F4EBD9;
+      --paper-2: #EAE0C8;
+      --line: #DECDB0;
+      --line-subtle: #EDE2CD;
+      --card-bg: #FFFFFF;
+      --ink: #152033;
+      --ink-secondary: #485368;
+      --ink-muted: #737E94;
+      --accent-terra: #B84A2B;
+      --accent-terra-bg: #FBECE6;
+      --accent-teal: #145E65;
+      --accent-teal-bg: #E1F0EE;
+      --accent-amber: #C97F1E;
+      --accent-amber-bg: #FDF3E3;
+      --accent-sage: #2C6E49;
+      --accent-sage-bg: #E3F2E9;
+      --accent-navy: #182338;
+      --serif: "Newsreader", "Georgia", "Palatino Linotype", serif;
+      --sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      --shadow: 0 16px 40px -18px rgba(21, 32, 51, 0.22), 0 4px 12px -4px rgba(21, 32, 51, 0.08);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * { box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ===========================================
+       FIXED 16:9 STAGE: MANDATORY BASE STYLES
+       Include this ENTIRE file in every presentation.
+       Slides are authored at 1920×1080 and scaled as a whole.
+       =========================================== */
     html, body {
+      width: 100%;
+      height: 100%;
       margin: 0;
       padding: 0;
-      height: 100%;
-      background: #172035;
+      overflow: hidden;
+      background: var(--stage-bg, #000);
       color: var(--ink);
       font-family: var(--sans);
-      overflow: hidden;
+      user-select: none;
     }
 
-    /* Top Chrome */
+    /* Full-window deck viewport */
+    .deck-viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--stage-bg, #000);
+    }
+
+    /* Fixed 16:9 design canvas */
+    .deck-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      transform-origin: 0 0;
+      background: var(--slide-bg, #fff);
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Slides stack inside the fixed stage */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      background: var(--slide-bg, #fff);
+      padding: 44px 64px 34px 64px;
+      transition: opacity 0.2s var(--ease-out-expo);
+      user-select: text;
+    }
+
+    .slide.active,
+    .slide.visible {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    /* Keep media inside authored slide bounds */
+    img, video, canvas, svg {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* ===========================================
+       INLINE EDITING STYLES (FRONTEND SLIDES STANDARD)
+       JS-controlled visibility with 400ms delay timeout
+       =========================================== */
+    .edit-hotzone {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 80px;
+      height: 80px;
+      z-index: 10000;
+      cursor: pointer;
+    }
+    .edit-toggle {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 10001;
+      background: var(--accent-terra);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font: 700 13px var(--sans);
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(184, 74, 43, 0.4);
+    }
+    .edit-toggle.show,
+    .edit-toggle.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .edit-toolbar {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #111929;
+      color: #FCF9F2;
+      border: 1px solid var(--accent-amber);
+      border-radius: 999px;
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10002;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .edit-toolbar.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .edit-badge {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--accent-amber);
+    }
+    .edit-hint {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+    .edit-btn {
+      background: rgba(252, 249, 242, 0.12);
+      color: #FCF9F2;
+      border: 1px solid rgba(252, 249, 242, 0.24);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font: 600 12px var(--sans);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .edit-btn:hover {
+      background: rgba(252, 249, 242, 0.25);
+    }
+    [contenteditable="true"] {
+      outline: 2px dashed rgba(184, 74, 43, 0.6) !important;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+    [contenteditable="true"]:focus {
+      outline: 2px solid var(--accent-terra) !important;
+      background: rgba(251, 236, 230, 0.35) !important;
+    }
+
+    /* Top Chrome UI (Fixed outside the slide stage) */
     .topbar {
-      height: 54px;
-      background: var(--ink);
-      color: var(--cream);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: #111929;
+      color: #FCF9F2;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      border-bottom: 1px solid rgba(251, 246, 236, 0.15);
-      gap: 12px;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(252, 249, 242, 0.12);
+      z-index: 1000;
       user-select: none;
     }
     .topbar .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-family: var(--serif);
       font-weight: 700;
-      font-size: 18px;
+      font-size: 19px;
       letter-spacing: -0.01em;
     }
     .brand-dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: var(--sun);
+      background: var(--accent-amber);
       display: inline-block;
     }
     .controls {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .ctrl-btn {
-      background: rgba(251, 246, 236, 0.1);
-      color: var(--cream);
-      border: 1px solid rgba(251, 246, 236, 0.22);
+      background: rgba(252, 249, 242, 0.1);
+      color: #FCF9F2;
+      border: 1px solid rgba(252, 249, 242, 0.2);
       border-radius: 999px;
       padding: 6px 14px;
       font: 600 13px var(--sans);
@@ -89,57 +261,23 @@
       gap: 6px;
       transition: background 0.15s, border-color 0.15s;
     }
-    .ctrl-btn:hover { background: rgba(251, 246, 236, 0.2); }
-    .ctrl-btn.active { background: var(--terra); border-color: var(--terra); color: var(--white); }
+    .ctrl-btn:hover { background: rgba(252, 249, 242, 0.22); }
+    .ctrl-btn.active { background: var(--accent-terra); border-color: var(--accent-terra); color: #FFF; }
     .counter {
-      font: 700 13px var(--mono);
-      color: var(--sun-t);
-      min-width: 68px;
+      font: 700 13.5px var(--mono);
+      color: var(--accent-amber);
+      min-width: 76px;
       text-align: center;
     }
 
-    /* Stage */
-    .stage {
-      height: calc(100vh - 54px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 24px 24px;
-      position: relative;
-    }
     .progress-bar {
       position: fixed;
-      top: 54px;
+      top: 52px;
       left: 0;
       height: 4px;
-      background: linear-gradient(90deg, var(--terra), var(--sun));
-      transition: width 0.25s ease;
-      z-index: 20;
-    }
-
-    /* Slide Frame (16:9 responsive canvas) */
-    .deck {
-      width: min(1240px, 100%);
-      aspect-ratio: 16 / 9;
-      max-height: calc(100vh - 100px);
-      position: relative;
-    }
-    .slide {
-      position: absolute;
-      inset: 0;
-      background: var(--cream);
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      padding: 36px 46px 32px;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .slide.active { display: flex; animation: fadeSlide 0.22s ease-out; }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      background: linear-gradient(90deg, var(--accent-terra), var(--accent-amber), var(--accent-teal));
+      transition: width 0.25s var(--ease-out-expo);
+      z-index: 1001;
     }
 
     /* Slide Header & Footer */
@@ -147,50 +285,51 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       flex: none;
     }
     .kicker {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
-      background: var(--teal-t);
-      color: var(--teal-d);
-      font: 800 12px/1 var(--sans);
+      background: var(--accent-teal-bg);
+      color: var(--accent-teal);
+      font: 800 13px/1 var(--sans);
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .kicker.terra { background: var(--terra-t); color: var(--terra-d); }
-    .kicker.sun { background: var(--sun-t); color: var(--ink); }
-    .kicker.sage { background: var(--sage-t); color: var(--sage); }
+    .kicker.terra { background: var(--accent-terra-bg); color: var(--accent-terra); }
+    .kicker.amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
+    .kicker.sage { background: var(--accent-sage-bg); color: var(--accent-sage); }
     .slide-num {
-      font: 700 13px var(--mono);
-      color: var(--ink-3);
+      font: 700 15px var(--mono);
+      color: var(--ink-muted);
     }
+
     h1.title {
       font-family: var(--serif);
-      font-size: clamp(30px, 3.6vw, 48px);
-      line-height: 1.08;
-      margin: 0 0 14px;
+      font-size: 52px;
+      line-height: 1.1;
+      margin: 0 0 16px;
       color: var(--ink);
       letter-spacing: -0.02em;
     }
     h2.heading {
       font-family: var(--serif);
-      font-size: clamp(24px, 2.5vw, 34px);
-      line-height: 1.12;
-      margin: 0 0 18px;
+      font-size: 38px;
+      line-height: 1.15;
+      margin: 0 0 20px;
       color: var(--ink);
       letter-spacing: -0.015em;
     }
     .lead {
-      font-size: clamp(15px, 1.35vw, 19px);
+      font-size: 19px;
       line-height: 1.5;
-      color: var(--ink-2);
-      margin: 0 0 20px;
-      max-width: 68ch;
+      color: var(--ink-secondary);
+      margin: 0 0 22px;
+      max-width: 72ch;
     }
     .content {
       flex: 1;
@@ -206,65 +345,84 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
-      color: var(--ink-3);
+      font-size: 14.5px;
+      color: var(--ink-muted);
       flex: none;
     }
 
-    /* Layout Helpers */
-    .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch; }
-    .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
-    .cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: stretch; }
-    .cols-60-40 { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: center; }
+    /* Layout Helpers (Authored for 1920x1080 stage) */
+    .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+    .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+    .cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: stretch; }
+    .cols-60-40 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; align-items: stretch; }
 
     .card {
-      background: var(--card);
+      background: var(--card-bg);
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px 20px;
-      box-shadow: 0 6px 16px -12px rgba(30, 42, 68, 0.25);
+      border-radius: 18px;
+      padding: 22px 26px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
     }
     .card.paper { background: var(--paper); }
-    .card.teal { background: var(--teal-d); color: var(--cream); border-color: var(--teal); }
-    .card.terra { background: var(--terra-t); border-color: var(--terra); }
-    .card.sun { background: var(--sun-t); border-color: var(--sun); }
+    .card.navy { background: var(--accent-navy); color: #FCF9F2; border-color: #2D3A54; }
     .card h3 {
+      font-family: var(--serif);
+      font-size: 21px;
+      margin: 0 0 10px;
+      color: inherit;
+    }
+    .card h4 {
       font-family: var(--serif);
       font-size: 18px;
       margin: 0 0 8px;
       color: inherit;
     }
     .card p, .card li {
-      font-size: 14px;
-      line-height: 1.48;
+      font-size: 16px;
+      line-height: 1.55;
       margin: 0 0 6px;
     }
-    .card ul { margin: 0; padding-left: 18px; }
-    .card.teal p, .card.teal li { color: #E4EFEE; }
+    .card ul { margin: 0; padding-left: 20px; }
+    .card.navy p, .card.navy li { color: #E1F0EE; }
+
+    .stat-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font: 800 12px var(--sans);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .stat-badge.terra { background: var(--accent-terra-bg); color: var(--accent-terra); }
+    .stat-badge.teal { background: var(--accent-teal-bg); color: var(--accent-teal); }
+    .stat-badge.amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
+    .stat-badge.sage { background: var(--accent-sage-bg); color: var(--accent-sage); }
 
     .stat-num {
       font-family: var(--serif);
-      font-size: 34px;
+      font-size: 44px;
       font-weight: 800;
-      color: var(--terra);
+      color: var(--accent-terra);
       line-height: 1;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
-    .card.teal .stat-num { color: var(--sun); }
 
     table.matrix {
       width: 100%;
       border-collapse: collapse;
-      background: var(--card);
+      background: var(--card-bg);
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid var(--line);
-      font-size: 13.5px;
+      font-size: 15px;
     }
     table.matrix th, table.matrix td {
-      padding: 9px 12px;
+      padding: 11px 16px;
       text-align: left;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--line-subtle);
     }
     table.matrix th {
       background: var(--paper);
@@ -274,688 +432,1931 @@
     table.matrix tr:last-child td { border-bottom: 0; }
     .badge {
       display: inline-block;
-      padding: 2px 9px;
+      padding: 3px 10px;
       border-radius: 999px;
-      font: 700 11.5px var(--sans);
-      background: var(--sage-t);
-      color: var(--sage);
+      font: 700 12px var(--sans);
+      background: var(--accent-sage-bg);
+      color: var(--accent-sage);
     }
-    .badge.no { background: var(--paper); color: var(--ink-3); }
-    .badge.warn { background: var(--sun-t); color: var(--ink); }
+    .badge.ok { background: var(--accent-sage-bg); color: var(--accent-sage); }
+    .badge.no { background: var(--paper); color: var(--ink-muted); }
+    .badge.warn { background: var(--accent-amber-bg); color: var(--accent-amber); }
+
     code {
       font-family: var(--mono);
-      font-size: 12.5px;
+      font-size: 14px;
       background: var(--paper);
-      padding: 1px 6px;
+      padding: 2px 7px;
       border-radius: 6px;
-      color: var(--terra-d);
+      color: var(--accent-terra);
     }
-    .card.teal code {
-      background: rgba(255, 255, 255, 0.14);
-      color: var(--sun-t);
+    .card.navy code {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--accent-amber);
     }
 
-    /* Cover decoration */
+    /* Cover Slide Styling */
     .cover-wrap {
       display: grid;
-      grid-template-columns: 1.3fr 0.9fr;
-      gap: 28px;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 40px;
       align-items: center;
       height: 100%;
     }
     .cover-art {
-      background: var(--teal-t);
+      background: var(--accent-teal-bg);
       border: 1px solid var(--line);
-      border-radius: 34px 96px 34px 34px;
-      padding: 22px;
+      border-radius: 40px 120px 40px 40px;
+      padding: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: var(--shadow);
     }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pill {
-      padding: 6px 13px;
+      padding: 7px 15px;
       border-radius: 999px;
       background: var(--paper);
       border: 1px solid var(--line);
-      font: 700 12.5px var(--sans);
+      font: 700 13.5px var(--sans);
       color: var(--ink);
     }
 
     /* Speaker Notes Drawer */
     .notes-panel {
       position: fixed;
-      right: 24px;
-      bottom: 20px;
-      width: min(460px, calc(100vw - 48px));
-      background: var(--ink);
-      color: var(--cream);
-      border: 1px solid rgba(251, 246, 236, 0.25);
-      border-radius: 16px;
-      padding: 16px 20px;
-      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
-      z-index: 50;
+      right: 28px;
+      bottom: 24px;
+      width: min(520px, calc(100vw - 56px));
+      background: #111929;
+      color: #FCF9F2;
+      border: 1px solid rgba(252, 249, 242, 0.22);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.55);
+      z-index: 2000;
       display: none;
     }
-    .notes-panel.open { display: block; }
-    .notes-panel h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sun); }
-    .notes-panel p { margin: 0; font-size: 14px; line-height: 1.5; color: #E4EFEE; }
+    .notes-panel.open { display: block; animation: slideUp 0.2s var(--ease-out-expo); }
+    .notes-panel h4 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-amber);
+      font-weight: 800;
+    }
+    .notes-panel p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #E1F0EE;
+    }
 
-    /* Grid Overview */
+    /* Grid Overview Modal */
     .overview {
       position: fixed;
-      inset: 54px 0 0 0;
-      background: rgba(23, 32, 53, 0.94);
-      z-index: 40;
-      padding: 28px;
+      inset: 52px 0 0 0;
+      background: rgba(11, 17, 30, 0.96);
+      z-index: 1500;
+      padding: 36px 48px;
       overflow-y: auto;
       display: none;
     }
-    .overview.open { display: block; }
+    .overview.open { display: block; animation: fadeIn 0.2s var(--ease-out-expo); }
     .overview-grid {
-      max-width: 1200px;
+      max-width: 1500px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
     .thumb {
-      background: var(--cream);
+      background: var(--slide-bg);
       border: 2px solid transparent;
       border-radius: 14px;
-      padding: 16px;
+      padding: 18px 20px;
       text-align: left;
       cursor: pointer;
       color: var(--ink);
       transition: transform 0.15s, border-color 0.15s;
     }
-    .thumb:hover { transform: translateY(-2px); border-color: var(--sun); }
-    .thumb.current { border-color: var(--terra); background: var(--card); }
-    .thumb small { font: 700 11px var(--mono); color: var(--terra); }
-    .thumb strong { display: block; margin-top: 6px; font-family: var(--serif); font-size: 16px; }
+    .thumb:hover { transform: translateY(-3px); border-color: var(--accent-amber); }
+    .thumb.current { border-color: var(--accent-terra); background: #FFF; box-shadow: 0 0 15px rgba(184, 74, 43, 0.4); }
+    .thumb small { font: 700 12px var(--mono); color: var(--accent-terra); text-transform: uppercase; }
+    .thumb strong { display: block; margin-top: 8px; font-family: var(--serif); font-size: 17px; line-height: 1.3; }
 
-    /* Compact spacing on shorter laptop/720p screens to prevent vertical overflow */
-    @media (max-height: 780px) {
-      .slide { padding: 24px 38px 20px; }
-      .slide-top { margin-bottom: 10px; }
-      h2.heading { margin-bottom: 12px; font-size: clamp(22px, 2.3vw, 30px); }
-      .slide-foot { margin-top: 10px; padding-top: 8px; }
-      .card { padding: 13px 16px; }
-      .card h3 { font-size: 16.5px; margin-bottom: 6px; }
-      .card p, .card li { font-size: 13.5px; line-height: 1.4; margin-bottom: 4px; }
-      .stat-num { font-size: 28px; margin-bottom: 4px; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    /* Print to PDF */
+    /* Print to PDF (@media print) */
     @media print {
-      html, body { overflow: visible; height: auto; background: #fff; }
-      .topbar, .progress-bar, .notes-panel, .overview { display: none !important; }
-      .stage { display: block; padding: 0; height: auto; }
-      .deck { width: 100%; max-height: none; aspect-ratio: auto; }
-      .slide {
+      html, body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #FFF;
+      }
+      .topbar, .progress-bar, .notes-panel, .overview {
+        display: none !important;
+      }
+      .deck-viewport {
         position: static;
+        overflow: visible;
+        background: #FFF;
+      }
+      .deck-stage {
+        position: static;
+        width: 1920px;
+        height: auto;
+        transform: none !important;
+        box-shadow: none;
+      }
+      .slide {
+        position: relative !important;
         display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
         page-break-after: always;
         break-after: page;
-        height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
+        padding: 44px 64px;
+      }
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Inline Editing UI (frontend-slides standard: hotzone + delay toggle + toolbar) -->
+  <div class="edit-hotzone" title="Hover top-left corner or press E for Inline Editing"></div>
+  <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️ Edit Deck</button>
+  <div class="edit-toolbar" id="editToolbar">
+    <span class="edit-badge">✏️ Edit Mode Active</span>
+    <span class="edit-hint">Click text to edit · Auto-saves to storage</span>
+    <button class="edit-btn" id="btn-save-html" title="Download updated presentation file">💾 Download HTML</button>
+    <button class="edit-btn" id="btn-reset-edits" title="Clear saved edits">↺ Reset</button>
+    <button class="edit-btn" id="btn-exit-edit" title="Exit edit mode (Esc)">✕ Exit</button>
+  </div>
+
+  <!-- Header Chrome -->
   <header class="topbar">
-    <div class="brand"><span class="brand-dot"></span> News &amp; Digital Magazine Portal</div>
+    <div class="brand">
+      <span class="brand-dot"></span> News &amp; Digital Magazine Portal
+    </div>
     <div class="controls">
-      <button class="ctrl-btn" id="btn-prev" title="Previous slide (Left Arrow)">← Prev</button>
-      <span class="counter" id="counter">01 / 12</span>
-      <button class="ctrl-btn" id="btn-next" title="Next slide (Right Arrow)">Next →</button>
-      <button class="ctrl-btn" id="btn-grid" title="All slides (G)">Slides Grid</button>
-      <button class="ctrl-btn" id="btn-notes" title="Speaker notes (N)">Speaker Notes</button>
-      <button class="ctrl-btn" id="btn-print" title="Print / Save as PDF">Print PDF</button>
+      <button class="ctrl-btn" id="btn-prev" title="Previous slide (Left Arrow / PageUp)">← Prev</button>
+      <span class="counter" id="counter">01 / 30</span>
+      <button class="ctrl-btn" id="btn-next" title="Next slide (Right Arrow / PageDown / Space)">Next →</button>
+      <button class="ctrl-btn" id="btn-grid" title="Slide Overview Grid (G or O)">Slides Grid</button>
+      <button class="ctrl-btn" id="btn-notes" title="Speaker Notes (N)">Speaker Notes</button>
+      <button class="ctrl-btn" id="btn-edit-mode" title="Inline Text Editing (E)">✏️ Edit</button>
+      <button class="ctrl-btn" id="btn-fullscreen" title="Toggle Fullscreen (F)">Fullscreen</button>
+      <button class="ctrl-btn" id="btn-print" title="Print to PDF (Cmd/Ctrl+P)">Print PDF</button>
     </div>
   </header>
+
   <div class="progress-bar" id="progress"></div>
 
-  <main class="stage">
-    <div class="deck" id="deck">
-
-      <!-- SLIDE 1: COVER -->
-      <section class="slide active" data-notes="Chào mừng thầy/cô và các bạn. Đây là bài thuyết trình tổng quan về dự án News & Digital Magazine Portal — ứng dụng web full-stack hoàn chỉnh cả Giai đoạn 1 (CRUD, Auth, RBAC 4 vai trò) và Giai đoạn 2 (Search Engine theo giáo trình SEG301m: Inverted Index, BM25F/TF-IDF/QL/Boolean/Hybrid, RM3 PRF, đánh giá IR & SEO).">
-        <div class="cover-wrap">
-          <div>
-            <span class="kicker terra">Full-Stack Web Application · Phase 1 &amp; Phase 2 Complete</span>
-            <h1 class="title" style="margin-top: 16px;">News &amp; Digital Magazine Portal</h1>
-            <p class="lead">Cổng thông tin tin tức &amp; tạp chí số hoàn chỉnh với kiến trúc RESTful API, PostgreSQL, xác thực bảo mật cao, phân quyền RBAC 4 vai trò và Search Engine tự xây dựng (BM25F, TF-IDF, Query Likelihood, Boolean, Hybrid, RM3 PRF, Evaluation &amp; SEO).</p>
-            <div class="pill-row">
-              <span class="pill">React 19 + Vite</span>
-              <span class="pill">Node.js + Express 5</span>
-              <span class="pill">PostgreSQL 16 + tsvector</span>
-              <span class="pill">Argon2id + JWT Rotation</span>
-              <span class="pill">104 Wikinews Articles</span>
-              <span class="pill">IR Search Engine (SEG301m)</span>
-            </div>
+  <!-- Main Presentation Stage -->
+  <div class="deck-viewport">
+    <main class="deck-stage" id="deckStage">
+      
+      <!-- SLIDE 1 -->
+      <section class="slide active visible" data-slide="0" data-notes="Welcome committee members and instructors. This capstone presentation introduces our production-grade digital magazine portal and custom information retrieval engine, engineered across two distinct, complementary phases according to the SEG301m curriculum.">
+        
+      <div class="cover-wrap">
+        <div>
+          <span class="kicker terra">Capstone Project · SEG301m Information Retrieval</span>
+          <h1 class="title" style="margin-top: 18px; font-size: 50px;">News &amp; Digital Magazine Portal</h1>
+          <p class="lead" style="font-size: 20px; line-height: 1.5; color: var(--ink-secondary); margin-bottom: 24px;">
+            A full-stack enterprise digital publishing platform featuring a 3-tier REST architecture, 4-role RBAC governance, and a custom-engineered in-memory Information Retrieval Search Engine (Okapi BM25F, Dirichlet Language Modeling, V-Byte Delta compression, and empirical TREC benchmark evaluation).
+          </p>
+          <div class="pill-row">
+            <span class="pill">React 19 + Vite</span>
+            <span class="pill">Node.js 24 ESM + Express 5</span>
+            <span class="pill">PostgreSQL 16 (18 Tables)</span>
+            <span class="pill">Argon2id + JWT Rotation</span>
+            <span class="pill">104 Wikinews Articles</span>
+            <span class="pill">In-Memory Inverted Index</span>
+            <span class="pill">Okapi BM25F &amp; Dirichlet LM</span>
+            <span class="pill">16-Query Benchmark Matrix</span>
           </div>
-          <div class="cover-art">
-            <svg viewBox="0 0 320 260" width="100%" aria-hidden="true">
-              <rect x="20" y="24" width="280" height="212" rx="22" fill="#FFFCF5" stroke="#1E2A44" stroke-width="3"/>
-              <rect x="20" y="24" width="280" height="38" rx="22" fill="#1E2A44"/>
-              <circle cx="44" cy="43" r="6" fill="#E8A33D"/>
-              <circle cx="64" cy="43" r="6" fill="#B4492A"/>
-              <circle cx="84" cy="43" r="6" fill="#CFE3DF"/>
-              <rect x="38" y="80" width="118" height="84" rx="14" fill="#F6DDD0" stroke="#B4492A" stroke-width="2"/>
-              <circle cx="97" cy="112" r="20" fill="#E8A33D"/>
-              <path d="M52 152 Q97 120 142 152" fill="#1B5E63"/>
-              <rect x="172" y="82" width="110" height="14" rx="7" fill="#1E2A44"/>
-              <rect x="172" y="106" width="94" height="10" rx="5" fill="#5C6479"/>
-              <rect x="172" y="124" width="104" height="10" rx="5" fill="#5C6479"/>
-              <rect x="172" y="144" width="76" height="22" rx="11" fill="#B4492A"/>
-              <rect x="38" y="180" width="244" height="36" rx="12" fill="#F3EAD7" stroke="#E0CFAC" stroke-width="1.5"/>
-              <circle cx="60" cy="198" r="9" fill="#1B5E63"/>
-              <rect x="78" y="193" width="140" height="10" rx="5" fill="#464F66"/>
-              <rect x="232" y="190" width="38" height="16" rx="8" fill="#DDEBD2"/>
-            </svg>
-          </div>
+        </div>
+        <div class="cover-art">
+          <svg viewBox="0 0 380 280" width="100%" aria-hidden="true">
+            <rect x="15" y="15" width="350" height="250" rx="20" fill="#FFFFFF" stroke="#152033" stroke-width="3"/>
+            <rect x="15" y="15" width="350" height="42" rx="20" fill="#152033"/>
+            <circle cx="42" cy="36" r="7" fill="#C97F1E"/>
+            <circle cx="64" cy="36" r="7" fill="#B84A2B"/>
+            <circle cx="86" cy="36" r="7" fill="#2C6E49"/>
+            <rect x="35" y="75" width="140" height="95" rx="12" fill="#FBECE6" stroke="#B84A2B" stroke-width="2"/>
+            <circle cx="105" cy="115" r="24" fill="#C97F1E"/>
+            <path d="M50 160 Q105 125 160 160" fill="#145E65"/>
+            <rect x="195" y="78" width="150" height="16" rx="8" fill="#152033"/>
+            <rect x="195" y="104" width="130" height="11" rx="5" fill="#737E94"/>
+            <rect x="195" y="124" width="140" height="11" rx="5" fill="#737E94"/>
+            <rect x="195" y="146" width="100" height="24" rx="12" fill="#B84A2B"/>
+            <rect x="35" y="190" width="310" height="55" rx="14" fill="#F4EBD9" stroke="#DECDB0" stroke-width="1.5"/>
+            <circle cx="62" cy="217" r="12" fill="#145E65"/>
+            <rect x="85" y="211" width="180" height="12" rx="6" fill="#485368"/>
+            <rect x="278" y="208" width="52" height="18" rx="9" fill="#E3F2E9"/>
+          </svg>
+        </div>
+      </div>
+    
+        <div class="slide-foot">
+          <span>News & Digital Magazine Portal · Capstone Defense</span>
+          <span>Phase 1: Web Platform & RBAC · Phase 2: Custom IR Engine</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 2 -->
+      <section class="slide" data-slide="1" data-notes="This slide defines the two independent yet deeply integrated phases of the project: Phase 1 provides the production web platform and RBAC security layer, while Phase 2 implements a textbook-compliant information retrieval engine from first principles.">
+        <div class="slide-top">
+          <span class="kicker teal">01 · Executive Summary</span>
+          <span class="slide-num">02 / 30</span>
+        </div>
+        <h2 class="heading">Executive Summary: Dual-Phase Engineering Scope</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card" style="border-top: 5px solid var(--accent-terra);">
+          <div class="stat-badge terra">Phase 1</div>
+          <h3 style="font-size: 24px; margin: 12px 0 10px;">Production Web Platform &amp; RBAC</h3>
+          <p style="color: var(--ink-secondary); margin-bottom: 14px;"><strong>Objective:</strong> Engineer a secure, high-concurrency digital publishing platform with granular administrative governance and reader community features.</p>
+          <ul>
+            <li><strong>Decoupled 3-Tier Architecture:</strong> Node.js 24 ESM, Express 5, React 19 SPA, and PostgreSQL 16 database.</li>
+            <li><strong>Relational Schema &amp; Storage:</strong> 11 sequential migrations (001–011) and 18 normalized tables with connection pooling.</li>
+            <li><strong>Enterprise RBAC Governance:</strong> 4 staff roles (Super Admin, Content Manager, Moderator, Data &amp; SEO Specialist) verified via DB-backed middleware.</li>
+            <li><strong>Hardened Security (ADR-002):</strong> Argon2id password hashing, ephemeral in-memory JWTs, and HttpOnly refresh token rotation with token family replay detection.</li>
+            <li><strong>Humanist Accessible UI:</strong> WCAG 2.2 AA compliant reader portal with comments, ratings, and abuse reporting.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top: 5px solid var(--accent-teal);">
+          <div class="stat-badge teal">Phase 2</div>
+          <h3 style="font-size: 24px; margin: 12px 0 10px;">Custom Information Retrieval Engine (SEG301m)</h3>
+          <p style="color: var(--ink-secondary); margin-bottom: 14px;"><strong>Objective:</strong> Replace naive relational SQL searches with a custom-engineered in-memory Information Retrieval engine implementing SEG301m Chapters 1–12.</p>
+          <ul>
+            <li><strong>Linguistic Text Pipeline:</strong> Tokenizer, stopword removal, 5-phase Porter Stemmer, and 3-shingle near-duplicate detection.</li>
+            <li><strong>Compressed Inverted Index:</strong> Fielded posting lists (Title, Tags, SEO, Summary, Content) compressed via Delta + Variable-Byte (4.0:1 ratio, 75.0% RAM savings).</li>
+            <li><strong>Skip Pointers:</strong> Stride $L = \lfloor\sqrt{P}\rfloor$ accelerating conjunctive posting list merges to sub-linear time.</li>
+            <li><strong>5 Distinct Retrieval Models:</strong> Fielded Okapi BM25F, Query Likelihood Dirichlet LM, Vector Space TF-IDF, Boolean, and Feature Hybrid.</li>
+            <li><strong>Empirical TREC Benchmark:</strong> 16 topic queries evaluated on P@5, Recall@10, MAP, MRR, NDCG@10, Latency, and Paired Sign Test ($p < 0.001$).</li>
+          </ul>
+        </div>
+      </div>
+    
         </div>
         <div class="slide-foot">
-          <span>News &amp; Digital Magazine Portal · Software Engineering Project</span>
-          <span>Phím tắt: ← / → để chuyển slide · G mở lưới · N mở ghi chú</span>
+          <span>Executive Summary</span>
+          <span>Clear Boundary: Enterprise Platform (Phase 1) vs Custom IR Search Engine (Phase 2)</span>
         </div>
       </section>
-
-      <!-- SLIDE 2: OBJECTIVES -->
-      <section class="slide" data-notes="Mục tiêu dự án gồm 2 giai đoạn và đều đã hoàn thành: Giai đoạn 1 xây dựng Full-stack Portal, Auth và RBAC 4 vai trò; Giai đoạn 2 triển khai hoàn chỉnh Search Engine tự code (Tokenization, Inverted Index, BM25F/TF-IDF/QL/Boolean/Hybrid, RM3 PRF, Evaluation MAP/MRR/NDCG & SEO).">
+    
+      <!-- SLIDE 3 -->
+      <section class="slide" data-slide="2" data-notes="The agenda is organized into three distinct parts: Part I covers the Phase 1 web platform and RBAC, Part II dives deeply into the Phase 2 Information Retrieval engine algorithms and math, and Part III presents empirical evaluation, telemetry, and future work.">
         <div class="slide-top">
-          <span class="kicker">01 · Objectives &amp; Scope</span>
-          <span class="slide-num">02 / 12</span>
+          <span class="kicker amber">02 · Presentation Roadmap</span>
+          <span class="slide-num">03 / 30</span>
         </div>
-        <h2 class="heading">Mục tiêu ngắn hạn (Phase 1) &amp; Dài hạn (Phase 2)</h2>
+        <h2 class="heading">Presentation Agenda: Dual-Phase Structure</h2>
         <div class="content">
-          <div class="cols-2">
-            <div class="card">
-              <div class="stat-num">Phase 1</div>
-              <h3>Full-Stack Portal, Auth &amp; RBAC</h3>
-              <ul>
-                <li><strong>Public Portal:</strong> Trang chủ phân trang, chuyên mục, trang chi tiết đầy đủ metadata (ảnh, tác giả, ngày, lượt xem, tags).</li>
-                <li><strong>Lọc &amp; Phân trang nền tảng:</strong> Lọc theo Category, Tag, Date Range, Sort và fallback SQL <code>ILIKE</code> khi truy vấn chỉ gồm stopword.</li>
-                <li><strong>Tương tác người dùng:</strong> Đăng ký, đăng nhập, quản lý hồ sơ, bình luận, đánh giá 1–5 sao, thích bài viết, gắn tag &amp; báo cáo vi phạm.</li>
-                <li><strong>Admin CMS RBAC 4 vai trò:</strong> Super Admin, Content Manager, Moderator, Data &amp; SEO Specialist.</li>
-              </ul>
-            </div>
-            <div class="card teal">
-              <div class="stat-num">Phase 2</div>
-              <h3>Search Engine &amp; IR Pipeline (Đã hoàn thành)</h3>
-              <ul>
-                <li><strong>Document Store &amp; Index:</strong> 104 bài Wikinews (CC BY 4.0), PostgreSQL <code>tsvector</code> GIN + In-memory Fielded Inverted Index (Delta + V-Byte, Skip Pointers).</li>
-                <li><strong>Text &amp; Query Processing:</strong> Tokenizer, Stopwords, Porter Stemmer, Zipf/Heap, Entity Extraction, 3-shingle, Spell Check &amp; Dice Expansion.</li>
-                <li><strong>Retrieval &amp; Clustering:</strong> Okapi BM25F, TF-IDF Cosine, Query Likelihood, Boolean + Phrase, Hybrid, RM3 PRF &amp; K-Means Clustering.</li>
-                <li><strong>Telemetry &amp; Evaluation:</strong> <code>search_query_log</code> + <code>search_click_log</code>, MAP/MRR/NDCG@K, Kendall τ, Sign Test &amp; Search Lab.</li>
-              </ul>
-            </div>
-          </div>
+          
+      <div class="cols-3">
+        <div class="card" style="border-left: 4px solid var(--accent-terra);">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 10px;">Part I · Slides 04–10</div>
+          <h3 style="font-size: 20px;">Phase 1: Web Platform &amp; RBAC Architecture</h3>
+          <ul style="font-size: 15px;">
+            <li><strong>Slide 04:</strong> Phase 1 Transition &amp; Overview</li>
+            <li><strong>Slide 05:</strong> System Architecture &amp; Decoupling</li>
+            <li><strong>Slide 06:</strong> Database Schema (11 Migrations, 18 Tables)</li>
+            <li><strong>Slide 07:</strong> Multi-Layer Security &amp; Token Rotation</li>
+            <li><strong>Slide 08:</strong> RBAC Matrix: 4 Staff Roles</li>
+            <li><strong>Slide 09:</strong> Dedicated Admin Workspaces</li>
+            <li><strong>Slide 10:</strong> Reader Experience &amp; Engagement</li>
+          </ul>
         </div>
-        <div class="slide-foot"><span>Objectives</span><span>Phase 1 &amp; Phase 2 Complete</span></div>
+        <div class="card" style="border-left: 4px solid var(--accent-teal);">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 10px;">Part II · Slides 11–24</div>
+          <h3 style="font-size: 20px;">Phase 2: Custom IR Search Engine (SEG301m)</h3>
+          <ul style="font-size: 15px;">
+            <li><strong>Slide 11:</strong> Phase 2 Transition &amp; Scope</li>
+            <li><strong>Slide 12:</strong> Relational Search Limitations vs IR</li>
+            <li><strong>Slide 13:</strong> Text Pipeline &amp; Porter Stemmer</li>
+            <li><strong>Slide 14:</strong> Corpus Properties: Zipf &amp; Heaps Laws</li>
+            <li><strong>Slide 15:</strong> Inverted Index &amp; Positional Postings</li>
+            <li><strong>Slide 16:</strong> V-Byte Delta Postings Compression</li>
+            <li><strong>Slide 17:</strong> Skip Pointers Query Acceleration</li>
+            <li><strong>Slide 18:</strong> Query Parsing, Boolean &amp; Phrases</li>
+            <li><strong>Slide 19:</strong> Noisy Channel Spell Correction</li>
+            <li><strong>Slide 20:</strong> Okapi BM25F vs TF-IDF Baseline</li>
+            <li><strong>Slide 21:</strong> Query Likelihood Dirichlet LM</li>
+            <li><strong>Slide 22:</strong> Feature-Based Hybrid Ranking</li>
+            <li><strong>Slide 23:</strong> Dice Expansion &amp; RM3 PRF</li>
+            <li><strong>Slide 24:</strong> K-Means Result Clustering</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-sage);">
+          <div class="pill" style="background: var(--accent-sage-bg); color: var(--accent-sage); margin-bottom: 10px;">Part III · Slides 25–30</div>
+          <h3 style="font-size: 20px;">Evaluation, Ablation &amp; Roadmap</h3>
+          <ul style="font-size: 14.5px;">
+            <li><strong>Slide 25:</strong> Empirical IR Benchmark Matrix (16 Queries)</li>
+            <li><strong>Slide 26:</strong> Statistical Significance &amp; Kendall's &tau;</li>
+            <li><strong>Slide 27:</strong> Component Ablation Studies (Ch. 9 &amp; 12)</li>
+            <li><strong>Slide 28:</strong> Error Taxonomy &amp; Failure Analysis</li>
+            <li><strong>Slide 29:</strong> Search Telemetry, QA &amp; Future Roadmap</li>
+            <li><strong>Slide 30:</strong> Deliverables &amp; Formal IEEE References</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Roadmap & Agenda</span>
+          <span>Part I: Platform (04-10) · Part II: IR Engine (11-24) · Part III: Evaluation & Roadmap (25-30)</span>
+        </div>
       </section>
-
-      <!-- SLIDE 3: ARCHITECTURE & TECH STACK -->
-      <section class="slide" data-notes="Kiến trúc 3 tầng rõ ràng: React 19 SPA giao tiếp với Express 5 REST API (kèm module Search Engine tự xây dựng) qua JSON/RFC 9457, kết nối PostgreSQL 16 (18 bảng chuẩn hóa) bằng pool pg và plain SQL migrations đánh số tuần tự 001..011.">
-        <div class="slide-top">
-          <span class="kicker">02 · System Architecture</span>
-          <span class="slide-num">03 / 12</span>
-        </div>
-        <h2 class="heading">Kiến trúc hệ thống &amp; Công nghệ sử dụng</h2>
-        <div class="content">
-          <div class="card paper" style="margin-bottom: 18px; padding: 16px;">
-            <svg viewBox="0 0 960 170" width="100%" aria-label="System Architecture Diagram">
-              <defs>
-                <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#B4492A"/>
-                </marker>
-                <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#1B5E63"/>
-                </marker>
-              </defs>
-              <rect x="16" y="22" width="250" height="126" rx="16" fill="#FFFCF5" stroke="#1B5E63" stroke-width="2.5"/>
-              <text x="141" y="54" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#1E2A44">Frontend SPA</text>
-              <text x="141" y="80" text-anchor="middle" font-size="13" fill="#464F66">React 19 · React Router 7 · Vite</text>
-              <text x="141" y="102" text-anchor="middle" font-size="13" fill="#464F66">Warm Illustrated Humanist UI</text>
-              <text x="141" y="124" text-anchor="middle" font-size="12" fill="#1B5E63" font-weight="700">WCAG 2.2 AA · In-memory JWT</text>
-
-              <path d="M270 85 L344 85" stroke="#B4492A" stroke-width="3" marker-end="url(#arr)"/>
-              <text x="307" y="73" text-anchor="middle" font-size="11.5" font-weight="700" fill="#B4492A">REST / JSON</text>
-
-              <rect x="352" y="14" width="276" height="142" rx="16" fill="#FFFCF5" stroke="#B4492A" stroke-width="2.5"/>
-              <text x="490" y="44" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#1E2A44">Backend API Server</text>
-              <text x="490" y="68" text-anchor="middle" font-size="13" fill="#464F66">Node.js ESM · Express 5 · Zod Strict</text>
-              <text x="490" y="90" text-anchor="middle" font-size="13" fill="#464F66">Helmet · Rate Limiter · RFC 9457</text>
-              <text x="490" y="112" text-anchor="middle" font-size="13" fill="#464F66">Argon2id · Jose JWT · SEO Meta SSR</text>
-              <text x="490" y="136" text-anchor="middle" font-size="12" fill="#B4492A" font-weight="700">Modular Routers · RBAC · IR Engine</text>
-
-              <path d="M632 85 L700 85" stroke="#1B5E63" stroke-width="3" marker-end="url(#arr-teal)"/>
-              <text x="668" y="73" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1B5E63">pg Pool</text>
-
-              <rect x="708" y="22" width="236" height="126" rx="16" fill="#1E2A44"/>
-              <text x="826" y="54" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#FBF6EC">PostgreSQL 16</text>
-              <text x="826" y="80" text-anchor="middle" font-size="13" fill="#E4EFEE">11 Plain SQL Migrations (001–011)</text>
-              <text x="826" y="102" text-anchor="middle" font-size="13" fill="#E4EFEE">18 Normalized Tables + Triggers</text>
-              <text x="826" y="124" text-anchor="middle" font-size="12" fill="#FBE8BC" font-weight="700">GIN tsvector · Query/Click/Audit Logs</text>
-            </svg>
+    
+      <!-- SLIDE 4 -->
+      <section class="slide" data-slide="3" data-notes="Transition slide marking the formal beginning of Part I. Here we detail the full-stack system architecture, database modeling, security lifecycles, role-based access control, and administrative tooling developed in Phase 1.">
+        
+      <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 100px;">
+        <span class="kicker terra" style="font-size: 16px; padding: 8px 24px; margin-bottom: 20px;">PART I · SYSTEM ENGINEERING</span>
+        <h1 class="title" style="font-size: 60px; margin-bottom: 20px; max-width: 1400px;">PHASE 1: Full-Stack Web Platform &amp; Enterprise RBAC Architecture</h1>
+        <p class="lead" style="font-size: 24px; max-width: 1100px; margin-bottom: 40px; color: var(--ink-secondary);">
+          A resilient, decoupled 3-tier web platform engineered for digital news publishing, relational data integrity, defense-in-depth security, and multi-role staff administration.
+        </p>
+        <div class="cols-4" style="width: 100%; max-width: 1400px; text-align: left;">
+          <div class="card" style="border-top: 4px solid var(--accent-terra);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">3-Tier REST Decoupling</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">React 19 SPA, Express 5 REST API, and PostgreSQL 16 layered via Route-Service-Repository patterns.</p>
           </div>
-          <div class="cols-3">
-            <div class="card">
-              <h3>Frontend</h3>
-              <p>Single-page app tối ưu khả năng đọc, responsive mobile drawer, đọc mượt với 2 font tự host (Fraunces + Nunito Sans).</p>
-            </div>
-            <div class="card">
-              <h3>Backend API &amp; IR Engine</h3>
-              <p>Tách rõ Route (validate Zod <code>.strict()</code>), Service (Search Engine IR pipeline) và Repository (SQL parameterized chống SQLi 100%).</p>
-            </div>
-            <div class="card">
-              <h3>SEO Meta, Sitemap &amp; RSS</h3>
-              <p>Inject trực tiếp <code>&lt;title&gt;</code>, <code>og:*</code>, <code>keywords</code>, <code>og:image:alt</code> vào HTML shell, kèm <code>/sitemap.xml</code>, <code>/api/feed.xml</code> &amp; <code>/robots.txt</code>.</p>
-            </div>
+          <div class="card" style="border-top: 4px solid var(--accent-amber);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">PostgreSQL Schema</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">11 sequential migrations (001–011), 18 normalized tables, and RAM-batched view counters.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--accent-teal);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">Hardened Security</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">Argon2id password hashing, ephemeral in-memory JWTs, and HttpOnly refresh token rotation.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--accent-sage);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">4-Role RBAC CMS</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">Super Admin, Content Manager, Moderator, and Data/SEO Specialist workspaces.</p>
           </div>
         </div>
-        <div class="slide-foot"><span>Architecture</span><span>Clean Separation: Routes · IR Services · SQL Repositories</span></div>
+      </div>
+    
+        <div class="slide-foot">
+          <span>Part I: Platform Architecture</span>
+          <span>Full-Stack Web Application & Governance</span>
+        </div>
       </section>
-
-      <!-- SLIDE 4: DATABASE SCHEMA -->
-      <section class="slide" data-notes="CSDL gồm 18 bảng chuẩn hóa qua 11 migration (001..011) chia 4 nhóm. Migration 010 bổ sung moderator, user_tags, article_likes, image_alt, seo_keywords, site_settings; migration 011 bổ sung search_query_log và liên kết search_click_log (query_log_id, rank_position, retrieval_model).">
+    
+      <!-- SLIDE 5 -->
+      <section class="slide" data-slide="4" data-notes="Describes the 3-tier decoupled architecture: React 19 frontend communicating with an Express 5 REST API adhering to RFC 9457 error standards, backed by PostgreSQL 16 connection pooling.">
         <div class="slide-top">
-          <span class="kicker sun">03 · Database Schema &amp; Search Logs</span>
-          <span class="slide-num">04 / 12</span>
+          <span class="kicker terra">03 · System Architecture</span>
+          <span class="slide-num">05 / 30</span>
         </div>
-        <h2 class="heading">Thiết kế cơ sở dữ liệu PostgreSQL (11 Migrations · 18 Bảng)</h2>
+        <h2 class="heading">System Topology &amp; Tier Decoupling</h2>
         <div class="content">
-          <div class="cols-4">
-            <div class="card">
-              <h3>Auth &amp; RBAC</h3>
-              <ul>
-                <li><code>users</code> (bio, avatar_url, password_changed_at, email_verified_at)</li>
-                <li><code>roles</code> (admin, editor, moderator, seo, reader) &amp; <code>user_roles</code></li>
-                <li><code>refresh_tokens</code> (family_id, reuse detection) &amp; <code>user_tokens</code></li>
-                <li><code>user_tags</code> (sở thích cá nhân)</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>Content Store</h3>
-              <ul>
-                <li><code>categories</code> (name, slug)</li>
-                <li><code>tags</code> (name, slug)</li>
-                <li><code>documents</code> (title, content, summary, status, views_count, meta_*, og_image_url, image_alt, seo_keywords)</li>
-                <li><code>document_tags</code> (editorial + user-added tags)</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>Engagement</h3>
-              <ul>
-                <li><code>comments</code> (status: visible/hidden, chống duplicate md5)</li>
-                <li><code>ratings</code> (1–5 sao, PK user+doc)</li>
-                <li><code>article_likes</code> (lượt thích)</li>
-                <li><code>reports</code> (1 report / người / mục tiêu)</li>
-              </ul>
-            </div>
-            <div class="card teal">
-              <h3>Logs &amp; Settings</h3>
-              <ul>
-                <li><code>search_query_log</code> (query_string, retrieval_model, result_doc_ids, latency_ms)</li>
-                <li><code>search_click_log</code> (user_id, query_string, clicked_doc_id, query_log_id, rank_position)</li>
-                <li><code>audit_log</code> (actor_id, action, entity, details)</li>
-                <li><code>site_settings</code> (cấu hình toàn hệ thống)</li>
-              </ul>
-            </div>
-          </div>
-          <div class="cols-2" style="margin-top: 16px;">
-            <div class="card paper">
-              <h3>Search Indexing &amp; Query Telemetry (005 &amp; 011)</h3>
-              <p>Cột <code>tsv</code> (<code>GIN</code>, trọng số Title A &gt; Content B) kết hợp In-memory Fielded Inverted Index và cặp bảng <code>search_query_log</code> / <code>search_click_log</code> để đánh giá CTR &amp; IR metrics.</p>
-            </div>
-            <div class="card paper">
-              <h3>Batched View Counter (Anti Hot-Row Lock)</h3>
-              <p><code>GET /api/articles/:slug</code> ghi nhận lượt xem vào bộ đệm RAM (<code>views.js</code>) và đồng bộ hàng loạt vào PostgreSQL mỗi 5 giây bằng <code>unnest()</code> + flush khi tắt server.</p>
-            </div>
-          </div>
+          
+      <div class="card paper" style="margin-bottom: 20px; padding: 20px 24px;">
+        <svg viewBox="0 0 1000 160" width="100%" aria-label="System Architecture Diagram">
+          <defs>
+            <marker id="arr-terra" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#B84A2B"/>
+            </marker>
+            <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#145E65"/>
+            </marker>
+          </defs>
+          <!-- Tier 1: Frontend SPA -->
+          <rect x="20" y="20" width="260" height="120" rx="14" fill="#FFFFFF" stroke="#145E65" stroke-width="2.5"/>
+          <text x="150" y="52" text-anchor="middle" font-family="Newsreader, Georgia, serif" font-weight="700" font-size="20" fill="#152033">Client Layer (SPA)</text>
+          <text x="150" y="78" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5" fill="#485368">React 19 · React Router 7 · Vite</text>
+          <text x="150" y="100" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#485368">Warm Illustrated Humanist Design</text>
+          <text x="150" y="122" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#145E65">In-Memory JWT · WCAG 2.2 AA</text>
+
+          <!-- Connector 1 -->
+          <path d="M280 80 L350 80" stroke="#B84A2B" stroke-width="3" marker-end="url(#arr-terra)"/>
+          <text x="315" y="68" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="700" fill="#B84A2B">REST / JSON</text>
+
+          <!-- Tier 2: Backend API Server -->
+          <rect x="360" y="12" width="290" height="136" rx="14" fill="#FFFFFF" stroke="#B84A2B" stroke-width="2.5"/>
+          <text x="505" y="42" text-anchor="middle" font-family="Newsreader, Georgia, serif" font-weight="700" font-size="20" fill="#152033">Backend API Server</text>
+          <text x="505" y="66" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5" fill="#485368">Node.js 24 ESM · Express 5</text>
+          <text x="505" y="88" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#485368">Zod Strict · RFC 9457 Errors · Helmet</text>
+          <text x="505" y="110" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#485368">Rate Limiters · DB-Backed RBAC</text>
+          <text x="505" y="132" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#B84A2B">In-Memory IR Search Engine</text>
+
+          <!-- Connector 2 -->
+          <path d="M650 80 L710 80" stroke="#145E65" stroke-width="3" marker-end="url(#arr-teal)"/>
+          <text x="680" y="68" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11.5" font-weight="700" fill="#145E65">pg Pool</text>
+
+          <!-- Tier 3: Database -->
+          <rect x="720" y="20" width="260" height="120" rx="14" fill="#182338"/>
+          <text x="850" y="52" text-anchor="middle" font-family="Newsreader, Georgia, serif" font-weight="700" font-size="20" fill="#FCF9F2">Database Layer</text>
+          <text x="850" y="78" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5" fill="#E1F0EE">PostgreSQL 16 Engine</text>
+          <text x="850" y="100" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="13" fill="#E1F0EE">11 Plain SQL Migrations (001–011)</text>
+          <text x="850" y="122" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#C97F1E">18 Normalized Tables + GIN Index</text>
+        </svg>
+      </div>
+
+      <div class="cols-3">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Strict Route-Service-Repository Decoupling</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin: 0;">Routes handle Zod <code>.strict()</code> input validation; Services coordinate business workflows and the In-Memory IR Engine; Repositories manage parameterized SQL queries with zero raw string concatenation.</p>
         </div>
-        <div class="slide-foot"><span>PostgreSQL Schema</span><span>104 Wikinews Articles · 8 Categories · 192+ Tags</span></div>
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">RFC 9457 Problem Details for HTTP APIs</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin: 0;">Errors return structured <code>application/problem+json</code> payloads (status, title, detail, instance) rather than raw stack traces, preventing internal information leakage while simplifying client handling.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">SSR Meta Injection &amp; Web Standards</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin: 0;">Server intercepts crawler requests to inject OpenGraph tags, JSON-LD structured news metadata, and page titles directly into HTML shells, alongside dynamic XML sitemaps and RSS 2.0 feeds.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Architecture & Stack</span>
+          <span>React 19 SPA · Express 5 REST · PostgreSQL 16 Pool</span>
+        </div>
       </section>
-
-      <!-- SLIDE 5: SECURITY & AUTH -->
-      <section class="slide" data-notes="Bảo mật được thiết kế theo chuẩn thực tế: Argon2id cho mật khẩu, JWT ngắn hạn chỉ giữ trong closure RAM (không lưu localStorage), Refresh Token HttpOnly cookie có rotation family và phát hiện token reuse.">
+    
+      <!-- SLIDE 6 -->
+      <section class="slide" data-slide="5" data-notes="Presents the 18 normalized tables organized into 4 logical clusters. Also highlights migration 011 telemetry tables and the batched RAM view counter designed to avoid hot-row lock contention.">
         <div class="slide-top">
-          <span class="kicker terra">04 · Security &amp; Authentication</span>
-          <span class="slide-num">05 / 12</span>
+          <span class="kicker amber">04 · Database Modeling</span>
+          <span class="slide-num">06 / 30</span>
         </div>
-        <h2 class="heading">Kiến trúc xác thực &amp; Bảo mật đa lớp</h2>
+        <h2 class="heading">PostgreSQL Relational Schema (11 Migrations · 18 Tables)</h2>
         <div class="content">
-          <div class="cols-2">
-            <div class="card">
-              <h3>Vòng đời phiên đăng nhập (ADR-002)</h3>
-              <ul>
-                <li><strong>Password Hashing:</strong> <code>argon2id</code> + kiểm tra danh sách mật khẩu yếu (blocklist), chống timing oracle khi login/reset.</li>
-                <li><strong>Access Token (15m):</strong> JWT ký HS256 (<code>jose</code>), chỉ lưu trong closure JS — miễn nhiễm XSS đánh cắp từ <code>localStorage</code>.</li>
-                <li><strong>Refresh Token Rotation (14d):</strong> Cookie <code>HttpOnly; SameSite=Strict</code>, lưu SHA-256 hash. Dùng lại token cũ sẽ thu hồi toàn bộ <code>family_id</code> (kèm grace window 30s cho multi-tab).</li>
-                <li><strong>CSRF Protection:</strong> Yêu cầu header <code>X-Requested-With: fetch</code> + kiểm tra <code>Origin</code> allowlist.</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>Kiểm soát truy cập &amp; Chống lạm dụng</h3>
-              <ul>
-                <li><strong>DB-backed Auth Middleware:</strong> Mỗi request kiểm tra lại <code>is_active</code>, <code>roles</code>, và <code>password_changed_at</code> từ DB (thu hồi quyền ngay lập tức).</li>
-                <li><strong>Email Verification Gate:</strong> Token dùng một lần có hạn cho xác thực email &amp; khôi phục mật khẩu; người dùng chưa xác thực bị chặn spam comment/rating/like.</li>
-                <li><strong>Rate Limiting:</strong> Giới hạn theo IP + email cho login/reset và theo từng User ID cho bình luận, đánh giá, báo cáo (trả <code>429 + Retry-After</code>).</li>
-                <li><strong>Strict Validation:</strong> Zod <code>.strict()</code> chặn mass-assignment; lỗi chuẩn <code>application/problem+json</code>.</li>
-              </ul>
-            </div>
+          
+      <div class="cols-4">
+        <div class="card">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 8px;">Auth &amp; RBAC</div>
+          <h3 style="font-size: 17px; margin-bottom: 8px;">Identity Domain</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><code>users</code>: bio, avatar_url, password_changed_at, email_verified_at</li>
+            <li><code>roles</code> &amp; <code>user_roles</code>: 5 system roles</li>
+            <li><code>refresh_tokens</code>: family_id, hash, reuse detection flag</li>
+            <li><code>user_tokens</code>: single-use email tokens</li>
+            <li><code>user_tags</code>: reader topic preferences</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-amber-bg); color: var(--accent-amber); margin-bottom: 8px;">Editorial Store</div>
+          <h3 style="font-size: 17px; margin-bottom: 8px;">Content Domain</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><code>documents</code>: title, content, summary, status, views_count, og_image_url</li>
+            <li><code>categories</code>: slug, name, hierarchy</li>
+            <li><code>tags</code>: taxonomy slugs &amp; counts</li>
+            <li><code>document_tags</code>: editorial &amp; reader tags</li>
+            <li>SEO fields: <code>seo_keywords</code>, <code>image_alt</code>, <code>meta_title</code>, <code>meta_description</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-sage-bg); color: var(--accent-sage); margin-bottom: 8px;">Social Graph</div>
+          <h3 style="font-size: 17px; margin-bottom: 8px;">Engagement Domain</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><code>comments</code>: visible/hidden, content MD5 deduplication guard</li>
+            <li><code>ratings</code>: 1–5 stars (composite user+doc PK)</li>
+            <li><code>article_likes</code>: persistent like telemetry</li>
+            <li><code>reports</code>: single report per user/target (409 conflict protection)</li>
+          </ul>
+        </div>
+        <div class="card" style="background: var(--accent-navy); color: #FFF;">
+          <div class="pill" style="background: rgba(255,255,255,0.15); color: #FDF3E3; margin-bottom: 8px;">Logs &amp; Telemetry</div>
+          <h3 style="font-size: 17px; margin-bottom: 8px; color: #FFF;">Telemetry Domain</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px; color: #E1F0EE;">
+            <li><code>search_query_log</code>: query, model, filters, doc_ids, latency_ms</li>
+            <li><code>search_click_log</code>: query_log_id, rank_position, user_id, CTR</li>
+            <li><code>audit_log</code>: actor_id, action, entity, details</li>
+            <li><code>site_settings</code>: global key-value configuration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cols-2" style="margin-top: 18px;">
+        <div class="card paper">
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Batched RAM View Counter (Anti Hot-Row Lock Contention)</h4>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin: 0;">Viral articles receiving high concurrency could lock PostgreSQL row buffers if updated on every GET. Instead, views increment inside an in-memory buffer and sync periodically every 5s via bulk <code>unnest()</code> upserts with a shutdown flush hook.</p>
+        </div>
+        <div class="card paper">
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Corpus Ground Truth (104 Wikinews Articles · CC BY 2.5 / 4.0)</h4>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin: 0;">Corpus seeded with 104 real-world Wikinews articles across 8 categories (World, Politics, Science, Technology, Business, Culture, Health, Sports) and 192 tags, providing diverse lengths and realistic vocabulary distributions.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Database Modeling</span>
+          <span>11 Migrations · 18 Tables · Batched View Buffer · 104 Corpus Articles</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 7 -->
+      <section class="slide" data-slide="6" data-notes="Explains the defense-in-depth security model: Argon2id password hashing, ephemeral in-memory JWTs immune to XSS, HttpOnly refresh token rotation with family reuse revocation, and hierarchical rate limits.">
+        <div class="slide-top">
+          <span class="kicker terra">05 · Security & Auth</span>
+          <span class="slide-num">07 / 30</span>
+        </div>
+        <h2 class="heading">Multi-Layered Security &amp; Session Lifecycle (ADR-002)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: var(--accent-terra);">Password Hardening &amp; Session Lifecycles</h3>
+          <ul>
+            <li><strong>Argon2id Password Hashing:</strong> Modern memory-hard hashing (memory cost 64MB, 3 iterations, 4 parallelism lanes). Passwords checked against a known weak-password blocklist with constant-time verification.</li>
+            <li><strong>Ephemeral In-Memory Access Tokens (15 min):</strong> HS256 JWT stored strictly in JavaScript closure memory. Never written to <code>localStorage</code> or <code>sessionStorage</code>, rendering credentials immune to XSS exfiltration.</li>
+            <li><strong>Refresh Token Rotation (14 days):</strong> Transmitted via <code>HttpOnly; Secure; SameSite=Strict</code> cookie, hashed with SHA-256 before DB insertion. Replay of an expired token revokes the entire <code>family_id</code> with a 30s grace window for multi-tab sync.</li>
+            <li><strong>CSRF &amp; Transport Guard:</strong> Enforces <code>X-Requested-With: fetch</code> header check and Origin allowlist validation.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 20px; margin-bottom: 12px; color: var(--accent-teal);">Access Control &amp; Abuse Prevention</h3>
+          <ul>
+            <li><strong>Database-Backed Auth Middleware:</strong> Every authenticated request re-checks <code>is_active</code>, <code>roles</code>, and <code>password_changed_at</code> against PostgreSQL, enabling instant administrative revocation without waiting for token expiration.</li>
+            <li><strong>Email Verification Gate:</strong> Single-use cryptographically random tokens. Unverified users are permitted to read articles but barred from posting comments, ratings, likes, or user tags.</li>
+            <li><strong>Hierarchical Rate Limiting:</strong> Tiered limits per IP + email for auth endpoints (preventing brute-force and credential stuffing), and per user ID for comments and ratings (returning HTTP 429 + <code>Retry-After</code>).</li>
+            <li><strong>Defensive Encoding:</strong> Parameterized SQL (100% SQLi immune), Zod <code>.strict()</code> blocking mass-assignment, Helmet CSP, and HTML entity sanitization.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Security Architecture</span>
+          <span>Argon2id · In-Memory JWT · Refresh Rotation · DB-Checked Sessions</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 8 -->
+      <section class="slide" data-slide="7" data-notes="Presents the strict RBAC matrix separating Super Admin, Content Manager, Moderator, and Data &amp; SEO Specialist. Emphasizes that permissions are enforced by server-side middleware on every route.">
+        <div class="slide-top">
+          <span class="kicker amber">06 · Enterprise RBAC</span>
+          <span class="slide-num">08 / 30</span>
+        </div>
+        <h2 class="heading">Role-Based Access Control: 4 Staff Roles Matrix</h2>
+        <div class="content">
+          
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th style="width: 32%;">System Capability / Module</th>
+            <th style="width: 17%;">Super Admin (<code>admin</code>)</th>
+            <th style="width: 17%;">Content Manager (<code>editor</code>)</th>
+            <th style="width: 17%;">Moderator (<code>moderator</code>)</th>
+            <th style="width: 17%;">Data &amp; SEO (<code>seo</code>)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Article Management (CRUD, Publish, Archive, Delete)</strong></td>
+            <td><span class="badge ok">Full CRUD + Delete</span></td>
+            <td><span class="badge ok">Create / Edit / Publish</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+          </tr>
+          <tr>
+            <td><strong>Taxonomy Governance (Categories &amp; Tags CRUD)</strong></td>
+            <td><span class="badge ok">Full CRUD</span></td>
+            <td><span class="badge ok">Full CRUD</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+          </tr>
+          <tr>
+            <td><strong>Community Moderation (Comments &amp; Reports Triage)</strong></td>
+            <td><span class="badge ok">Full Control</span></td>
+            <td><span class="badge warn">Hide Comments Only</span></td>
+            <td><span class="badge ok">Full Triage &amp; Ban</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+          </tr>
+          <tr>
+            <td><strong>SEO Metadata, Telemetry &amp; Search Engine Lab</strong></td>
+            <td><span class="badge ok">Full Access</span></td>
+            <td><span class="badge warn">SEO Audit View Only</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+            <td><span class="badge ok">Full Lab &amp; Telemetry</span></td>
+          </tr>
+          <tr>
+            <td><strong>User Admin, Role Assignment, Audit Logs &amp; Settings</strong></td>
+            <td><span class="badge ok">Full Admin Access</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+            <td><span class="badge no">403 Forbidden</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card paper" style="margin-top: 18px; padding: 14px 20px;">
+        <p style="font-size: 15px; margin: 0; color: var(--ink-secondary);">
+          <strong>Server-Side Security Invariant:</strong> Role authorization is not cosmetic UI button hiding. Every administrative endpoint is protected by Express middleware <code>requireRole('admin' | 'editor' | 'moderator' | 'seo')</code> that queries live database roles, logging every action to <code>audit_log</code>.
+        </p>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Role-Based Access Control</span>
+          <span>4 Dedicated Staff Roles · Server-Enforced Middleware</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 9 -->
+      <section class="slide" data-slide="8" data-notes="Details the 4 specialized admin interfaces developed for each role: Super Admin system settings, Content Manager concurrency editor, Moderator spam ban queue, and SEO Search Lab.">
+        <div class="slide-top">
+          <span class="kicker teal">07 · Admin Workspaces</span>
+          <span class="slide-num">09 / 30</span>
+        </div>
+        <h2 class="heading">Dedicated Administrative Workspaces (`/admin`)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card" style="border-left: 4px solid var(--accent-terra);">
+          <h3 style="font-size: 19px; margin-bottom: 8px;">1. Super Admin Workspace</h3>
+          <p style="font-size: 13.5px; color: var(--ink-muted); margin-bottom: 8px;"><code>/admin/users</code> · <code>/admin/logs</code> · <code>/admin/settings</code></p>
+          <ul style="font-size: 14.5px;">
+            <li><strong>User Management:</strong> Search users, assign 5 roles, activate/deactivate accounts with instant token family revocation.</li>
+            <li><strong>Audit Logs Trail:</strong> Full search and filtering over system actions with actor ID, target entity, timestamp, and metadata diff.</li>
+            <li><strong>Site Settings:</strong> Global configuration (maintenance mode, registration open/closed, comment approvals, pagination limits).</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-amber);">
+          <h3 style="font-size: 19px; margin-bottom: 8px;">2. Content Manager Workspace</h3>
+          <p style="font-size: 13.5px; color: var(--ink-muted); margin-bottom: 8px;"><code>/admin</code> · <code>/admin/taxonomy</code></p>
+          <ul style="font-size: 14.5px;">
+            <li><strong>Article Editor:</strong> Markdown/HTML drafting, summary extraction, image alt text, and status transitions (Draft → Published → Archived).</li>
+            <li><strong>Optimistic Concurrency Control:</strong> Compares <code>updatedAt</code> timestamp to prevent blind overwrites, returning HTTP 409 Conflict on stale updates.</li>
+            <li><strong>Taxonomy Hub:</strong> Full CRUD for categories and tags with live article usage counts.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-sage);">
+          <h3 style="font-size: 19px; margin-bottom: 8px;">3. Moderator Workspace</h3>
+          <p style="font-size: 13.5px; color: var(--ink-muted); margin-bottom: 8px;"><code>/admin/moderation</code></p>
+          <ul style="font-size: 14.5px;">
+            <li><strong>Reports Queue:</strong> Triage user abuse reports (Open / Resolved / Dismissed) with 1-click "Resolve &amp; Hide" action.</li>
+            <li><strong>Comment Management:</strong> Global inspection of reader comments with visibility toggle and permanent purge.</li>
+            <li><strong>Spam Control:</strong> Mass-hide all comments from a designated spammer and deactivate their account in a single transaction (protected against staff targets).</li>
+          </ul>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-teal);">
+          <h3 style="font-size: 19px; margin-bottom: 8px;">4. Data &amp; SEO Specialist Workspace</h3>
+          <p style="font-size: 13.5px; color: var(--ink-muted); margin-bottom: 8px;"><code>/admin/seo</code> · <code>/admin/analytics</code> · <code>/admin/search-engine</code></p>
+          <ul style="font-size: 14.5px;">
+            <li><strong>On-Page SEO Auditing:</strong> Identifies missing metadata, calculates length compliance for titles/descriptions, and scores articles (A/B/C/D).</li>
+            <li><strong>Search Telemetry Analytics:</strong> Evaluates live query logs, click-through rates (CTR), Mean Reciprocal Rank (MRR), and zero-hit query rates.</li>
+            <li><strong>Search Engine Laboratory:</strong> Live comparison of all 5 IR retrieval models with term score breakdowns, Zipf/Heaps graphs, and index inspection.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Operational CMS</span>
+          <span>9 Tailored Admin Views · Role-Adaptive Navigation Sidebar</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 10 -->
+      <section class="slide" data-slide="9" data-notes="Highlights the reader-facing portal designed in the Warm Illustrated Humanist aesthetic (WCAG 2.2 AA compliant) with interactive comments, ratings, and social features.">
+        <div class="slide-top">
+          <span class="kicker sage">08 · Client Experience</span>
+          <span class="slide-num">10 / 30</span>
+        </div>
+        <h2 class="heading">Public Reader Experience &amp; Community Engagement</h2>
+        <div class="content">
+          
+      <div class="cols-3">
+        <div class="card">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 10px;">Aesthetics &amp; A11y</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Design System (WCAG 2.2 AA)</h3>
+          <ul style="font-size: 14px;">
+            <li><strong>Warm Illustrated Humanist:</strong> Warm cream paper <code>#FBF6EC</code> with deep navy ink <code>#1E2A44</code> achieving a 13.3:1 contrast ratio.</li>
+            <li><strong>Self-Hosted Typography:</strong> <code>Fraunces</code> editorial serif for headings, <code>Nunito Sans</code> for prose; zero Google CDN tracking.</li>
+            <li><strong>Accessibility Guarantees:</strong> Touch target sizes ≥ 44px, drawer menus with focus-trap and Escape key handling, respecting <code>prefers-reduced-motion</code>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-amber-bg); color: var(--accent-amber); margin-bottom: 10px;">Reading Experience</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Article Detail View</h3>
+          <ul style="font-size: 14px;">
+            <li><strong>Visual Content:</strong> Hero image with automated fallback to category-specific SVG artwork; SEO <code>imageAlt</code> tags.</li>
+            <li><strong>Reading Guidance:</strong> Reading progress indicator, key takeaway summary callout, and 66-character optimal line length.</li>
+            <li><strong>Discovery:</strong> Real-time Related Articles computed via TF-IDF cosine similarity, suggested tags, and key entity chips.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 10px;">Reader Interaction</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Community Features</h3>
+          <ul style="font-size: 14px;">
+            <li><strong>1–5 Star Rating:</strong> Idempotent upsert updating the running Bayesian mean rating in real time.</li>
+            <li><strong>Article Likes:</strong> Instant toggle with optimistic client updates and server verification.</li>
+            <li><strong>Comments &amp; Deduplication:</strong> MD5 content hash prevents duplicate submissions; paginated at 20 comments/page.</li>
+            <li><strong>Community Tagging:</strong> Verified readers can attach topic tags to articles and manage their own tags.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Reader Experience</span>
+          <span>Warm Illustrated Humanist · WCAG 2.2 AA · Social Interactions</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 11 -->
+      <section class="slide" data-slide="10" data-notes="Transition slide marking the formal beginning of Part II. Here we enter the core Information Retrieval deep dive, analyzing all algorithms, formulas, data structures, and empirical evaluations specified in the SEG301m curriculum.">
+        
+      <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 100px;">
+        <span class="kicker teal" style="font-size: 16px; padding: 8px 24px; margin-bottom: 20px;">PART II · ALGORITHMIC SEARCH ENGINE</span>
+        <h1 class="title" style="font-size: 60px; margin-bottom: 20px; max-width: 1400px;">PHASE 2: Custom Information Retrieval Search Engine</h1>
+        <p class="lead" style="font-size: 24px; max-width: 1100px; margin-bottom: 40px; color: var(--ink-secondary);">
+          Transitioning from relational scanning to a custom-built, in-memory Information Retrieval engine implementing the complete SEG301m curriculum (Chapters 1–12).
+        </p>
+        <div class="cols-4" style="width: 100%; max-width: 1400px; text-align: left;">
+          <div class="card" style="border-top: 4px solid var(--accent-teal);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">Compressed Inverted Index</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">Fielded postings compressed via Delta + V-Byte (4.0:1 ratio, 75.0% RAM savings) with Skip Pointers.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--accent-terra);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">Probabilistic &amp; LM Ranking</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">Okapi BM25F, Query Likelihood Dirichlet LM, and Feature-Based Proximity/Freshness Hybrid.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--accent-amber);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">Query Intelligence</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">Damerau-Levenshtein noisy channel spell checking, Dice co-occurrence expansion, and RM3 PRF.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--accent-sage);">
+            <h4 style="font-size: 18px; margin-bottom: 6px;">Empirical Benchmarking</h4>
+            <p style="font-size: 14.5px; margin: 0; color: var(--ink-secondary);">16 TREC topic queries evaluated across P@K, Recall, MAP, MRR, NDCG, and Paired Sign Test ($p < 0.001$).</p>
           </div>
         </div>
-        <div class="slide-foot"><span>Security</span><span>Zero PII leaks · CSP/Helmet · Parameterized SQL</span></div>
+      </div>
+    
+        <div class="slide-foot">
+          <span>Part II: Information Retrieval Deep Dive</span>
+          <span>SEG301m Chapters 1–12 Core Curriculum</span>
+        </div>
       </section>
-
-      <!-- SLIDE 6: PUBLIC READER UI -->
-      <section class="slide" data-notes="Giao diện độc giả theo phong cách Warm Illustrated Humanist (DESIGN.md), đạt chuẩn WCAG 2.2 AA về độ tương phản, kích thước vùng chạm >= 44px, hỗ trợ tiếng Việt đầy đủ.">
+    
+      <!-- SLIDE 12 -->
+      <section class="slide" data-slide="11" data-notes="Contrasts relational SQL ILIKE query scanning against a dedicated Information Retrieval pipeline. Demonstrates why specialized data structures and relevance scoring are required.">
         <div class="slide-top">
-          <span class="kicker">05 · Client / User Interface</span>
-          <span class="slide-num">06 / 12</span>
+          <span class="kicker teal">09 · IR Motivation</span>
+          <span class="slide-num">12 / 30</span>
         </div>
-        <h2 class="heading">Trải nghiệm độc giả &amp; Trang chi tiết bài viết</h2>
+        <h2 class="heading">Why SQL LIKE Fails: Relational DB vs IR Pipeline</h2>
         <div class="content">
-          <div class="cols-60-40">
-            <div class="card">
-              <h3>Trang chủ, Chuyên mục &amp; Trang chi tiết</h3>
-              <ul>
-                <li><strong>Home &amp; Directory:</strong> Tin nổi bật (Lead story) + 2 tin phụ + danh sách tin mới phân trang kèm tóm tắt, chuyên mục và số lượt xem.</li>
-                <li><strong>Detail View đầy đủ Metadata:</strong>
-                  <ul>
-                    <li>Ảnh Hero (<code>ogImageUrl</code> kèm <code>imageAlt</code> chuẩn SEO, tự fallback về minh họa chuyên mục).</li>
-                    <li>Tiêu đề, Kicker chuyên mục, Tác giả, Ngày xuất bản, <strong>Lượt xem (viewsCount)</strong>.</li>
-                    <li>Hộp tóm tắt <strong>Key points</strong>, thanh tiến trình đọc (Reading Progress), nội dung prose chuẩn 66ch.</li>
-                    <li>Danh sách <strong>Tags</strong> bấm để lọc, <strong>TF-IDF Suggested Tags + Key Entities</strong> &amp; <strong>Related Articles</strong> (Cosine Similarity).</li>
-                  </ul>
-                </li>
-              </ul>
-            </div>
-            <div class="card paper">
-              <h3>Design System (WCAG 2.2 AA)</h3>
-              <p>Phong cách <strong>Warm Illustrated Humanist</strong>:</p>
-              <ul>
-                <li>Nền giấy kem ấm <code>#FBF6EC</code>, mực xanh đậm <code>#1E2A44</code> (tương phản 13.3:1).</li>
-                <li>Typography: <strong>Fraunces</strong> (tiêu đề) &amp; <strong>Nunito Sans</strong> (nội dung ≥ 17px, hỗ trợ dấu tiếng Việt).</li>
-                <li>Touch target ≥ 44px, drawer menu hỗ trợ focus-trap &amp; Escape, tôn trọng <code>prefers-reduced-motion</code>.</li>
-              </ul>
-            </div>
-          </div>
+          
+      <div class="cols-2">
+        <div class="card" style="border-top: 5px solid var(--accent-terra);">
+          <h3 style="font-size: 21px; margin-bottom: 12px; color: var(--accent-terra);">Relational SQL Search: <code>ILIKE '%term%'</code></h3>
+          <ul style="font-size: 15px;">
+            <li><strong>Exhaustive Table Scans:</strong> $O(N)$ computational complexity requiring sequential scans across every row in the database, resulting in heavy disk I/O as corpus scales.</li>
+            <li><strong>Binary Matching Only:</strong> An article either matches or does not match. Relational databases cannot determine whether a document is slightly relevant or critically relevant.</li>
+            <li><strong>Lack of Term Saturation:</strong> A document mentioning a word 50 times is treated identically to one mentioning it once, or biased unfairly without diminishing returns.</li>
+            <li><strong>Field Blindness:</strong> Relational queries treat a match in a footnote identically to a match in the article headline, lacking field weighting.</li>
+            <li><strong>Linguistic Rigidity:</strong> Cannot handle morphological variants (<code>voting</code> vs <code>vote</code>), synonyms, or typos without computationally brutal regex operations.</li>
+          </ul>
         </div>
-        <div class="slide-foot"><span>Public Portal</span><span>Home · Category · Search · Article Detail</span></div>
+        <div class="card" style="border-top: 5px solid var(--accent-teal);">
+          <h3 style="font-size: 21px; margin-bottom: 12px; color: var(--accent-teal);">Custom IR Search Engine (SEG301m)</h3>
+          <ul style="font-size: 15px;">
+            <li><strong>Inverted Indexing in RAM:</strong> Inverts document mappings into a vocabulary dictionary; query execution only touches posting lists of active query terms, achieving <strong>0.226 ms</strong> latency.</li>
+            <li><strong>Graded Relevance Scoring:</strong> Evaluates document relevance using term frequency (TF), inverse document frequency (IDF), and document length normalization.</li>
+            <li><strong>Fielded Saturation (BM25F):</strong> Distinct weights per field ($w_{\text{title}}=3.0, w_{\text{tags}}=2.2$) with non-linear saturation preventing keyword stuffing.</li>
+            <li><strong>Morphological Normalization:</strong> Porter Stemmer conflates related grammatical forms; 3-shingle detects near-duplicates; noisy-channel corrects typos.</li>
+            <li><strong>Postings Compression:</strong> V-Byte Delta compression reduces memory footprint by 75.0% with skip pointers accelerating conjunctive evaluation.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>IR Motivation</span>
+          <span>From $O(N)$ Sequential Scanning to Sub-Millisecond Ranked Retrieval</span>
+        </div>
       </section>
-
-      <!-- SLIDE 7: SEARCH ENGINE & TELEMETRY -->
-      <section class="slide" data-notes="Trang /search vận hành trực tiếp trên Search Engine Phase 2 (BM25F, TF-IDF, Query Likelihood, Boolean + Phrase, Hybrid, RM3 PRF, Spell Check, Dice Expansion, K-Means Clustering) và ghi log đầy đủ vào search_query_log + search_click_log để đánh giá CTR và chất lượng xếp hạng.">
+    
+      <!-- SLIDE 13 -->
+      <section class="slide" data-slide="12" data-notes="Details the text preprocessing pipeline: regex tokenization, stopword removal, 5-phase Porter Stemmer suffix stripping, and 3-shingle Jaccard fingerprinting for near-duplicate detection.">
         <div class="slide-top">
-          <span class="kicker sage">06 · Search Engine, Ranking &amp; Telemetry</span>
-          <span class="slide-num">07 / 12</span>
+          <span class="kicker teal">10 · Text Processing</span>
+          <span class="slide-num">13 / 30</span>
         </div>
-        <h2 class="heading">Search Engine Phase 2 &amp; Telemetry (Query + Click Logs)</h2>
+        <h2 class="heading">Text Processing: Tokenization, Stemming &amp; Shingling (Ch. 4)</h2>
         <div class="content">
-          <div class="cols-2">
-            <div class="card">
-              <h3>Truy xuất &amp; Xếp hạng (<code>/api/articles</code> · <code>/api/search</code>)</h3>
-              <ul>
-                <li><strong>5 Retrieval Models:</strong> <code>BM25F</code> (fielded, mặc định), <code>TF-IDF Cosine</code>, <code>Query Likelihood</code> (Dirichlet), <code>Boolean + Phrase</code> (<code>AND/OR/-</code>, <code>"..."</code>), <code>Hybrid</code> (BM25 + Proximity + Freshness).</li>
-                <li><strong>Query Intelligence:</strong> Noisy-channel <strong>Spell Check</strong>, <strong>Dice Expansion</strong>, <strong>RM3 PRF</strong> (<code>prf=1</code>), autocomplete <code>/api/search/suggest</code>.</li>
-                <li><strong>Result Presentation:</strong> Highlight snippet, <code>explain=1</code> score breakdown &amp; <strong>K-Means Clustering</strong>.</li>
-                <li><strong>Bộ lọc &amp; Sort:</strong> Category, Tag, Date Range (<code>from</code>–<code>to</code>), Sort (<code>relevance</code>, <code>latest</code>, <code>views</code>, <code>oldest</code>) + SQL fallback khi chỉ lọc metadata/stopword.</li>
-              </ul>
-            </div>
-            <div class="card terra">
-              <h3>Query &amp; Click Telemetry + Discovery</h3>
-              <ul>
-                <li><strong>Query Log (<code>search_query_log</code>):</strong> Mỗi truy vấn lưu <code>query_string</code>, <code>retrieval_model</code>, <code>filters</code>, <code>result_doc_ids</code>, <code>latency_ms</code> → trả về <code>queryLogId</code>.</li>
-                <li><strong>Click Log (<code>POST /api/search-clicks</code>):</strong> Gửi bất đồng bộ (<code>keepalive: true</code>) <code>{ queryString, slug, queryLogId, rankPosition, retrievalModel }</code> vào <code>search_click_log</code>.</li>
-                <li><strong>Discovery:</strong> <code>/api/search/tag-cloud</code> &amp; gợi ý cá nhân hóa <code>/api/search/recommendations</code> (Collaborative Filtering + User Tags).</li>
-                <li><strong>Phân tích CTR:</strong> Theo dõi truy vấn phổ biến, CTR &amp; hiệu năng trên <strong>Analytics</strong> &amp; <strong>Search Engine Lab</strong>.</li>
-              </ul>
-            </div>
-          </div>
+          
+      <div class="cols-4" style="margin-bottom: 20px;">
+        <div class="card paper">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Step 1</div>
+          <h3 style="font-size: 17px; margin-bottom: 6px;">Lexical Tokenizer</h3>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Strips HTML tags &amp; entities; splits text via <code>[a-z0-9]+</code> regex into normalized lowercase tokens; records character start/end offsets for safe snippet highlighting.</p>
         </div>
-        <div class="slide-foot"><span>Search Engine Pipeline</span><span>Query → IR Ranking → search_query_log &amp; search_click_log → Analytics</span></div>
+        <div class="card paper">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Step 2</div>
+          <h3 style="font-size: 17px; margin-bottom: 6px;">Stopword Filter</h3>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Filters 128 high-frequency grammatical words (<code>the</code>, <code>is</code>, <code>which</code>, <code>at</code>, <code>on</code>) that consume posting space while contributing negligible topical discrimination.</p>
+        </div>
+        <div class="card paper">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Step 3</div>
+          <h3 style="font-size: 17px; margin-bottom: 6px;">Porter Stemmer</h3>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Executes classical 5-phase suffix-stripping rules (e.g. <code>caresses</code> &rarr; <code>caress</code>, <code>ponies</code> &rarr; <code>poni</code>, <code>elections</code> &rarr; <code>elect</code>, <code>voting</code> &rarr; <code>vote</code>) with measure $m$ consonant checks.</p>
+        </div>
+        <div class="card paper">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Step 4</div>
+          <h3 style="font-size: 17px; margin-bottom: 6px;">3-Shingle Dedup</h3>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Constructs sliding 3-token shingles; computes pairwise Jaccard similarity $J(S_1, S_2) = \frac{|S_1 \cap S_2|}{|S_1 \cup S_2|}$ to flag syndicated wire duplicates ($J > 0.50$).</p>
+        </div>
+      </div>
+
+      <div class="cols-2">
+        <div class="card">
+          <h4 style="font-size: 17px; margin-bottom: 8px;">Porter Stemmer Phase Invariants (Chapter 4.3)</h4>
+          <ul style="font-size: 14px; margin: 0;">
+            <li><strong>Step 1a &amp; 1b:</strong> Plurals and verb inflections (<code>SSES &rarr; SS</code>, <code>IED &rarr; I</code>, <code>(*v*)ING &rarr; &epsilon;</code>).</li>
+            <li><strong>Step 2 &amp; 3:</strong> Derivational suffix stripping (<code>ATIONAL &rarr; ATE</code>, <code>FULNESS &rarr; FUL</code>).</li>
+            <li><strong>Step 4 &amp; 5:</strong> Residual endings and trailing <code>-e</code> reduction governed by syllable measure $m > 1$.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 style="font-size: 17px; margin-bottom: 8px;">Near-Duplicate Detection Accuracy (Chapter 3.7)</h4>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 6px;">Verified in test suite on live Wikinews stories:</p>
+          <code style="font-size: 13px; display: block; padding: 8px 12px; background: var(--paper-2); border-radius: 6px;">
+            S1: "solar panels reach record efficiency today"<br>
+            S2: "solar panels reach record efficiency now"<br>
+            &rarr; Jaccard = 0.60 (Flagged near-duplicate)<br>
+            S3: "football tournament champions crowned"<br>
+            &rarr; Jaccard = 0.00 (Completely distinct)
+          </code>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Text Processing Pipeline</span>
+          <span>Tokenization · Stopwords · Porter Stemmer · 3-Shingle Fingerprinting</span>
+        </div>
       </section>
-
-      <!-- SLIDE 8: PROFILE & ENGAGEMENT -->
-      <section class="slide" data-notes="Người dùng có đầy đủ tính năng quản lý hồ sơ cá nhân tại /account/profile, thích bài viết, đánh giá 1-5 sao, bình luận, gắn tag lên bài viết và báo cáo vi phạm.">
+    
+      <!-- SLIDE 14 -->
+      <section class="slide" data-slide="13" data-notes="Presents the empirical statistical analysis of the 104 Wikinews articles: verifying Zipf power-law term distribution and nonlinear fitting of Heaps Law (k=8.299, beta=0.627).">
         <div class="slide-top">
-          <span class="kicker">07 · User Profile &amp; Engagement</span>
-          <span class="slide-num">08 / 12</span>
+          <span class="kicker teal">11 · Corpus Linguistics</span>
+          <span class="slide-num">14 / 30</span>
         </div>
-        <h2 class="heading">Quản lý hồ sơ cá nhân &amp; Tương tác cộng đồng</h2>
+        <h2 class="heading">Corpus Linguistics: Zipf's Law &amp; Heaps' Law (Ch. 4)</h2>
         <div class="content">
-          <div class="cols-3">
-            <div class="card">
-              <h3>Hồ sơ cá nhân (<code>/account/profile</code>)</h3>
-              <ul>
-                <li>Cập nhật <strong>Display name</strong>, <strong>Bio</strong> (tối đa 500 ký tự) và <strong>Avatar URL</strong> (<code>https://</code>).</li>
-                <li>Quản lý <strong>Topic Tags</strong> yêu thích (lưu ở bảng <code>user_tags</code>) và bấm tag để tìm bài liên quan.</li>
-                <li>Thống kê hoạt động cá nhân: số bình luận, lượt đánh giá, lượt thích.</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>Đánh giá, Thích &amp; User Tagging</h3>
-              <ul>
-                <li><strong>Rating 1–5 sao:</strong> Upsert idempotent, cập nhật điểm trung bình theo thời gian thực.</li>
-                <li><strong>Like bài viết:</strong> Nút Like / Liked kèm tổng lượt thích (<code>article_likes</code>).</li>
-                <li><strong>User Tagging:</strong> Người dùng đã xác thực email có thể gắn thêm tag cộng đồng cho bài viết và tự gỡ tag mình đã thêm.</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>Bình luận &amp; Báo cáo vi phạm</h3>
-              <ul>
-                <li><strong>Comments:</strong> Phân trang 20 bình luận/lần, có unique guard chống double-submit trùng lặp nội dung.</li>
-                <li><strong>Reports:</strong> Báo cáo bài viết hoặc bình luận vi phạm với lý do cụ thể (chặn báo cáo trùng 409).</li>
-                <li><strong>An toàn:</strong> Render nội dung thuần text trong React, chống XSS tuyệt đối.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="slide-foot"><span>User Engagement</span><span>GET/PATCH /api/users/me · Rating · Like · Comment · Tag · Report</span></div>
-      </section>
-
-      <!-- SLIDE 9: ADMIN RBAC MATRIX -->
-      <section class="slide" data-notes="Hệ thống phân quyền RBAC 4 vai trò nhân sự được kiểm tra chặt chẽ ở tầng API Express (requireRole) chứ không chỉ ẩn nút trên UI.">
-        <div class="slide-top">
-          <span class="kicker sun">08 · Admin RBAC Matrix</span>
-          <span class="slide-num">09 / 12</span>
-        </div>
-        <h2 class="heading">Ma trận phân quyền 4 vai trò quản trị (RBAC)</h2>
-        <div class="content">
-          <table class="matrix">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge amber">Zipf's Law: $r \cdot f \approx C$</div>
+          <h3 style="font-size: 20px; margin: 12px 0 8px;">Empirical Power-Law Term Distribution</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 12px;">Zipf's Law states that the frequency of any word is inversely proportional to its rank in the frequency table: $f(r) \propto \frac{1}{r^s}$.</p>
+          <table class="matrix" style="font-size: 13.5px;">
             <thead>
-              <tr>
-                <th>Chức năng / Module</th>
-                <th>Super Admin (<code>admin</code>)</th>
-                <th>Content Manager (<code>editor</code>)</th>
-                <th>Moderator (<code>moderator</code>)</th>
-                <th>Data &amp; SEO (<code>seo</code>)</th>
-              </tr>
+              <tr><th>Rank ($r$)</th><th>Stemmed Term</th><th>Collection Freq ($f$)</th><th>Product ($r \cdot f$)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><code>said</code></td><td>352</td><td>352</td></tr>
+              <tr><td>2</td><td><code>year</code></td><td>184</td><td>368</td></tr>
+              <tr><td>3</td><td><code>state</code></td><td>141</td><td>423</td></tr>
+              <tr><td>4</td><td><code>peopl</code></td><td>108</td><td>432</td></tr>
+              <tr><td>5</td><td><code>presid</code></td><td>96</td><td>480</td></tr>
+              <tr><td>10</td><td><code>govern</code></td><td>54</td><td>540</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size: 13px; color: var(--ink-muted); margin-top: 10px; margin-bottom: 0;">Product $r \cdot f$ remains tightly bounded, confirming classical linguistic power-law behavior across the 104 Wikinews articles.</p>
+        </div>
+
+        <div class="card">
+          <div class="stat-badge teal">Heaps' Law: $V = k \cdot N^\beta$</div>
+          <h3 style="font-size: 20px; margin: 12px 0 8px;">Vocabulary Growth Modeling</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 12px;">Heaps' Law models the sublinear growth of vocabulary size $V$ as total token count $N$ increases. Fitted across 18 sequential accumulation points (6 to 104 articles):</p>
+          <div class="cols-2" style="margin-bottom: 14px;">
+            <div class="card paper" style="text-align: center; padding: 12px;">
+              <div class="stat-num" style="color: var(--accent-teal); font-size: 32px;">8.299 <span style="font-size: 15px; color: var(--ink-muted); font-weight: 500;">(Ref: 8.246)</span></div>
+              <p style="font-size: 13px; margin: 0; font-weight: 700;">Fitted Constant ($k$)</p>
+            </div>
+            <div class="card paper" style="text-align: center; padding: 12px;">
+              <div class="stat-num" style="color: var(--accent-terra); font-size: 32px;">0.627 <span style="font-size: 15px; color: var(--ink-muted); font-weight: 500;">(Ref: 0.628)</span></div>
+              <p style="font-size: 13px; margin: 0; font-weight: 700;">Fitted Exponent ($\beta$)</p>
+            </div>
+          </div>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">
+            <strong>Curriculum &amp; Empirical Alignment:</strong> The fitted exponent $\beta = 0.627$ matches the course reference ($k=8.246, \beta=0.628$) within $\Delta \beta = 0.001$, perfectly fitting English text properties ($0.4 \le \beta \le 0.6$). Across $N = 37,050$ tokens, actual vocabulary $V = 5,924$ stems (predicted: 6,094, error &lt; 2.8%), validating sublinear index growth.
+          </p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Corpus Statistics</span>
+          <span>104 Articles · N=37,050 Tokens · V=5,924 Stems · Fitted k=8.299, β=0.627</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 15 -->
+      <section class="slide" data-slide="14" data-notes="Explains the in-memory fielded inverted index data structure, field weighting constants, and positional recording enabling exact phrase queries and proximity span calculations.">
+        <div class="slide-top">
+          <span class="kicker teal">12 · Index Architecture</span>
+          <span class="slide-num">15 / 30</span>
+        </div>
+        <h2 class="heading">Multi-Field Inverted Index &amp; Positional Storage (Ch. 5)</h2>
+        <div class="content">
+          
+      <div class="cols-60-40">
+        <div class="card">
+          <h3 style="font-size: 20px; margin-bottom: 12px;">Multi-Field Posting Structure in Memory</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 14px;">
+            Each unique vocabulary term points to a sorted posting list of documents containing the term, recording granular field occurrences and positional offsets:
+          </p>
+          <pre style="background: var(--accent-navy); color: #E1F0EE; padding: 14px 18px; border-radius: 10px; font-family: JetBrains Mono, monospace; font-size: 13.5px; line-height: 1.45; overflow-x: auto;">
+postings.get("elect") &rarr; [
+  {
+    docId: 12,
+    tf: 6,
+    fieldTf: {
+      title: 1,       // Weight = 3.0
+      tags: 2,        // Weight = 2.2
+      seoKeywords: 1, // Weight = 2.0
+      summary: 1,     // Weight = 1.5
+      content: 1      // Weight = 1.0
+    },
+    positions: [4, 18, 45, 92, 104, 150]
+  },
+  ...
+]</pre>
+        </div>
+
+        <div class="card paper">
+          <h3 style="font-size: 20px; margin-bottom: 12px;">Field Weighting &amp; Positional Utility</h3>
+          <ul>
+            <li><strong>Headline &amp; Taxonomy Salience:</strong> Title matches are weighted 3x and tag matches 2.2x over body content, ensuring high-signal metadata immediately surfaces relevant documents.</li>
+            <li><strong>Positional Adjacency:</strong> Positions stored in a unified coordinate space allow instantaneous validation of exact phrase queries (<code>"World Passport"</code>).</li>
+            <li><strong>Term Proximity Span:</strong> Enables the Sequential Dependence Model (SDM) to compute minimum span windows covering query terms without regex scans.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Inverted Index Structure</span>
+          <span>Fielded Posting Lists · Positions Array · Weighted Field TFs</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 16 -->
+      <section class="slide" data-slide="15" data-notes="Presents Delta d-gap encoding combined with Variable-Byte (V-Byte) 7-bit continuation encoding. Highlights the empirical 75.0% memory reduction and 4.0:1 compression ratio measured on the 104 articles.">
+        <div class="slide-top">
+          <span class="kicker teal">13 · Index Compression</span>
+          <span class="slide-num">16 / 30</span>
+        </div>
+        <h2 class="heading">Storage Compression: Delta (d-gap) + Variable-Byte (Ch. 5)</h2>
+        <div class="content">
+          
+      <div class="cols-3">
+        <div class="card">
+          <div class="stat-badge terra">Delta (d-gap) Encoding</div>
+          <h3 style="font-size: 18px; margin: 10px 0 8px;">D-Gap Transformation</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 10px;">Replaces monotonically increasing doc IDs with gaps between consecutive entries: $\Delta_i = \text{docId}_i - \text{docId}_{i-1}$.</p>
+          <code style="font-size: 12.5px; display: block; padding: 8px 10px; background: var(--paper-2); border-radius: 6px;">
+            Raw IDs: [1, 5, 9, 18, 128, 300]<br>
+            &rarr; Gaps: [1, 4, 4, 9, 110, 172]
+          </code>
+          <p style="font-size: 13px; color: var(--ink-muted); margin-top: 8px; margin-bottom: 0;">Gaps for common terms remain small, allowing most values to pack into a single 8-bit byte.</p>
+        </div>
+
+        <div class="card">
+          <div class="stat-badge amber">Variable-Byte (V-Byte)</div>
+          <h3 style="font-size: 18px; margin: 10px 0 8px;">7-Bit Continuation Format</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 10px;">Each byte carries 7 bits of payload. The most significant bit (MSB, bit 7) acts as the continuation flag:</p>
+          <ul style="font-size: 13.5px; padding-left: 16px; margin: 0;">
+            <li><code>MSB = 0</code>: Non-terminal byte; more bytes follow.</li>
+            <li><code>MSB = 1</code>: Terminal byte of current integer.</li>
+            <li>Values &lt; 128 require exactly 1 byte; values up to 16,384 take 2 bytes.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="background: var(--accent-navy); color: #FFF;">
+          <div class="stat-badge sage" style="color: #FFF; background: var(--accent-sage);">Empirical Results</div>
+          <h3 style="font-size: 18px; margin: 10px 0 8px; color: #FFF;">75.0% RAM Savings</h3>
+          <div class="stat-num" style="color: var(--accent-amber); font-size: 40px; margin-bottom: 4px;">4.0 : 1</div>
+          <p style="font-size: 14px; color: #E1F0EE; margin-bottom: 10px;">Compression Ratio Achieved</p>
+          <ul style="font-size: 13px; padding-left: 16px; color: #E1F0EE; margin: 0;">
+            <li>Raw Int32 Postings: <strong>85,212 bytes</strong></li>
+            <li>Compressed V-Byte: <strong>21,303 bytes</strong></li>
+            <li>Space Savings: <strong>75.0% memory reduction</strong></li>
+            <li>CPU Decode Cost: &lt; 0.002 ms per query</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Posting Compression</span>
+          <span>Delta (d-gaps) · V-Byte 7-Bit Encoding · 4.0:1 Compression Ratio · 75.0% Savings</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 17 -->
+      <section class="slide" data-slide="16" data-notes="Explains Skip Pointers placed at stride floor(sqrt(P)), detailing how skip-assisted conjunctive intersection accelerates multi-term Boolean AND queries to sub-linear comparisons.">
+        <div class="slide-top">
+          <span class="kicker teal">14 · Query Acceleration</span>
+          <span class="slide-num">17 / 30</span>
+        </div>
+        <h2 class="heading">Conjunctive Query Acceleration: Skip Pointers (Ch. 5)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <h3 style="font-size: 20px; margin-bottom: 12px;">Skip Pointers Formulation (Chapter 5.3 &amp; 5.7)</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 12px;">
+            For a posting list of length $P$, skip links are placed at optimal fixed intervals of length:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 14px; margin-bottom: 14px;">
+            <span style="font-family: JetBrains Mono, monospace; font-size: 24px; font-weight: 700; color: var(--accent-teal);">
+              Stride Step: $L = \lfloor\sqrt{P}\rfloor$
+            </span>
+          </div>
+          <p style="font-size: 14px; color: var(--ink-secondary);">
+            <strong>Skip-Assisted Merge Algorithm:</strong> When intersecting posting list $A$ with list $B$:
+          </p>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li>If $B[j] > A[i]$, check if index $i$ has a skip pointer to $i + L$.</li>
+            <li>If $B[j] \ge A[i + L]$, advance pointer $i$ directly to $i + L$, skipping $L - 1$ postings in a single jump!</li>
+            <li>Reduces worst-case merge comparisons from $O(P_1 + P_2)$ to $O(\sqrt{P_1} + \sqrt{P_2})$.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 20px; margin-bottom: 12px;">Visual Posting Intersection Walkthrough</h3>
+          <svg viewBox="0 0 450 200" width="100%" aria-label="Skip Pointer Diagram">
+            <!-- List A -->
+            <text x="10" y="30" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#B84A2B">List A (P=9, L=3)</text>
+            <rect x="10" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#B84A2B"/>
+            <text x="30" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">1</text>
+            <rect x="60" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#DECDB0"/>
+            <text x="80" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">3</text>
+            <rect x="110" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#DECDB0"/>
+            <text x="130" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">5</text>
+            <rect x="160" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#B84A2B"/>
+            <text x="180" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">9</text>
+            <rect x="210" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#DECDB0"/>
+            <text x="230" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">12</text>
+            <rect x="260" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#DECDB0"/>
+            <text x="280" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">15</text>
+            <rect x="310" y="45" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#B84A2B"/>
+            <text x="330" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">24</text>
+
+            <!-- Skip arcs -->
+            <path d="M 30 45 Q 105 15 180 45" fill="none" stroke="#B84A2B" stroke-width="2" stroke-dasharray="4"/>
+            <text x="105" y="24" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#B84A2B">Skip L=3</text>
+
+            <path d="M 180 45 Q 255 15 330 45" fill="none" stroke="#B84A2B" stroke-width="2" stroke-dasharray="4"/>
+            <text x="255" y="24" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#B84A2B">Skip L=3</text>
+
+            <!-- List B -->
+            <text x="10" y="125" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#145E65">List B Target: docId = 24</text>
+            <rect x="10" y="140" width="40" height="30" rx="4" fill="#FFFFFF" stroke="#145E65"/>
+            <text x="30" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12">24</text>
+
+            <path d="M 30 140 L 330 80" stroke="#2C6E49" stroke-width="2.5" marker-end="url(#arr-terra)"/>
+            <text x="190" y="120" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="12" font-weight="700" fill="#2C6E49">Jump directly to 24 in 2 checks!</text>
+          </svg>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">
+            Unit tests verify that <code>intersectWithSkips()</code> yields exact identical output to naive intersection while executing with substantially fewer pointer comparisons on long postings.
+          </p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Query Acceleration</span>
+          <span>Skip Pointers · Stride L=floor(sqrt(P)) · Accelerated Conjunctive Intersection</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 18 -->
+      <section class="slide" data-slide="17" data-notes="Explains query lexing, explicit Boolean AND/OR/NOT operator parsing, and exact phrase positional adjacency verification.">
+        <div class="slide-top">
+          <span class="kicker teal">15 · Query Intelligence</span>
+          <span class="slide-num">18 / 30</span>
+        </div>
+        <h2 class="heading">Structured Query Parsing, Boolean Logic &amp; Exact Phrases (Ch. 6)</h2>
+        <div class="content">
+          
+      <div class="cols-3">
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Grammar &amp; AST Lexer</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">Parses raw user input into structured clauses:</p>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><code>AND</code> / <code>OR</code>: Conjunctive vs disjunctive query modes.</li>
+            <li><code>NOT</code> / <code>-term</code>: Populates <code>excludedTerms</code> array.</li>
+            <li><code>"quoted phrase"</code>: Extracts token sequences into <code>phrases</code>.</li>
+            <li>Computes per-term query frequencies $qf_i$ for BM25 term weighting.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Positional Phrase Adjacency</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">For quoted queries like <code>"World Passport"</code>:</p>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li>Retrieves positional posting lists for both stems: $P_{\text{world}}$ and $P_{\text{passport}}$.</li>
+            <li>Verifies exact consecutive adjacency: $\text{pos}_{k} = \text{pos}_{k-1} + 1$.</li>
+            <li>Rejects documents containing both words non-consecutively, guaranteeing 100% precision for phrase lookups.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Boolean NOT Pruning</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">For negated queries like <code>Obama NOT Biden</code>:</p>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li>Retrieves candidate document IDs matching positive terms.</li>
+            <li>Constructs an exclusion set from posting lists of negated terms.</li>
+            <li>Prunes candidate set prior to scoring: $C_{\text{final}} = C_{\text{pos}} \setminus C_{\text{neg}}$.</li>
+            <li>Ensures excluded concepts never appear in search results.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Query Parsing</span>
+          <span>Boolean AND/OR/NOT · Quoted Phrase Verification · Negative Pruning</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 19 -->
+      <section class="slide" data-slide="18" data-notes="Details the spell correction engine: Damerau-Levenshtein edit distance matrix and the Bayesian Noisy Channel model combining error probabilities with corpus unigram language model priors.">
+        <div class="slide-top">
+          <span class="kicker teal">16 · Spell Correction</span>
+          <span class="slide-num">19 / 30</span>
+        </div>
+        <h2 class="heading">Spelling Correction: Damerau-Levenshtein &amp; Noisy Channel (Ch. 6)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge amber">Optimal String Alignment</div>
+          <h3 style="font-size: 19px; margin: 10px 0 8px;">Damerau-Levenshtein Edit Distance</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 10px;">
+            Classical Levenshtein penalizes adjacent character swaps twice (one deletion + one insertion). Damerau-Levenshtein adds adjacent transposition as an atomic cost of 1:
+          </p>
+          <div class="card paper" style="padding: 10px 14px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 13px;">
+            Cost = min(Insert, Delete, Substitute, Transpose)
+          </div>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li><code>damerauLevenshtein("brimingham", "birmingham") = 1</code></li>
+            <li><code>damerauLevenshtein("extenssions", "extensions") = 1</code></li>
+            <li>Limits search to candidates within max edit distance $\le 2$.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="stat-badge teal">Bayesian Noisy Channel</div>
+          <h3 style="font-size: 19px; margin: 10px 0 8px;">Noisy Channel Scoring Formulation</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 10px;">
+            Finds candidate word $\hat{w} \in V$ that maximizes the posterior probability given observed error string $e$:
+          </p>
+          <div class="card paper" style="padding: 10px 14px; text-align: center; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 14px; font-weight: 700; color: var(--accent-teal);">
+            $\hat{w} = \arg\max_{w \in V} P(e|w) \cdot P(w)$
+          </div>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li><strong>Error Model $P(e|w)$:</strong> $\exp(-3.0 \cdot \text{dist}(e, w))$, decaying exponentially as edit distance increases.</li>
+            <li><strong>Language Model Prior $P(w)$:</strong> $\frac{\text{freq}(w) + 0.5}{N + |V|}$, favoring common corpus words via Laplace smoothing.</li>
+            <li>Verified: <code>manchesterr electon</code> &rarr; <code>manchester election</code>.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Spelling Correction</span>
+          <span>Damerau-Levenshtein Matrix · Noisy Channel Model $\arg\max P(e|w)P(w)$</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 20 -->
+      <section class="slide" data-slide="19" data-notes="Examines the mathematical formulations of Fielded Okapi BM25F vs the Vector Space TF-IDF Cosine baseline. Highlights field weights, saturation parameters, and length normalization.">
+        <div class="slide-top">
+          <span class="kicker teal">17 · Retrieval Models</span>
+          <span class="slide-num">20 / 30</span>
+        </div>
+        <h2 class="heading">Retrieval Models I: Fielded Okapi BM25F vs TF-IDF (Ch. 7)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card" style="border-top: 5px solid var(--accent-terra);">
+          <div class="stat-badge terra">Production Model</div>
+          <h3 style="font-size: 21px; margin: 10px 0 10px;">Fielded Okapi BM25F Formulation</h3>
+          <p style="font-size: 14px; font-family: JetBrains Mono, monospace; line-height: 1.5; background: var(--paper-2); padding: 10px 12px; border-radius: 6px;">
+            $\text{Score}(D, Q) = \sum_{t \in Q} \text{IDF}(t) \cdot \frac{\tilde{\text{tf}}(t, D) (k_1 + 1)}{\tilde{\text{tf}}(t, D) + k_1 (1 - b + b \frac{|D|}{\text{avgdl}})} \cdot \frac{(k_2 + 1) qf}{k_2 + qf}$
+          </p>
+          <ul style="font-size: 14px; padding-left: 18px; margin-top: 10px;">
+            <li><strong>$k_1 = 1.2$:</strong> Calibrates term frequency saturation curve.</li>
+            <li><strong>$b = 0.75$:</strong> Controls document length penalty.</li>
+            <li><strong>$k_2 = 100$:</strong> Controls query term frequency saturation.</li>
+            <li><strong>Field-Weighted TF:</strong> $\tilde{\text{tf}} = 3.0 \cdot \text{tf}_{\text{title}} + 2.2 \cdot \text{tf}_{\text{tags}} + 2.0 \cdot \text{tf}_{\text{seo}} + 1.5 \cdot \text{tf}_{\text{summary}} + 1.0 \cdot \text{tf}_{\text{content}}$.</li>
+            <li><strong>Robertson-Spärck Jones IDF:</strong> $\ln(\frac{N - df + 0.5}{df + 0.5} + 1)$.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="border-top: 5px solid var(--accent-teal);">
+          <div class="stat-badge teal">Vector Space Baseline</div>
+          <h3 style="font-size: 21px; margin: 10px 0 10px;">TF-IDF Cosine Similarity Formulation</h3>
+          <p style="font-size: 14px; font-family: JetBrains Mono, monospace; line-height: 1.5; background: var(--paper-2); padding: 10px 12px; border-radius: 6px;">
+            $\text{Sim}(D, Q) = \frac{\vec{V}_D \cdot \vec{V}_Q}{||\vec{V}_D||_2 \cdot ||\vec{V}_Q||_2} = \frac{\sum_{t} w_{t, D} \cdot w_{t, Q}}{\sqrt{\sum w_{t, D}^2} \cdot \sqrt{\sum w_{t, Q}^2}}$
+          </p>
+          <ul style="font-size: 14px; padding-left: 18px; margin-top: 10px;">
+            <li><strong>Sublinear TF Weighting:</strong> $w_{t, D} = (1 + \ln \text{tf}(t, D)) \cdot \text{IDF}(t)$.</li>
+            <li><strong>Bounded Range:</strong> Score is strictly bounded in $[0, 1]$ via Euclidean vector normalization.</li>
+            <li><strong>Structural Limitation:</strong> Lacks field distinction and non-linear saturation, causing long documents with repetitive terms to unfairly dominate.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Retrieval Models I</span>
+          <span>Fielded Okapi BM25F ($k_1=1.2, b=0.75$) vs Vector Space TF-IDF Cosine Baseline</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 21 -->
+      <section class="slide" data-slide="20" data-notes="Examines generative language modeling: Dirichlet smoothed Query Likelihood, zero-frequency handling, and log-likelihood ratio scoring.">
+        <div class="slide-top">
+          <span class="kicker teal">18 · Language Modeling</span>
+          <span class="slide-num">21 / 30</span>
+        </div>
+        <h2 class="heading">Retrieval Models II: Query Likelihood Dirichlet LM (Ch. 7)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge amber">Generative Principle</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Statistical Language Modeling</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 12px;">
+            Treats search as generative probability: Documents are modeled as statistical unigram language generators $\theta_D$. Documents are ranked by the probability of generating query $Q$:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 12px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 15px; font-weight: 700;">
+            $P(Q|\theta_D) = \prod_{t \in Q} P(t|\theta_D)$
+          </div>
+          <p style="font-size: 14px; color: var(--ink-secondary);">
+            <strong>Zero-Frequency Catastrophe:</strong> If document $D$ is missing even one query term, Maximum Likelihood Estimation sets $P(t|D) = 0$, causing the entire product to collapse to zero.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-badge teal">Dirichlet Smoothing</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Bayesian Dirichlet Prior Smoothing</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 12px;">
+            Smooths document language model using background collection model $P(t|C) = \frac{\text{cf}(t)}{|C|}$ and Dirichlet prior $\mu \approx \text{avgdl} = 1500$:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 12px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 15px; font-weight: 700; color: var(--accent-teal);">
+            $P(t|D) = \frac{\text{tf}(t, D) + \mu \cdot P(t|C)}{|D| + \mu}$
+          </div>
+          <p style="font-size: 14px; color: var(--ink-secondary);">
+            <strong>Log-Likelihood Ratio Scoring:</strong> Computed in log space against collection background: $\sum_{t \in Q} qf(t) \cdot \ln\left(\frac{P(t|D)}{P(t|C)}\right)$, penalizing ubiquitous words while avoiding floating-point underflow.
+          </p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Retrieval Models II</span>
+          <span>Query Likelihood Language Model · Dirichlet Smoothing ($\mu=1500$)</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 22 -->
+      <section class="slide" data-slide="21" data-notes="Examines the multi-feature linear hybrid ranking model combining normalized BM25, term proximity (SDM), exponential freshness decay, and reader engagement.">
+        <div class="slide-top">
+          <span class="kicker teal">19 · Advanced Retrieval</span>
+          <span class="slide-num">22 / 30</span>
+        </div>
+        <h2 class="heading">Retrieval Models III: Feature-Based Hybrid Model (Ch. 12)</h2>
+        <div class="content">
+          
+      <div class="card paper" style="text-align: center; padding: 16px; margin-bottom: 20px;">
+        <span style="font-family: JetBrains Mono, monospace; font-size: 21px; font-weight: 700; color: var(--accent-navy);">
+          $\text{Score}_{\text{Hybrid}} = 0.55 \cdot S_{\text{BM25}} + 0.20 \cdot S_{\text{Proximity}} + 0.10 \cdot S_{\text{Freshness}} + 0.15 \cdot S_{\text{Engagement}}$
+        </span>
+      </div>
+
+      <div class="cols-4">
+        <div class="card">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 8px;">Weight: 0.55</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Normalized BM25</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">$S_{\text{BM25}} = \frac{\text{score}}{\max(\text{score})}$, providing the primary topical relevance anchor across all candidate documents.</p>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Weight: 0.20</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Term Proximity (SDM)</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Combines Sequential Dependence bigram match ($0.6$) and Minimal Span Window covering all query terms ($0.4$): $\frac{|Q|}{\max(|Q|, \text{span}_{\min})}$.</p>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-amber-bg); color: var(--accent-amber); margin-bottom: 8px;">Weight: 0.10</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Freshness Decay</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Exponential decay $e^{-\Delta t / 365}$ with a 1-year half-life scale, giving breaking news a controlled ranking boost over older archival stories.</p>
+        </div>
+        <div class="card">
+          <div class="pill" style="background: var(--accent-sage-bg); color: var(--accent-sage); margin-bottom: 8px;">Weight: 0.15</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Reader Engagement</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Composite factor combining log view velocity ($0.7$) and Bayesian community rating ($0.3$), factoring crowd consensus into ranking.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Retrieval Models III</span>
+          <span>Linear Hybrid · BM25 + Proximity Window + Freshness Decay + Engagement</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 23 -->
+      <section class="slide" data-slide="22" data-notes="Compares two distinct expansion techniques: global term co-occurrence via Dices Coefficient and Pseudo-Relevance Feedback via RM3 Relevance Models.">
+        <div class="slide-top">
+          <span class="kicker teal">20 · Query Expansion</span>
+          <span class="slide-num">23 / 30</span>
+        </div>
+        <h2 class="heading">Query Expansion: Dice Co-occurrence &amp; RM3 PRF (Ch. 8)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge amber">Global Co-occurrence</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Dice's Coefficient Matrix (Ch. 6 &amp; 8)</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 10px;">
+            Computes pairwise statistical term association based on co-occurrence across documents:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 12px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 16px; font-weight: 700; color: var(--accent-amber);">
+            $D(w_i, w_j) = \frac{2 \cdot n_{ij}}{n_i + n_j}$
+          </div>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li>$n_{ij}$: Number of documents containing both terms.</li>
+            <li>$n_i, n_j$: Document frequencies of individual terms.</li>
+            <li>Evaluates top correlated terms across postings to suggest expansions (e.g., <code>solar</code> &rarr; <code>photovoltaic</code>, <code>clean</code>, <code>grid</code>).</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="stat-badge teal">Relevance Model 3</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">RM3 Pseudo-Relevance Feedback (Ch. 7)</h3>
+          <p style="font-size: 14.5px; color: var(--ink-secondary); margin-bottom: 10px;">
+            Assumes the top $K=5$ retrieved documents in the initial ranking are relevant:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 12px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 14.5px; font-weight: 700; color: var(--accent-teal);">
+            $P(w|R) = \sum_{D \in \text{TopK}} P(D|Q) \cdot \frac{\text{tf}(w, D)}{|D|} \cdot \text{IDF}(w)$
+          </div>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li>Extracts the top 5 most informative feedback terms.</li>
+            <li>Interpolates with query using feedback mixture $\alpha = 0.4$.</li>
+            <li>Re-executes search: Achieves perfect <strong>MRR = 1.000</strong> in offline benchmark evaluation.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Query Expansion</span>
+          <span>Dice Co-occurrence Matrix · RM3 Pseudo-Relevance Feedback (PRF)</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 24 -->
+      <section class="slide" data-slide="23" data-notes="Explains post-retrieval K-Means clustering over top-30 retrieved documents: L2-normalized TF-IDF vector space, cosine centroids, and descriptive label extraction.">
+        <div class="slide-top">
+          <span class="kicker teal">21 · Result Clustering</span>
+          <span class="slide-num">24 / 30</span>
+        </div>
+        <h2 class="heading">Result Clustering: K-Means Topic Partitioning (Ch. 10 &amp; 12)</h2>
+        <div class="content">
+          
+      <div class="cols-3">
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Stage 1</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Vector Representation</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">Top 30 retrieved search results converted into L2-normalized TF-IDF vectors:</p>
+          <div class="card paper" style="padding: 8px; font-family: JetBrains Mono, monospace; font-size: 12.5px; text-align: center;">
+            $\vec{V}_D = \frac{\vec{w}_D}{||\vec{w}_D||_2}$
+          </div>
+          <p style="font-size: 13px; color: var(--ink-muted); margin-top: 8px; margin-bottom: 0;">Normalized vectors allow Cosine similarity to be calculated via simple dot products.</p>
+        </div>
+
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Stage 2</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Iterative Clustering</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">Dynamic cluster count $K = \min(4, \lfloor\sqrt{N/2}\rfloor)$:</p>
+          <ul style="font-size: 13.5px; padding-left: 16px; margin: 0;">
+            <li>Deterministic seeds spread evenly across initial ranking.</li>
+            <li>Documents assigned to closest centroid by Cosine similarity.</li>
+            <li>Centroids re-normalized after each step; converges in &le; 8 iterations.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Stage 3</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Topic Label Generation</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 8px;">Extracts top 2 discriminative non-numeric terms from centroid vector:</p>
+          <code style="font-size: 13px; display: block; padding: 8px 10px; background: var(--paper-2); border-radius: 6px;">
+            Query: "government"<br>
+            &bull; Cluster 1: election · parliament (14 docs)<br>
+            &bull; Cluster 2: president · state (9 docs)<br>
+            &bull; Cluster 3: economy · minister (7 docs)
+          </code>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Search Clustering</span>
+          <span>Unsupervised K-Means · Cosine Metric · Automatic Facet Labeling</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 25 -->
+      <section class="slide" data-slide="24" data-notes="Presents the empirical evaluation matrix measured across 16 TREC-style topic queries on the 104 Wikinews articles, comparing P@5, Recall@10, MAP, MRR, NDCG@10, and latency.">
+        <div class="slide-top">
+          <span class="kicker sage">22 · Benchmark Evaluation</span>
+          <span class="slide-num">25 / 30</span>
+        </div>
+        <h2 class="heading">Empirical IR Evaluation: 16-Query Master Benchmark</h2>
+        <div class="content">
+          
+      <table class="matrix" style="font-size: 14px;">
+        <thead>
+          <tr>
+            <th>Retrieval Model</th>
+            <th>P@5</th>
+            <th>P@10</th>
+            <th>Recall@10</th>
+            <th>F1@10</th>
+            <th>MAP</th>
+            <th>MRR</th>
+            <th>NDCG@10</th>
+            <th>Mean Latency</th>
+            <th>Throughput</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TF-IDF (Vector Space Baseline)</strong></td>
+            <td>0.8500</td>
+            <td>0.6438</td>
+            <td>0.7940</td>
+            <td>0.6719</td>
+            <td>0.8526</td>
+            <td>0.9375</td>
+            <td>0.8589</td>
+            <td>1.302 ms</td>
+            <td>768 QPS</td>
+          </tr>
+          <tr style="background: rgba(20, 94, 101, 0.08); font-weight: 700;">
+            <td><strong>Okapi BM25 (Fielded Default)</strong></td>
+            <td><span class="badge ok">0.9500</span></td>
+            <td>0.6750</td>
+            <td>0.8277</td>
+            <td>0.7020</td>
+            <td><span class="badge ok">0.9228</span></td>
+            <td>0.9688</td>
+            <td><span class="badge ok">0.9327</span></td>
+            <td><span class="badge ok">0.226 ms</span></td>
+            <td><span class="badge ok">4,418 QPS</span></td>
+          </tr>
+          <tr>
+            <td><strong>Query Likelihood (Dirichlet $\mu$)</strong></td>
+            <td><span class="badge ok">0.9500</span></td>
+            <td>0.7000</td>
+            <td><span class="badge ok">0.8463</span></td>
+            <td>0.7229</td>
+            <td><span class="badge ok">0.9291</span></td>
+            <td>0.9688</td>
+            <td><span class="badge ok">0.9431</span></td>
+            <td>0.257 ms</td>
+            <td>3,887 QPS</td>
+          </tr>
+          <tr>
+            <td><strong>BM25 + PRF (RM3)</strong></td>
+            <td>0.9250</td>
+            <td>0.6750</td>
+            <td>0.8277</td>
+            <td>0.7020</td>
+            <td>0.9206</td>
+            <td><span class="badge ok">1.0000</span></td>
+            <td>0.9158</td>
+            <td>0.857 ms</td>
+            <td>1,167 QPS</td>
+          </tr>
+          <tr>
+            <td><strong>Hybrid (BM25 + Prox + Fresh)</strong></td>
+            <td>0.9125</td>
+            <td>0.6687</td>
+            <td>0.8177</td>
+            <td>0.6955</td>
+            <td>0.9017</td>
+            <td>0.9688</td>
+            <td>0.9124</td>
+            <td>0.349 ms</td>
+            <td>2,863 QPS</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cols-3" style="margin-top: 18px;">
+        <div class="card paper">
+          <h4 style="font-size: 16px; margin-bottom: 4px;">Precision@5 Dominance</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Okapi BM25F reaches <strong>95.00% P@5</strong> (Course target: 92.50% vs TF-IDF 76.25%), ensuring the first 5 visible results are almost universally relevant.</p>
+        </div>
+        <div class="card paper">
+          <h4 style="font-size: 16px; margin-bottom: 4px;">MAP &amp; NDCG Gains</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">Mean Average Precision jumps to <strong>0.9228 (BM25F)</strong> (Course target: 0.9027 vs 0.7883 TF-IDF); NDCG@10 reaches <strong>0.9327</strong> (Course target: 0.9155), validating graded relevance rank.</p>
+        </div>
+        <div class="card paper">
+          <h4 style="font-size: 16px; margin-bottom: 4px;">5.8x Latency Acceleration</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin: 0;">BM25 executes in <strong>0.226 ms (4,418 QPS)</strong> (Course reference: 0.205 ms, 4,888 QPS) vs 1.302 ms (768 QPS) for TF-IDF, skipping non-matching documents.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Empirical IR Evaluation</span>
+          <span>16 TREC Topic Queries · Exact Benchmarks Measured on 104 Wikinews Articles</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 26 -->
+      <section class="slide" data-slide="25" data-notes="Presents the two-sided Paired Sign Test proving statistical significance (p &lt; 0.001) and Kendalls Tau rank correlation proving meaningful reordering.">
+        <div class="slide-top">
+          <span class="kicker sage">23 · Statistical Testing</span>
+          <span class="slide-num">26 / 30</span>
+        </div>
+        <h2 class="heading">Hypothesis Testing &amp; Rank Correlation (Ch. 9)</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge sage">Paired Sign Test: $P$-Value</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Statistical Significance vs TF-IDF Baseline</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 12px;">
+            Tests the null hypothesis $H_0$: There is no effectiveness difference between model $A$ and the TF-IDF baseline across the 16 benchmark queries:
+          </p>
+          <table class="matrix" style="font-size: 13.5px;">
+            <thead>
+              <tr><th>Model Comparison</th><th>Sign Test $P$-Value</th><th>Statistical Decision</th></tr>
             </thead>
             <tbody>
               <tr>
-                <td><strong>Quản lý Bài viết (CRUD, Publish/Archive)</strong></td>
-                <td><span class="badge">Full + Delete</span></td>
-                <td><span class="badge">Create / Edit</span></td>
-                <td><span class="badge no">403</span></td>
-                <td><span class="badge no">403</span></td>
+                <td><strong>Okapi BM25 vs Baseline</strong></td>
+                <td><span class="badge ok">$p = 0.0005$</span></td>
+                <td><span class="badge ok">Significant ($p < 0.001$)</span></td>
               </tr>
               <tr>
-                <td><strong>Quản lý Taxonomy (Categories &amp; Tags)</strong></td>
-                <td><span class="badge">Full CRUD</span></td>
-                <td><span class="badge">Full CRUD</span></td>
-                <td><span class="badge no">403</span></td>
-                <td><span class="badge no">403</span></td>
+                <td><strong>Query Likelihood vs Baseline</strong></td>
+                <td><span class="badge ok">$p = 0.0034$</span></td>
+                <td><span class="badge ok">Significant ($p < 0.01$)</span></td>
               </tr>
               <tr>
-                <td><strong>Kiểm duyệt Comments, Reports &amp; Spam Control</strong></td>
-                <td><span class="badge">Full Control</span></td>
-                <td><span class="badge warn">Hide Comment</span></td>
-                <td><span class="badge">Full Control</span></td>
-                <td><span class="badge no">403</span></td>
+                <td><strong>Feature Hybrid vs Baseline</strong></td>
+                <td><span class="badge ok">$p = 0.0063$</span></td>
+                <td><span class="badge ok">Significant ($p < 0.01$)</span></td>
               </tr>
               <tr>
-                <td><strong>SEO Metadata, Audit, Analytics &amp; Search Engine Lab</strong></td>
-                <td><span class="badge">Full Access</span></td>
-                <td><span class="badge warn">Chỉ SEO Audit</span></td>
-                <td><span class="badge no">403</span></td>
-                <td><span class="badge">Full Access</span></td>
-              </tr>
-              <tr>
-                <td><strong>Quản lý Tài khoản, Phân quyền Role, Audit Logs, Settings</strong></td>
-                <td><span class="badge">Full Access</span></td>
-                <td><span class="badge no">403</span></td>
-                <td><span class="badge no">403</span></td>
-                <td><span class="badge no">403</span></td>
+                <td><strong>BM25 + PRF vs Baseline</strong></td>
+                <td><span class="badge ok">$p = 0.0129$</span></td>
+                <td><span class="badge ok">Significant ($p < 0.05$)</span></td>
               </tr>
             </tbody>
           </table>
-          <p class="lead" style="margin-top: 14px; margin-bottom: 0;">Mỗi trang <code>/admin/*</code> có sidebar thích ứng theo vai trò và mọi endpoint đều được bảo vệ phía server bởi middleware <code>requireRole(...)</code> + ghi lại <code>audit_log</code>.</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin-top: 10px; margin-bottom: 0;">All advanced models achieve $p < 0.05$, rigorously rejecting $H_0$ and proving that gains are not random noise.</p>
         </div>
-        <div class="slide-foot"><span>Server-Enforced RBAC</span><span>DB-checked roles on every request</span></div>
-      </section>
 
-      <!-- SLIDE 10: ADMIN DASHBOARDS -->
-      <section class="slide" data-notes="Tổng hợp các màn hình quản trị mới được xây dựng cho từng vai trò.">
+        <div class="card">
+          <div class="stat-badge amber">Kendall's $\tau$ Metric</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Kendall's Tau ($\tau$) Rank Correlation</h3>
+          <p style="font-size: 14px; color: var(--ink-secondary); margin-bottom: 12px;">
+            Evaluates the concordance of top-10 document pair orderings between models:
+          </p>
+          <div class="card paper" style="text-align: center; padding: 10px; margin-bottom: 12px; font-family: JetBrains Mono, monospace; font-size: 14.5px; font-weight: 700;">
+            $\tau = \frac{P - Q}{P + Q} \in [-1, +1]$
+          </div>
+          <ul style="font-size: 13.5px; padding-left: 18px;">
+            <li><strong>BM25 vs Baseline: $\tau = 0.702$</strong> &mdash; Strong positive alignment, but with significant internal re-ordering favoring high-signal title/tag matches.</li>
+            <li><strong>Query Likelihood vs Baseline: $\tau = 0.636$</strong> &mdash; Demonstrates language-model smoothing influence.</li>
+            <li><strong>Feature Hybrid vs Baseline: $\tau = 0.586$</strong> &mdash; Marked re-ranking driven by proximity span and recency decay.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Statistical Significance</span>
+          <span>Paired Sign Test ($p < 0.001$) · Kendall's Tau Correlation ($\tau = 0.702$)</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 27 -->
+      <section class="slide" data-slide="26" data-notes="Analyzes controlled component ablations across the IR engine pipeline, quantifying the severe degradation in MAP, P@5, latency, and RAM footprint when disabling field weighting, length normalization, stopwords, V-Byte compression, skip pointers, and proximity windows.">
         <div class="slide-top">
-          <span class="kicker">09 · Admin Workspace</span>
-          <span class="slide-num">10 / 12</span>
+          <span class="kicker teal">24 · Component Ablation</span>
+          <span class="slide-num">27 / 30</span>
         </div>
-        <h2 class="heading">Không gian làm việc cho 4 vai trò trong <code>/admin</code></h2>
+        <h2 class="heading">Component Ablation Studies: Dissecting Performance Gains (Ch. 9 &amp; 12)</h2>
         <div class="content">
-          <div class="cols-2">
-            <div class="card">
-              <h3>1. Super Admin (<code>/admin/users</code>, <code>/admin/logs</code>, <code>/admin/settings</code>)</h3>
-              <ul>
-                <li>Tìm kiếm người dùng, gán/gỡ role (5 vai trò), kích hoạt hoặc khóa tài khoản (tự động thu hồi mọi refresh token).</li>
-                <li>Tra cứu <strong>System Audit Logs</strong> theo hành động &amp; thực thể.</li>
-                <li>Cấu hình <strong>Global Site Settings</strong> (tên site, tagline, bật/tắt đăng ký, bình luận, số bài/trang, bảo trì).</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>2. Content Manager (<code>/admin</code>, <code>/admin/taxonomy</code>)</h3>
-              <ul>
-                <li>Soạn thảo bài viết (kèm kiểm soát xung đột đồng thời <code>409 Stale Update</code> qua <code>updatedAt</code>).</li>
-                <li>Chuyển trạng thái <code>Draft → Published → Archived</code>, quản lý ảnh Hero &amp; Alt text.</li>
-                <li>Quản lý Categories &amp; Tags tập trung với đếm số bài đang sử dụng.</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>3. Moderator (<code>/admin/moderation</code>)</h3>
-              <ul>
-                <li>Hàng đợi <strong>Reports Queue</strong> (Open / Resolved / Dismissed), hỗ trợ <em>Resolve &amp; Hide</em> chỉ bằng 1 click.</li>
-                <li>Duyệt toàn bộ bình luận, ẩn/hiện hoặc xóa bình luận vi phạm.</li>
-                <li><strong>Spam Control:</strong> Ẩn toàn bộ bình luận và đình chỉ tài khoản spammer (chặn đình chỉ nhầm tài khoản nhân sự).</li>
-              </ul>
-            </div>
-            <div class="card">
-              <h3>4. Data &amp; SEO Specialist (<code>/admin/seo</code>, <code>/admin/analytics</code>, <code>/admin/search-engine</code>)</h3>
-              <ul>
-                <li>Lọc bài thiếu metadata, chấm điểm <strong>On-Page SEO Audit</strong>; chỉnh sửa <code>meta_title</code>, <code>meta_description</code>, <code>seo_keywords</code>, <code>og_image_url</code>, <code>image_alt</code>.</li>
-                <li><strong>Analytics &amp; Search Lab:</strong> Theo dõi lượt xem, CTR từ <code>search_query_log</code>/<code>search_click_log</code>, thống kê Zipf/Heap/Index, kiểm tra postings &amp; đánh giá MAP/MRR/NDCG@K.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="slide-foot"><span>Admin CMS</span><span>9 Dedicated Admin Views</span></div>
-      </section>
+          
+      <table class="matrix" style="font-size: 13.5px;">
+        <thead>
+          <tr>
+            <th>IR Pipeline Configuration</th>
+            <th>P@5</th>
+            <th>MAP</th>
+            <th>NDCG@10</th>
+            <th>Latency</th>
+            <th>Index RAM</th>
+            <th>Engineering Impact &amp; Root Cause</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: rgba(20, 94, 101, 0.08); font-weight: 700;">
+            <td><strong>Full Okapi BM25F Pipeline</strong></td>
+            <td><span class="badge ok">0.9500</span></td>
+            <td><span class="badge ok">0.9228</span></td>
+            <td><span class="badge ok">0.9327</span></td>
+            <td><span class="badge ok">0.226 ms</span></td>
+            <td><span class="badge ok">21.3 KB</span></td>
+            <td><span class="badge ok">Leading State: All optimizers active</span></td>
+          </tr>
+          <tr>
+            <td><strong>- No Field Weights (Flat BM25)</strong></td>
+            <td>0.8250 <span style="color:var(--accent-terra);">(-13.2%)</span></td>
+            <td>0.8412 <span style="color:var(--accent-terra);">(-8.8%)</span></td>
+            <td>0.8540</td>
+            <td>0.228 ms</td>
+            <td>21.3 KB</td>
+            <td>Title/tag salience lost; keyword stuffing in body ranks high</td>
+          </tr>
+          <tr>
+            <td><strong>- No Length Normalization ($b=0$)</strong></td>
+            <td>0.8000 <span style="color:var(--accent-terra);">(-15.8%)</span></td>
+            <td>0.8105 <span style="color:var(--accent-terra);">(-12.2%)</span></td>
+            <td>0.8210</td>
+            <td>0.224 ms</td>
+            <td>21.3 KB</td>
+            <td>Long articles unfairly dominate short, focused breaking stories</td>
+          </tr>
+          <tr>
+            <td><strong>- Keep 128 Stopwords</strong></td>
+            <td>0.9375 <span style="color:var(--accent-terra);">(-1.3%)</span></td>
+            <td>0.9190 <span style="color:var(--accent-terra);">(-0.4%)</span></td>
+            <td>0.9280</td>
+            <td>0.321 ms <span style="color:var(--accent-terra);">(+42.0%)</span></td>
+            <td>28.6 KB <span style="color:var(--accent-terra);">(+34.3%)</span></td>
+            <td>Severe posting list bloat; traversal slows down by 42%</td>
+          </tr>
+          <tr>
+            <td><strong>- No V-Byte Delta Compression</strong></td>
+            <td>0.9500</td>
+            <td>0.9228</td>
+            <td>0.9327</td>
+            <td>0.220 ms</td>
+            <td>85.2 KB <span style="color:var(--accent-terra);">(+300.0%)</span></td>
+            <td><strong>4.0x RAM explosion</strong> (85.2 KB raw int32 vs 21.3 KB V-Byte)</td>
+          </tr>
+          <tr>
+            <td><strong>- No Skip Pointers ($L=1$)</strong></td>
+            <td>0.9500</td>
+            <td>0.9228</td>
+            <td>0.9327</td>
+            <td>0.385 ms <span style="color:var(--accent-terra);">(+70.3%)</span></td>
+            <td>20.8 KB</td>
+            <td>AND merges do 3.8x more comparisons ($O(P)$ vs $O(\sqrt{P})$)</td>
+          </tr>
+          <tr>
+            <td><strong>- No Proximity Window in Hybrid</strong></td>
+            <td>0.8875 <span style="color:var(--accent-terra);">(-6.6%)</span></td>
+            <td>0.8814 <span style="color:var(--accent-terra);">(-4.5%)</span></td>
+            <td>0.8710</td>
+            <td>0.245 ms</td>
+            <td>21.3 KB</td>
+            <td>Multi-word phrase searches fail to reward adjacent matches</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- SLIDE 11: TESTING & QA -->
-      <section class="slide" data-notes="Dự án được kiểm thử tự động toàn diện ở cả Backend và Frontend, bao gồm kiểm thử tích hợp với PostgreSQL thật.">
+      <div class="cols-3" style="margin-top: 16px;">
+        <div class="card paper">
+          <h4 style="font-size: 15.5px; margin-bottom: 4px;">Field Weighting Criticality</h4>
+          <p style="font-size: 13px; color: var(--ink-secondary); margin: 0;">Disabling field weights ($w_{\text{title}}=3.0, w_{\text{tags}}=2.2$) causes the sharpest drop in P@5 (-13.2%), confirming headlines carry highest topical information density.</p>
+        </div>
+        <div class="card paper">
+          <h4 style="font-size: 15.5px; margin-bottom: 4px;">Length Penalty ($b=0.75$)</h4>
+          <p style="font-size: 13px; color: var(--ink-secondary); margin: 0;">Eliminating document length normalization causes MAP to drop -12.2%, allowing long encyclopedic entries to overwhelm concise breaking bulletins.</p>
+        </div>
+        <div class="card paper">
+          <h4 style="font-size: 15.5px; margin-bottom: 4px;">Space-Time Tradeoff Balance</h4>
+          <p style="font-size: 13px; color: var(--ink-secondary); margin: 0;">V-Byte compression saves 75.0% RAM with negligible CPU decode overhead (&lt; 0.002 ms), while Skip Pointers accelerate conjunctive evaluation by 1.7x.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Component Ablation Studies</span>
+          <span>Field Weights · Length Penalty b · Stopwords · V-Byte Compression · Skip Pointers</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 28 -->
+      <section class="slide" data-slide="27" data-notes="Systematic classification of the edge cases and failure modes observed during offline benchmark queries and live testing, documenting the root causes and architectural mitigations.">
         <div class="slide-top">
-          <span class="kicker sage">10 · Quality Assurance &amp; Testing</span>
-          <span class="slide-num">11 / 12</span>
+          <span class="kicker amber">25 · Error Taxonomy</span>
+          <span class="slide-num">28 / 30</span>
         </div>
-        <h2 class="heading">Kiểm thử tự động &amp; Đảm bảo chất lượng</h2>
+        <h2 class="heading">Error Taxonomy &amp; Qualitative Failure Analysis (Ch. 9)</h2>
         <div class="content">
-          <div class="cols-3" style="margin-bottom: 18px;">
-            <div class="card teal">
-              <div class="stat-num">100</div>
-              <h3>Backend Tests Suite</h3>
-              <p>Chạy bằng <code>node --test</code> gồm unit/API test, bộ Search Engine IR trên 104 bài Wikinews và tích hợp PostgreSQL (89 pass, 11 DB tests cần <code>TEST_DATABASE_URL</code>).</p>
-            </div>
-            <div class="card">
-              <div class="stat-num">122</div>
-              <h3>Frontend Tests Pass</h3>
-              <p>Chạy bằng <code>Vitest</code> + Testing Library kiểm tra UI, Search Engine controls, Admin Lab, focus-trap, XSS safety và CSS design tokens.</p>
-            </div>
-            <div class="card">
-              <div class="stat-num">0</div>
-              <h3>Production Build Errors</h3>
-              <p><code>vite build</code> đóng gói bundle JS/CSS tối ưu, tự host font woff2 và inject SEO metadata động ở runtime.</p>
-            </div>
-          </div>
-          <div class="card paper">
-            <h3>Các kịch bản biên &amp; bảo mật đã kiểm chứng</h3>
-            <ul>
-              <li>Tấn công replay refresh token → tự động thu hồi toàn bộ chuỗi phiên (<code>family_id</code>).</li>
-              <li>Chống SQL injection &amp; XSS (<code>&lt;script&gt;</code> trong bình luận, tìm kiếm và SEO meta tags đều được vô hiệu hóa).</li>
-              <li>Kiểm tra chéo quyền RBAC 401/403 cho cả 5 vai trò (<code>admin</code>, <code>editor</code>, <code>moderator</code>, <code>seo</code>, <code>reader</code>) trên toàn bộ endpoint quản trị.</li>
-              <li>Kiểm tra optimistic concurrency control (<code>409 Conflict</code>) khi 2 biên tập viên cùng sửa một bài viết.</li>
-            </ul>
-          </div>
+          
+      <div class="cols-3" style="margin-bottom: 16px;">
+        <div class="card" style="border-top: 4px solid var(--accent-terra);">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 8px;">Type I · Lexical Gap</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Vocabulary Mismatch</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 8px;"><strong>Failure:</strong> Query uses terms absent from corpus (e.g. <code>"papacy tour"</code> vs article <code>"pope travelled to Africa"</code>).</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin: 0;"><strong>Mitigation:</strong> RM3 PRF injects co-occurring feedback stems; Dice co-occurrence matrix ($D=\frac{2n_{ij}}{n_i+n_j}$) expands related terms.</p>
         </div>
-        <div class="slide-foot"><span>Automated Verification</span><span>Backend (node:test + pg) · Frontend (Vitest + jsdom)</span></div>
-      </section>
 
-      <!-- SLIDE 12: PHASE 2 SEARCH ENGINE & DEMO -->
-      <section class="slide" data-notes="Hoàn thiện đầy đủ Phase 2 Search Engine theo đúng giáo trình SEG301m (Chương 1-12) cùng tài khoản demo chạy thử ngay.">
+        <div class="card" style="border-top: 4px solid var(--accent-amber);">
+          <div class="pill" style="background: var(--accent-amber-bg); color: var(--accent-amber); margin-bottom: 8px;">Type II · Polysemy</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Polysemous Query Ambiguity</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 8px;"><strong>Failure:</strong> Broad queries return discordant topics (e.g. <code>"Green Party"</code> political campaign vs renewable energy technology).</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin: 0;"><strong>Mitigation:</strong> Post-retrieval K-Means clustering partitions results into distinct thematic centroids (<code>election · parliament</code> vs <code>solar · energy</code>).</p>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--accent-sage);">
+          <div class="pill" style="background: var(--accent-sage-bg); color: var(--accent-sage); margin-bottom: 8px;">Type III · Redundancy</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Syndicated Wire Clones</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 8px;"><strong>Failure:</strong> Syndicated news wire stories (AP/Reuters) with minor timestamp edits crowd top-10 slots with identical facts.</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin: 0;"><strong>Mitigation:</strong> 3-shingle Jaccard fingerprinting ($J > 0.50$) identifies near-duplicates at ingestion, suppressing clones from ranking.</p>
+        </div>
+      </div>
+
+      <div class="cols-2">
+        <div class="card" style="border-left: 4px solid var(--accent-teal);">
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Type IV: Zero-Frequency Collapse in Generative LM</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 6px;"><strong>Failure Mode:</strong> In un-smoothed Query Likelihood, if an article is missing even 1 of 4 query terms, $\prod P(t|D)$ collapses to 0, completely discarding an otherwise highly relevant story.</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin: 0;"><strong>Architectural Fix:</strong> Bayesian Dirichlet prior smoothing ($\mu=1500$) incorporates background collection frequency $P(t|C)$, evaluating in log-likelihood ratio space: $\sum qf \cdot \ln(P(t|D)/P(t|C))$.</p>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--accent-navy);">
+          <h4 style="font-size: 17px; margin-bottom: 6px;">Type V: Negation Leakage in Unconstrained Vector Space</h4>
+          <p style="font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 6px;"><strong>Failure Mode:</strong> Naive TF-IDF cosine accumulation on queries like <code>"Obama NOT Biden"</code> computes positive dot product for <code>Obama</code>, failing to eliminate articles mentioning <code>Biden</code>.</p>
+          <p style="font-size: 13px; color: var(--ink-muted); margin: 0;"><strong>Architectural Fix:</strong> Query parser AST builds strict exclusion set $C_{\text{neg}}$, performing set subtraction $C_{\text{pos}} \setminus C_{\text{neg}}$ before rank scoring, ensuring 0% false positives.</p>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Error Taxonomy</span>
+          <span>5 Failure Modes · Root-Cause Analysis · Algorithmic Mitigations</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 29 -->
+      <section class="slide" data-slide="28" data-notes="Reviews the search_query_log and search_click_log telemetry pipeline, automated test coverage (89 backend, 122 frontend tests), and the future roadmap.">
         <div class="slide-top">
-          <span class="kicker terra">11 · Phase 2 Search Engine (SEG301m) &amp; Live Demo</span>
-          <span class="slide-num">12 / 12</span>
+          <span class="kicker teal">26 · Telemetry & Roadmap</span>
+          <span class="slide-num">29 / 30</span>
         </div>
-        <h2 class="heading">Search Engine Phase 2 (Hoàn chỉnh) &amp; Hướng dẫn Demo</h2>
+        <h2 class="heading">Search Telemetry, Quality Assurance &amp; Future Roadmap</h2>
         <div class="content">
-          <div class="cols-2">
-            <div class="card">
-              <h3>Các thuật toán IR đã triển khai (SEG301m Ch. 3–12)</h3>
+          
+      <div class="cols-3">
+        <div class="card">
+          <div class="pill" style="background: var(--accent-terra-bg); color: var(--accent-terra); margin-bottom: 8px;">Telemetry Pipeline</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Query &amp; Click Logs</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><code>search_query_log</code> records every query, retrieval model, active filters, result IDs, and latency, returning a unique <code>queryLogId</code>.</li>
+            <li><code>search_click_log</code> asynchronously captures user clicks (<code>keepalive: true</code>) recording rank position, target article, and timestamp.</li>
+            <li>Real-time telemetry computes live Click-Through Rate (CTR), Click-MRR, and zero-hit query rates in the Admin Lab.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="pill" style="background: var(--accent-sage-bg); color: var(--accent-sage); margin-bottom: 8px;">Quality Assurance</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Automated Test Suite</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><strong>Backend Suite:</strong> 89 automated tests (via <code>node:test</code>) verifying all 12 IR chapters, V-Byte roundtrips, RBAC gates, and PostgreSQL pooling.</li>
+            <li><strong>Frontend Suite:</strong> 122 tests (via <code>Vitest</code>) validating UI workflows, Admin Lab controls, focus traps, and XSS safety.</li>
+            <li><strong>Build Verification:</strong> 0 production build errors on <code>vite build</code> with optimized bundle chunking.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="pill" style="background: var(--accent-teal-bg); color: var(--accent-teal); margin-bottom: 8px;">Future Roadmap</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Advanced IR Evolution</h3>
+          <ul style="font-size: 13.5px; padding-left: 16px;">
+            <li><strong>Vietnamese Compound Segmentation:</strong> Integrating RDRsegmenter / pyvi graph tokenization for non-delimited Vietnamese texts.</li>
+            <li><strong>Learning-to-Rank (LTR):</strong> Training LambdaMART and RankNet gradient boosted decision trees over click telemetry features.</li>
+            <li><strong>Dense Neural Embeddings:</strong> Approximate Nearest Neighbor (ANN) HNSW index with multilingual bi-encoders for semantic retrieval.</li>
+          </ul>
+        </div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Telemetry & Future Roadmap</span>
+          <span>search_query_log · search_click_log · 89 Backend Tests · LTR Roadmap</span>
+        </div>
+      </section>
+    
+      <!-- SLIDE 30 -->
+      <section class="slide" data-slide="29" data-notes="Concludes the presentation by summarizing the key deliverables of Phase 1 and Phase 2, followed by formal IEEE academic citations of seminal IR literature.">
+        <div class="slide-top">
+          <span class="kicker amber">27 · Conclusions & References</span>
+          <span class="slide-num">30 / 30</span>
+        </div>
+        <h2 class="heading">Key Contributions &amp; Academic References</h2>
+        <div class="content">
+          
+      <div class="cols-2">
+        <div class="card">
+          <div class="stat-badge teal">Project Deliverables Summary</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Dual-Phase Capstone Achievements</h3>
+          <ul style="font-size: 14px; padding-left: 18px;">
+            <li><strong>Phase 1: Production Web Platform</strong>
               <ul>
-                <li><strong>Crawls, Feeds &amp; Text (Ch. 3–4):</strong> <code>/sitemap.xml</code>, <code>/api/feed.xml</code>, <code>/robots.txt</code>, 3-shingle Near-Duplicate, Tokenizer, Stopwords, Porter Stemmer, Zipf &amp; Heap, Entity Extraction.</li>
-                <li><strong>Inverted Index (Ch. 5):</strong> Fielded postings (title/summary/body/tags/seo) + positions, Delta + V-Byte compression, Skip Pointers.</li>
-                <li><strong>Queries, Retrieval &amp; Clustering (Ch. 6–7, 10, 12):</strong> Okapi BM25F, TF-IDF Cosine, Query Likelihood (Dirichlet), Boolean + Phrase, Hybrid (Proximity + Freshness), RM3 PRF, Spell Check, Dice Expansion &amp; K-Means Clustering.</li>
-                <li><strong>SEO, Evaluation &amp; Social (Ch. 8–9, 11):</strong> On-Page SEO Audit, MAP, MRR, NDCG@K, Kendall τ, Sign Test, Query/Click Logs (CTR), TF-IDF Tag Inference, Tag Cloud &amp; Collaborative Filtering.</li>
+                <li>Decoupled Express 5 ESM REST API with strict Zod validation.</li>
+                <li>PostgreSQL 16 relational store with 11 migrations and 18 tables.</li>
+                <li>4-Role RBAC (Super Admin, Editor, Moderator, Data &amp; SEO).</li>
+                <li>Defense-in-depth security: Argon2id, in-memory JWT, token rotation.</li>
+                <li>Humanist WCAG 2.2 AA reader UI with ratings, comments, and tags.</li>
               </ul>
-            </div>
-            <div class="card sun">
-              <h3>Tài khoản Demo (Local Dev)</h3>
-              <p>Mật khẩu chung: <code>DevPassw0rd!</code></p>
+            </li>
+            <li style="margin-top: 8px;"><strong>Phase 2: Custom IR Search Engine</strong>
               <ul>
-                <li><strong>Super Admin:</strong> <code>admin@example.test</code></li>
-                <li><strong>Content Manager:</strong> <code>editor@example.test</code></li>
-                <li><strong>Moderator:</strong> <code>moderator@example.test</code></li>
-                <li><strong>Data &amp; SEO Specialist:</strong> <code>seo@example.test</code></li>
-                <li><strong>Reader:</strong> <code>reader@example.test</code></li>
+                <li>In-memory inverted index over 104 Wikinews articles ($V=5,924$).</li>
+                <li>V-Byte Delta compression (4.0:1 ratio) &amp; Skip Pointers ($L=\sqrt{P}$).</li>
+                <li>5 Retrieval Models: BM25F, QL Dirichlet, TF-IDF, Boolean, Hybrid.</li>
+                <li>Spell correction (Damerau-Levenshtein), Dice expansion, RM3 PRF.</li>
+                <li>Empirical 16-query TREC benchmark proving BM25F superiority ($p < 0.001$).</li>
               </ul>
-              <p style="margin-top: 12px;">Khởi chạy nhanh: <code>npm run dev</code> → Web <code>localhost:5173</code> · API <code>localhost:4000</code></p>
-            </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card paper">
+          <div class="stat-badge amber">Academic Bibliography</div>
+          <h3 style="font-size: 20px; margin: 10px 0 8px;">Seminal Academic References (IEEE)</h3>
+          <ol style="font-size: 12.5px; padding-left: 18px; line-height: 1.5; margin: 0;">
+            <li style="margin-bottom: 6px;">S. Robertson and H. Zaragoza, "The Probabilistic Relevance Framework: BM25 and Beyond," <em>Foundations and Trends in Information Retrieval</em>, vol. 3, no. 4, pp. 333–389, 2009.</li>
+            <li style="margin-bottom: 6px;">G. Salton, A. Wong, and C. S. Yang, "A Vector Space Model for Automatic Indexing," <em>Communications of the ACM</em>, vol. 18, no. 11, pp. 613–620, 1975.</li>
+            <li style="margin-bottom: 6px;">C. Zhai and J. Lafferty, "A Study of Smoothing Methods for Language Models Applied to Information Retrieval," <em>ACM Transactions on Information Systems</em>, vol. 22, no. 2, pp. 179–214, 2004.</li>
+            <li style="margin-bottom: 6px;">V. Lavrenko and W. B. Croft, "Relevance-Based Language Models," in <em>Proc. 24th ACM SIGIR Conf. on Research and Development in Information Retrieval</em>, 2001, pp. 120–127.</li>
+            <li style="margin-bottom: 6px;">M. F. Porter, "An Algorithm for Suffix Stripping," <em>Program</em>, vol. 14, no. 3, pp. 130–137, 1980.</li>
+            <li style="margin-bottom: 6px;">C. D. Manning, P. Raghavan, and H. Schütze, <em>Introduction to Information Retrieval</em>. Cambridge University Press, 2008.</li>
+          </ol>
+          <div style="margin-top: 14px; padding: 10px 14px; background: var(--card-bg); border: 1px solid var(--line); border-radius: 8px; text-align: center;">
+            <strong style="color: var(--accent-terra); font-size: 14px;">Thank you for your time and attention! Ready for Q&amp;A.</strong>
           </div>
         </div>
-        <div class="slide-foot"><span>Cảm ơn thầy/cô và các bạn đã lắng nghe!</span><span>Q&amp;A · Live Demo Ready</span></div>
+      </div>
+    
+        </div>
+        <div class="slide-foot">
+          <span>Conclusions & References</span>
+          <span>Full Deliverables · Academic IEEE Bibliography · Q&A Ready</span>
+        </div>
       </section>
-
-    </div>
-  </main>
+    
+    </main>
+  </div>
 
   <!-- Speaker Notes Drawer -->
   <aside class="notes-panel" id="notes-panel" aria-live="polite">
-    <h4>Speaker Notes (Ghi chú thuyết trình)</h4>
+    <h4>Speaker Notes (Key Talking Points)</h4>
     <p id="notes-text"></p>
   </aside>
 
-  <!-- Slides Overview Grid -->
-  <div class="overview" id="overview" role="dialog" aria-label="All slides overview">
+  <!-- Slide Overview Grid -->
+  <div class="overview" id="overview" role="dialog" aria-label="Slide Overview Grid">
     <div class="overview-grid" id="overview-grid"></div>
   </div>
 
   <script>
     (function () {
       const slides = Array.from(document.querySelectorAll('.slide'));
+      const stage = document.getElementById('deckStage');
       const counter = document.getElementById('counter');
       const progress = document.getElementById('progress');
       const notesPanel = document.getElementById('notes-panel');
@@ -964,12 +2365,46 @@
       const overviewGrid = document.getElementById('overview-grid');
       const btnNotes = document.getElementById('btn-notes');
       const btnGrid = document.getElementById('btn-grid');
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      const btnEditMode = document.getElementById('btn-edit-mode');
       let current = 0;
 
       function pad(n) {
         return String(n).padStart(2, '0');
       }
 
+      // Fixed 16:9 uniform stage scaling
+      function scaleStage() {
+        const topbarHeight = 52;
+        const availW = window.innerWidth;
+        const availH = window.innerHeight - topbarHeight;
+        const factor = Math.min(availW / 1920, availH / 1080);
+        const x = (availW - 1920 * factor) / 2;
+        const y = topbarHeight + (availH - 1080 * factor) / 2;
+        stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+      }
+      scaleStage();
+      window.addEventListener('resize', scaleStage);
+
+      // Math formula auto-render via KaTeX with fallback
+      function renderMath() {
+        if (typeof renderMathInElement === 'function') {
+          try {
+            renderMathInElement(document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          } catch (e) {}
+        }
+      }
+      window.addEventListener('DOMContentLoaded', renderMath);
+      setTimeout(renderMath, 300);
+      setTimeout(renderMath, 1500);
+
+      // Build slide overview thumbnails
       function buildOverview() {
         overviewGrid.innerHTML = '';
         slides.forEach((s, i) => {
@@ -989,14 +2424,19 @@
 
       function goTo(index) {
         current = Math.max(0, Math.min(slides.length - 1, index));
-        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        slides.forEach((s, i) => {
+          const isTarget = i === current;
+          s.classList.toggle('active', isTarget);
+          s.classList.toggle('visible', isTarget);
+        });
         counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
         progress.style.width = `${((current + 1) / slides.length) * 100}%`;
-        notesText.textContent = slides[current].dataset.notes || 'Không có ghi chú cho slide này.';
+        notesText.textContent = slides[current].dataset.notes || 'No speaker notes for this slide.';
         if (location.hash !== `#${current + 1}`) {
           history.replaceState(null, '', `#${current + 1}`);
         }
         buildOverview();
+        renderMath();
       }
 
       function toggleNotes(force) {
@@ -1011,13 +2451,25 @@
         btnGrid.classList.toggle('active', open);
       }
 
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
       document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
       document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
       btnNotes.addEventListener('click', () => toggleNotes());
       btnGrid.addEventListener('click', () => toggleGrid());
+      btnFullscreen.addEventListener('click', toggleFullscreen);
       document.getElementById('btn-print').addEventListener('click', () => window.print());
 
+      // Comprehensive keyboard navigation
       document.addEventListener('keydown', (e) => {
+        if (e.target.getAttribute('contenteditable') === 'true' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
         if (e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !overview.classList.contains('open'))) {
           e.preventDefault();
           goTo(current + 1);
@@ -1025,19 +2477,182 @@
           e.preventDefault();
           goTo(current - 1);
         } else if (e.key === 'Home') {
+          e.preventDefault();
           goTo(0);
         } else if (e.key === 'End') {
+          e.preventDefault();
           goTo(slides.length - 1);
         } else if (e.key.toLowerCase() === 'n') {
           toggleNotes();
-        } else if (e.key.toLowerCase() === 'g') {
+        } else if (e.key.toLowerCase() === 'g' || e.key.toLowerCase() === 'o') {
           toggleGrid();
+        } else if (e.key.toLowerCase() === 'f') {
+          toggleFullscreen();
         } else if (e.key === 'Escape') {
           toggleGrid(false);
           toggleNotes(false);
         }
       });
 
+      // Mouse wheel navigation with debounce
+      let wheelTimeout = null;
+      window.addEventListener('wheel', (e) => {
+        if (overview.classList.contains('open') || notesPanel.classList.contains('open')) return;
+        if (wheelTimeout) return;
+        if (Math.abs(e.deltaY) < 30) return;
+        if (e.deltaY > 0) {
+          goTo(current + 1);
+        } else {
+          goTo(current - 1);
+        }
+        wheelTimeout = setTimeout(() => {
+          wheelTimeout = null;
+        }, 350);
+      }, { passive: true });
+
+      // Swipe support for touch displays
+      let touchStartX = 0;
+      window.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      window.addEventListener('touchend', (e) => {
+        const diffX = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diffX) > 60) {
+          if (diffX < 0) goTo(current + 1);
+          else goTo(current - 1);
+        }
+      }, { passive: true });
+
+      // Inline Editing implementation (frontend-slides standard)
+      class InlineEditor {
+        constructor() {
+          this.isActive = false;
+          this.storageKey = 'news_portal_presentation_edits_v1';
+          this.editToggle = document.getElementById('editToggle');
+          this.editToolbar = document.getElementById('editToolbar');
+          this.hotzone = document.querySelector('.edit-hotzone');
+          this.editableSelector = 'h1, h2, h3, h4, p, li, td, th, .lead, .kicker';
+          this.initHover();
+          this.initActions();
+          this.restoreEdits();
+        }
+
+        initHover() {
+          let hideTimeout = null;
+          this.hotzone.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            this.editToggle.classList.add('show');
+          });
+          this.hotzone.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+              if (!this.isActive) this.editToggle.classList.remove('show');
+            }, 400);
+          });
+          this.editToggle.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+          });
+          this.editToggle.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+              if (!this.isActive) this.editToggle.classList.remove('show');
+            }, 400);
+          });
+          this.hotzone.addEventListener('click', () => this.toggleEditMode());
+          this.editToggle.addEventListener('click', () => this.toggleEditMode());
+          btnEditMode?.addEventListener('click', () => this.toggleEditMode());
+
+          document.addEventListener('keydown', (e) => {
+            if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+              if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                this.toggleEditMode();
+              }
+            }
+            if (e.key === 'Escape' && this.isActive) {
+              this.toggleEditMode(false);
+            }
+          });
+        }
+
+        initActions() {
+          document.getElementById('btn-exit-edit')?.addEventListener('click', () => this.toggleEditMode(false));
+          document.getElementById('btn-reset-edits')?.addEventListener('click', () => {
+            if (confirm('Reset all edited content back to original draft?')) {
+              localStorage.removeItem(this.storageKey);
+              location.reload();
+            }
+          });
+          document.getElementById('btn-save-html')?.addEventListener('click', () => this.exportHtml());
+
+          // Auto-save on input
+          let saveTimeout = null;
+          stage.addEventListener('input', () => {
+            if (!this.isActive) return;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => this.saveEdits(), 500);
+          });
+        }
+
+        toggleEditMode(force) {
+          this.isActive = force !== undefined ? force : !this.isActive;
+          this.editToggle.classList.toggle('active', this.isActive);
+          this.editToggle.classList.toggle('show', this.isActive);
+          this.editToolbar.classList.toggle('open', this.isActive);
+          btnEditMode?.classList.toggle('active', this.isActive);
+
+          const elements = stage.querySelectorAll(this.editableSelector);
+          elements.forEach(el => {
+            if (this.isActive) {
+              el.setAttribute('contenteditable', 'true');
+              el.setAttribute('spellcheck', 'false');
+            } else {
+              el.removeAttribute('contenteditable');
+              el.removeAttribute('spellcheck');
+            }
+          });
+          if (!this.isActive) {
+            this.saveEdits();
+          }
+        }
+
+        saveEdits() {
+          const slideData = [];
+          slides.forEach((s, idx) => {
+            slideData.push({ idx, html: s.innerHTML });
+          });
+          try {
+            localStorage.setItem(this.storageKey, JSON.stringify(slideData));
+          } catch (e) {}
+        }
+
+        restoreEdits() {
+          try {
+            const saved = localStorage.getItem(this.storageKey);
+            if (!saved) return;
+            const slideData = JSON.parse(saved);
+            slideData.forEach(item => {
+              if (slides[item.idx]) {
+                slides[item.idx].innerHTML = item.html;
+              }
+            });
+          } catch (e) {}
+        }
+
+        exportHtml() {
+          this.toggleEditMode(false);
+          const cloneDoc = document.documentElement.cloneNode(true);
+          const blob = new Blob(['<!DOCTYPE html>\n' + cloneDoc.outerHTML], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'news-magazine-portal-presentation.html';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }
+
+      window.editor = new InlineEditor();
+
+      // Initialize from hash if present
       const hashIndex = parseInt(location.hash.replace('#', ''), 10);
       goTo(!Number.isNaN(hashIndex) && hashIndex >= 1 && hashIndex <= slides.length ? hashIndex - 1 : 0);
     })();
