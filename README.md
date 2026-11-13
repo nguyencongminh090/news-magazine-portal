@@ -3,7 +3,6 @@
 News & Digital Magazine Portal (assignment). Phase 1: CRUD, authentication, RBAC. Phase 2 prep: document store + search/click log.
 
 **Stack:** Node.js (Express, ESM) · PostgreSQL (`pg`, plain SQL migrations) · React + Vite.
-Design decisions: [`features/stack-adr/planning.md`](features/stack-adr/planning.md).
 
 ## Run locally
 Requires Node >= 20.12 (and PostgreSQL from the schema item onward).
@@ -24,10 +23,9 @@ npm run dev                 # API http://localhost:4000, web http://localhost:51
 
 ## Layout
 ```
-backend/   Express API (src/app.js, src/routes/, src/config.js); db/migrations/*.sql + db/migrate.js
-frontend/  React app (src/)
-docs/      Tracking files and knowledge index
-features/  Design folders (ADRs)
+backend/       Express API (src/app.js, src/routes/, src/config.js); db/migrations/*.sql + db/migrate.js
+frontend/      React app (src/)
+presentation/  Presentation slide deck (index.html)
 ```
 
 ## Seed data
