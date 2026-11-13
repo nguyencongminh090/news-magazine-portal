@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design and Empirical Evaluation of a Full-Stack Digital News Portal with an In-Memory Fielded Information Retrieval Engine</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.75in 0.625in 1in;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #000000;
+    font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
+    font-size: 10pt;
+    line-height: 1.18;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @media screen {
+    body {
+      max-width: 7.25in;
+      margin: 0.5in auto;
+    }
+  }
+
+  /* IEEEtran Title & Author Block */
+  .paper-header {
+    text-align: center;
+    margin-bottom: 14pt;
+  }
+
+  .paper-title {
+    font-size: 22pt;
+    font-weight: normal;
+    line-height: 1.15;
+    margin: 0 0 12pt 0;
+  }
+
+  .author-block {
+    font-size: 10.5pt;
+    line-height: 1.25;
+    margin: 0 auto 6pt auto;
+  }
+
+  .author-name {
+    font-size: 11pt;
+    margin-bottom: 2pt;
+  }
+
+  .author-affil {
+    font-size: 9.5pt;
+  }
+
+  /* Two-column IEEE body */
+  .two-col {
+    column-count: 2;
+    column-gap: 0.25in;
+    column-fill: balance;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* Abstract & Index Terms */
+  .abstract {
+    font-size: 9pt;
+    line-height: 1.18;
+    font-weight: bold;
+    margin: 0 0 8pt 0;
+    text-indent: 1em;
+  }
+
+  .abstract em.lead {
+    font-style: italic;
+    font-weight: bold;
+  }
+
+  .keywords {
+    font-size: 9pt;
+    line-height: 1.18;
+    font-weight: bold;
+    margin: 0 0 12pt 0;
+    text-indent: 1em;
+  }
+
+  .keywords em.lead {
+    font-style: italic;
+    font-weight: bold;
+  }
+
+  /* Section Headings */
+  h2.ieee-sec {
+    font-size: 10pt;
+    font-weight: normal;
+    font-variant: small-caps;
+    text-align: center;
+    margin: 12pt 0 5pt 0;
+    letter-spacing: 0.3pt;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  h3.ieee-subsec {
+    font-size: 10pt;
+    font-weight: normal;
+    font-style: italic;
+    text-align: left;
+    margin: 9pt 0 3.5pt 0;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 4pt 0;
+    text-indent: 1em;
+  }
+
+  p.noindent {
+    text-indent: 0;
+  }
+
+  code, .tt {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.4pt;
+    font-weight: normal;
+  }
+
+  ol.ieee-list, ul.ieee-list {
+    margin: 4pt 0 6pt 0;
+    padding-left: 16pt;
+  }
+
+  ol.ieee-list li, ul.ieee-list li {
+    margin-bottom: 3.5pt;
+    text-align: justify;
+  }
+
+  /* Figures */
+  figure.ieee-fig {
+    margin: 8pt 0 9pt 0;
+    padding: 0;
+    text-align: center;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  figure.ieee-fig img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 4pt auto;
+    border: 0.5pt solid #d8dee6;
+  }
+
+  figure.ieee-fig figcaption {
+    font-size: 8.5pt;
+    line-height: 1.18;
+    text-align: left;
+    color: #000000;
+  }
+
+  /* Tables (IEEE booktabs style) */
+  .ieee-table-wrap {
+    margin: 8pt 0 10pt 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .ieee-table-wrap.spanning {
+    column-span: all;
+    margin: 10pt 0 12pt 0;
+  }
+
+  .table-caption {
+    font-size: 8.5pt;
+    line-height: 1.18;
+    text-align: center;
+    margin: 0 0 4pt 0;
+  }
+
+  .table-caption .tab-num {
+    display: block;
+    font-variant: small-caps;
+    margin-bottom: 1pt;
+  }
+
+  .table-caption .tab-title {
+    font-variant: small-caps;
+  }
+
+  table.ieee-tab {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    line-height: 1.2;
+    border-top: 1.2pt solid #000000;
+    border-bottom: 1.2pt solid #000000;
+  }
+
+  table.ieee-tab th {
+    font-weight: bold;
+    padding: 3.5pt 3pt;
+    border-bottom: 0.7pt solid #000000;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  table.ieee-tab th:first-child {
+    text-align: left;
+  }
+
+  table.ieee-tab td {
+    padding: 3pt 3pt;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  table.ieee-tab td:first-child {
+    text-align: left;
+  }
+
+  table.ieee-tab.ablation td,
+  table.ieee-tab.ablation th {
+    text-align: left;
+  }
+
+  /* Math formatting (100% offline, zero CDN dependencies) */
+  .eq-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 6pt 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .eq-body {
+    flex: 1;
+    text-align: center;
+    font-size: 9.2pt;
+    line-height: 1.25;
+  }
+
+  .eq-num {
+    font-size: 9.5pt;
+    margin-left: 6pt;
+    white-space: nowrap;
+  }
+
+  .m-it { font-style: italic; }
+  .m-rm { font-style: normal; }
+  .m-cal { font-family: "Times New Roman", serif; font-style: italic; }
+
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 2pt;
+    font-size: 8.6pt;
+    line-height: 1.08;
+  }
+
+  .frac > span.num {
+    border-bottom: 0.65pt solid #000000;
+    padding: 0 2.5pt 1pt 2.5pt;
+  }
+
+  .frac > span.den {
+    padding: 1pt 2.5pt 0 2.5pt;
+  }
+
+  .sum-op {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 2pt;
+    line-height: 0.95;
+  }
+
+  .sum-op .sym {
+    font-size: 13pt;
+    line-height: 0.95;
+  }
+
+  .sum-op .lim {
+    font-size: 6.8pt;
+  }
+
+  .tilde-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tilde-wrap::before {
+    content: "~";
+    position: absolute;
+    top: -5.5pt;
+    left: 2pt;
+    font-size: 9pt;
+    font-style: normal;
+  }
+
+  .hat-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .hat-wrap::before {
+    content: "^";
+    position: absolute;
+    top: -4.5pt;
+    left: 1.5pt;
+    font-size: 8.5pt;
+    font-style: normal;
+  }
+
+  /* Bibliography */
+  .bib-list {
+    font-size: 8pt;
+    line-height: 1.18;
+    margin: 4pt 0 0 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .bib-list li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3.5pt;
+    text-align: left;
+  }
+
+  .bib-list .bib-idx {
+    min-width: 19pt;
+    flex-shrink: 0;
+  }
+
+  .bib-list .bib-txt {
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+
+<header class="paper-header">
+  <h1 class="paper-title">Design and Empirical Evaluation of a Full-Stack Digital News Portal with an In-Memory Fielded Information Retrieval Engine</h1>
+  <div class="author-block">
+    <div class="author-name">Trieu Nguyen</div>
+    <div class="author-affil">
+      <em>Dept. of Software Engineering, SEG301m Capstone Project</em><br>
+      <em>FPT University</em><br>
+      Vietnam<br>
+      trieunguyen2088@gmail.com
+    </div>
+  </div>
+</header>
+
+<main class="two-col">
+
+  <p class="abstract"><em class="lead">Abstract&mdash;</em>Digital news portals require both strict editorial governance and sub-millisecond full-text retrieval across heterogeneous article metadata and prose. Standard relational pattern matching via SQL LIKE or ILIKE degrades rapidly under unstructured news workloads because it performs linear table scans without morphological normalization, field weighting, or probabilistic term-saturation ranking. This paper presents the design and empirical evaluation of a dual-phase full-stack digital news platform that pairs a governed publishing architecture with a custom in-memory Information Retrieval engine. Phase 1 establishes a decoupled three-tier web platform built on Node.js 24 ESM, Express 5, React 19, and PostgreSQL 16 with an 18-table schema managed by 11 idempotent migrations, Argon2id password hashing, rotating HttpOnly refresh token families, RFC 9457 error contracts, and a four-role database-verified RBAC governance matrix. Phase 2 implements an embedded in-memory search engine from first principles, combining a five-phase Porter stemmer, a five-field positional inverted index compressed via Delta and Variable-Byte encoding for a 75.0 percent RAM reduction, skip pointers, Fielded Okapi BM25F, Query Likelihood Dirichlet language modeling, RM3 pseudo-relevance feedback, and K-Means++ result clustering. Across a 16-query evaluation benchmark over 104 Wikinews articles, the primary BM25F ranker achieves 95.00 percent Precision at 5, 0.9228 Mean Average Precision, and 0.226 ms average query latency at 4,418 queries per second, outperforming a Vector Space TF-IDF baseline with statistical significance.</p>
+
+  <p class="keywords"><em class="lead">Index Terms&mdash;</em>information retrieval, inverted index, Okapi BM25F, Dirichlet language model, role-based access control, variable-byte compression, digital publishing.</p>
+
+  <h2 class="ieee-sec">I. Introduction</h2>
+  <p class="noindent">Modern digital newsrooms operate under two simultaneous engineering pressures: maintaining rigorous editorial access control over content lifecycles while delivering instantaneous, relevance-ranked search across continuously updated article corpora. In many mid-scale web applications, full-text search is initially delegated to relational database predicates such as SQL <span class="tt">LIKE</span> or case-insensitive <span class="tt">ILIKE</span>. While convenient for exact identifier lookups, substring matching over unstructured news prose exhibits fundamental architectural and algorithmic deficiencies. First, unindexed wildcard predicates force <em>O</em>(<em>N</em>) sequential table scans that scale poorly as article length and archive size grow. Second, Boolean substring matching lacks morphological normalization (e.g., conflating &ldquo;investigating&rdquo; and &ldquo;investigation&rdquo;), treats headline tokens identically to incidental body mentions, and ignores document-length normalization and term-frequency saturation. Third, returning chronological or binary matches provides no probabilistic ordering, forcing readers to inspect irrelevant articles even when high-signal editorial metadata such as tags and search keywords exist.</p>
+
+  <p>Conversely, deploying external distributed search clusters introduces operational overhead, cross-service synchronization lag, and eventual-consistency windows where newly published or moderated articles remain unsearchable or exposed past retraction. For a single-node or vertically scaled newsroom portal, an embedded, memory-resident Information Retrieval (IR) engine synchronized directly with transactional publishing mutations eliminates network serialization overhead and guarantees sub-millisecond query execution without external infrastructure dependencies.</p>
+
+  <p>To bridge enterprise governance and classical IR engineering within a unified codebase, this work contributes four primary engineering outcomes:</p>
+  <ol class="ieee-list">
+    <li><strong>Decoupled Full-Stack Publishing Platform:</strong> A three-tier architecture pairing a React&nbsp;19 Single-Page Application (SPA) with a Node.js&nbsp;24 ESM / Express&nbsp;5 REST backend and PostgreSQL&nbsp;16 persistence (with automatic embedded PGlite fallback), structured around 18 relational tables across five domains and 11 SHA-256-verified idempotent SQL migrations.</li>
+    <li><strong>Defense-in-Depth Security and Four-Role RBAC:</strong> A hardened identity and governance layer combining Argon2id credential hashing, 15-minute ephemeral in-memory JSON Web Tokens (JWTs), 30-day <span class="tt">HttpOnly</span> refresh token rotation with <span class="tt">family_id</span> replay revocation, RFC&nbsp;9457 <span class="tt">application/problem+json</span> error contracts, and live database-backed role verification across four distinct editorial roles.</li>
+    <li><strong>Compressed In-Memory Fielded IR Engine:</strong> A custom search subsystem featuring a five-phase Porter stemmer, 3-shingle Jaccard near-duplicate detection, a five-field positional inverted index compressed via Delta <em>d</em>-gap and Variable-Byte (V-Byte) encoding (achieving a 75.0% memory footprint reduction), and skip pointers with stride <em>L</em> = &lfloor;&radic;<em>P</em>&rfloor; (3.8&times; fewer posting comparisons).</li>
+    <li><strong>Multi-Model Probabilistic Ranking and Empirical Evaluation:</strong> Head-to-head implementation and benchmarking of Fielded Okapi BM25F, Query Likelihood with Dirichlet smoothing, BM25+RM3 pseudo-relevance feedback, Feature-Based Hybrid ranking, and a Vector Space TF-IDF baseline across 104 CC&nbsp;BY&nbsp;4.0 Wikinews articles and 16 graded queries, supported by paired significance testing, component ablation, and production search telemetry.</li>
+  </ol>
+
+  <p>The remainder of this paper is organized as follows. Section&nbsp;II surveys relevant information retrieval models, text compression structures, and web security standards. Section&nbsp;III details Phase&nbsp;1, covering the three-tier topology, relational schema, authentication lifecycle, and RBAC matrix. Section&nbsp;IV presents Phase&nbsp;2, detailing linguistic preprocessing, empirical Zipf/Heaps corpus laws, V-Byte index compression, and probabilistic scoring formulations. Section&nbsp;V reports the 16-query benchmark results, statistical significance, ablation experiments, and automated quality assurance. Section&nbsp;VI concludes with directions for future work.</p>
+
+  <h2 class="ieee-sec">II. Related Work and Theoretical Background</h2>
+  <p class="noindent">Foundational ad-hoc retrieval began with Salton et al.&rsquo;s Vector Space Model (VSM) [1], which represents documents and queries as high-dimensional term vectors weighted by Term Frequency&ndash;Inverse Document Frequency (TF-IDF) and scored via cosine similarity. Although VSM captures global term rarity, linear term-frequency weighting over-rewards repetitive documents and cannot easily reconcile heterogeneous document zones such as headlines and body text without ad-hoc concatenation.</p>
+
+  <p>To address term-frequency saturation and multi-field structure in a principled probabilistic framework, Robertson and Zaragoza formalized Okapi BM25 and its multi-field extension BM25F [2]. Rather than computing independent per-field BM25 scores&mdash;which violates the non-linear concavity of term saturation&mdash;BM25F aggregates field-weighted pseudo-term frequencies normalized by field-specific document lengths prior to applying the saturation parameter <em>k</em><sub>1</sub>. Alongside probabilistic relevance models, Zhai and Lafferty introduced statistical language modeling for retrieval using Query Likelihood with Bayesian Dirichlet prior smoothing [3], which models each document as a unigram multinomial distribution smoothed against background collection statistics via parameter &mu;. When short user queries suffer from vocabulary mismatch, Lavrenko and Croft&rsquo;s Relevance Model 3 (RM3) [4] performs pseudo-relevance feedback (PRF) by interpolating the original query model with expansion terms drawn from top-ranked initial documents.</p>
+
+  <p>Efficient execution of these rankers relies on classical text normalization and inverted index engineering. Porter&rsquo;s five-phase suffix-stripping algorithm [5] reduces inflectional and derivational variants to canonical stems without requiring heavyweight morphological dictionaries. As synthesized by Manning, Raghavan, and Sch&uuml;tze [6], modern inverted indices compress monotonically increasing document identifier lists into <em>d</em>-gaps encoded with byte-aligned Variable-Byte (V-Byte) codes, accelerating conjunctive intersections through skip pointers placed at &lfloor;&radic;<em>P</em>&rfloor; intervals. Vocabulary growth and term-rank skewness in natural language news corpora are governed by Zipf&rsquo;s rank-frequency law and Heaps&rsquo; sublinear vocabulary growth law [7], which inform memory budgeting for in-memory index structures.</p>
+
+  <p>On the web systems engineering side, modern API governance increasingly adopts standardized machine-readable error envelopes defined by RFC&nbsp;9457 (<em>Problem Details for HTTP APIs</em>) [8], ensuring predictable client handling without exposing internal stack traces. Credential storage best practices rely on memory-hard key derivation via Argon2id [9] to resist GPU and ASIC brute-force attacks, while contemporary decoupled portals leverage typed schema validation, SPA routing, and ACID-compliant relational persistence [10] to maintain strict consistency across editorial workflows.</p>
+
+  <h2 class="ieee-sec">III. Phase 1: Full-Stack System Architecture and RBAC Governance</h2>
+
+  <h3 class="ieee-subsec">A. Decoupled Three-Tier Topology</h3>
+  <p class="noindent">The platform separates presentation, application logic/retrieval, and durable persistence into three cleanly bounded tiers, illustrated in Fig.&nbsp;1.</p>
+
+  <figure class="ieee-fig">
+    <img src="fig1_architecture.png" alt="Decoupled three-tier system architecture">
+    <figcaption>Fig. 1. Decoupled three-tier system architecture connecting the React&nbsp;19 SPA (Port&nbsp;5173), Express&nbsp;5 API with embedded in-memory IR engine (Port&nbsp;4000), and PostgreSQL&nbsp;16 / PGlite persistence layer.</figcaption>
+  </figure>
+
+  <p>At the presentation tier, a React&nbsp;19 Single-Page Application built with React Router&nbsp;7 and bundled via Vite operates on Port&nbsp;5173. It delivers public news browsing, faceted discovery, interactive search with query suggestions, reader engagement widgets, and role-segmented editorial/administration consoles. At the application tier, a Node.js&nbsp;24 ECMAScript Module (ESM) backend built on Express&nbsp;5 runs on Port&nbsp;4000. All inbound payloads are validated against strict declarative Zod schemas, hardened with Helmet security headers, and routed through centralized error handlers. Crucially, the custom in-memory IR engine executes inside this application tier: it hydrates its compressed inverted index from persisted published documents at startup and processes incremental index updates synchronously upon editorial publication or archival, eliminating cross-network retrieval hops.</p>
+
+  <p>At the persistence tier, the backend maintains a connection pool to PostgreSQL&nbsp;16 for production workloads. To guarantee deterministic zero-configuration execution in local development and automated test suites where an external database daemon may be absent, the database adapter automatically falls back to an embedded WebAssembly PGlite instance while executing identical SQL dialects and migration scripts.</p>
+
+  <h3 class="ieee-subsec">B. Relational Schema and Idempotent Migrations</h3>
+  <p class="noindent">Database evolution is governed by 11 sequential SQL migration scripts (<span class="tt">001</span> through <span class="tt">011</span>). A dedicated <span class="tt">schema_migrations</span> control table records each applied script alongside its cryptographic SHA-256 checksum. On startup, the migration runner verifies checksum integrity against the repository scripts, guaranteeing idempotent execution and halting immediately if previously applied migrations are altered out-of-band.</p>
+
+  <p>Across these 11 migrations, the normalized schema comprises 18 relational tables organized into five functional domains:</p>
+  <ul class="ieee-list">
+    <li><strong>Identity and RBAC:</strong> <span class="tt">users</span>, <span class="tt">roles</span>, <span class="tt">user_roles</span>, and <span class="tt">refresh_tokens</span>, supporting many-to-many role assignments and traceable token rotation lineages.</li>
+    <li><strong>Content and Taxonomy:</strong> <span class="tt">categories</span>, <span class="tt">tags</span>, <span class="tt">documents</span>, and <span class="tt">document_tags</span>, storing article headlines, summaries, rich body prose, SEO keywords, publication statuses, and hierarchical/folksonomy labels.</li>
+    <li><strong>Community Engagement:</strong> <span class="tt">comments</span>, <span class="tt">ratings</span>, <span class="tt">article_likes</span>, and <span class="tt">reports</span>, capturing reader feedback, 1&ndash;5 star evaluations, and content moderation flags.</li>
+    <li><strong>Telemetry and Auditing:</strong> <span class="tt">search_query_log</span>, <span class="tt">search_click_log</span>, and <span class="tt">audit_log</span>, persisting every executed query, latency, ranker choice, clicked result rank, and privileged administrative mutation.</li>
+    <li><strong>System Governance:</strong> <span class="tt">schema_migrations</span> and supporting system configuration/state tables maintaining platform metadata and migration integrity.</li>
+  </ul>
+
+  <h3 class="ieee-subsec">C. Defense-in-Depth Authentication and Refresh Token Rotation</h3>
+  <p class="noindent">Account security enforces defense-in-depth across credential storage, session transport, and error reporting. User passwords are salted and hashed using Argon2id [9], mitigating side-channel and GPU cracking threats. Upon authentication, the server issues a short-lived 15-minute access JWT held exclusively in ephemeral React application memory rather than browser <span class="tt">localStorage</span> or <span class="tt">sessionStorage</span>, preventing persistent token theft via Cross-Site Scripting (XSS).</p>
+
+  <p>Long-lived session continuity relies on a 30-day refresh token transmitted via an <span class="tt">HttpOnly</span>, <span class="tt">SameSite</span> cookie inaccessible to client-side scripts. Each issued refresh token belongs to a tracked <span class="tt">family_id</span> lineage in the <span class="tt">refresh_tokens</span> table. Whenever the client exchanges a refresh cookie for a fresh access JWT, the server atomically rotates the refresh token, invalidating the old token while preserving the shared <span class="tt">family_id</span>. If a previously rotated (consumed) refresh token is replayed&mdash;an indicator of cookie theft or session hijacking&mdash;the server detects the reuse event and immediately revokes every token sharing that <span class="tt">family_id</span>, forcing re-authentication. All authentication, authorization, and validation failures serialize to RFC&nbsp;9457 <span class="tt">application/problem+json</span> responses [8], conveying structured <span class="tt">type</span>, <span class="tt">title</span>, <span class="tt">status</span>, <span class="tt">detail</span>, and <span class="tt">instance</span> fields without leaking stack traces or database internals.</p>
+
+  <h3 class="ieee-subsec">D. Enterprise Four-Role RBAC Matrix and Community Reader Features</h3>
+  <p class="noindent">Authorization is enforced redundantly at both API and UI boundaries. On the server, the <span class="tt">requireRole</span> Express middleware queries live role assignments in PostgreSQL on protected routes rather than relying solely on potentially stale JWT claims, ensuring immediate revocation when privileges change. On the client, declarative React <span class="tt">&lt;RequireRole&gt;</span> route guards restrict navigation and hide unauthorized administrative controls.</p>
+
+  <div class="ieee-table-wrap">
+    <div class="table-caption">
+      <span class="tab-num">TABLE I</span>
+      <span class="tab-title">Enterprise Four-Role RBAC Permission Matrix Across Five Operational Pillars</span>
+    </div>
+    <table class="ieee-tab">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>User Mgmt</th>
+          <th>Publishing</th>
+          <th>Moderation</th>
+          <th>SEO/Tel.</th>
+          <th>Sys./Audit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Super Admin</td>
+          <td>Full</td>
+          <td>Full</td>
+          <td>Full</td>
+          <td>Full</td>
+          <td>Full</td>
+        </tr>
+        <tr>
+          <td>Content Manager</td>
+          <td>&ndash;</td>
+          <td>Full</td>
+          <td>Read</td>
+          <td>Metadata</td>
+          <td>&ndash;</td>
+        </tr>
+        <tr>
+          <td>Moderator</td>
+          <td>&ndash;</td>
+          <td>Read</td>
+          <td>Full</td>
+          <td>&ndash;</td>
+          <td>Audit Read</td>
+        </tr>
+        <tr>
+          <td>Data &amp; SEO Spec.</td>
+          <td>&ndash;</td>
+          <td>Read</td>
+          <td>&ndash;</td>
+          <td>Full</td>
+          <td>Telemetry</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Table&nbsp;I summarizes the four enterprise roles and their separation of duties across five operational pillars:</p>
+  <ul class="ieee-list">
+    <li><strong>Super Admin:</strong> Holds unrestricted authority over user provisioning, role assignment, editorial overrides, moderation escalation, SEO/telemetry inspection, and system <span class="tt">audit_log</span> review.</li>
+    <li><strong>Content Manager:</strong> Owns the editorial publishing lifecycle (drafting, editing, tagging, scheduling, publishing, and archiving documents) plus SEO metadata curation, without access to user privilege escalation.</li>
+    <li><strong>Moderator:</strong> Governs community safety by inspecting <span class="tt">reports</span> queues, hiding or removing policy-violating <span class="tt">comments</span>, and reviewing moderation audit trails.</li>
+    <li><strong>Data &amp; SEO Specialist:</strong> Manages search engine optimization fields (<span class="tt">seoKeywords</span>, slugs, summaries), monitors search telemetry (<span class="tt">search_query_log</span>, <span class="tt">search_click_log</span>), and evaluates ranking models in the Search Lab without altering editorial prose or user accounts.</li>
+  </ul>
+
+  <p>For general readers, the portal supports authenticated and interactive community participation: 1&ndash;5 star article ratings with aggregated averages, one-click article likes (<span class="tt">article_likes</span>), nested threaded comments (<span class="tt">comments</span>), collaborative user-submitted tags (<span class="tt">tags</span>, <span class="tt">document_tags</span>), and structured violation reporting (<span class="tt">reports</span>) routed directly to Moderator queues.</p>
+
+  <h2 class="ieee-sec">IV. Phase 2: Custom Information Retrieval Engine Design</h2>
+
+  <h3 class="ieee-subsec">A. Linguistic Preprocessing and Near-Duplicate Fingerprinting</h3>
+  <p class="noindent">To eliminate the morphological rigidity and linear scan penalties of relational <span class="tt">LIKE</span>/<span class="tt">ILIKE</span> queries, Phase&nbsp;2 implements a deterministic five-stage linguistic normalization pipeline in <span class="tt">tokenizer.js</span>. Before indexing or querying, raw article HTML is sanitized to strip markup tags (<span class="tt">&lt;[^&gt;]*&gt;</span>) while preserving character offsets for query-biased snippet anchoring. Unicode strings undergo NFKD compatibility normalization and case folding, followed by possessive suffix stripping (<span class="tt">'s</span> removal) and alphanumeric tokenization that retains numeric identifiers. Next, 131 high-frequency English function words are filtered using a hash-backed stopword table.</p>
+
+  <p>Surviving content tokens pass through a full five-phase Martin Porter Stemmer [5] (Steps&nbsp;1a through&nbsp;5b). By evaluating consonant&ndash;vowel syllable measures (<em>m</em> &gt; 0, <em>m</em> = 1, <em>m</em> &gt; 1) alongside stem-vowel and consonant-vowel-consonant (<span class="tt">CVC</span>) predicates, the stemmer conflates inflectional and derivational variants (e.g., mapping &ldquo;elections&rdquo; and &ldquo;elected&rdquo; to <span class="tt">elect</span>) without requiring an external lemmatization lexicon.</p>
+
+  <p>To prevent syndicated wire rewrites or duplicate drafts from polluting top search ranks, the indexer computes a 3-word shingle fingerprint <em>S<sub>i</sub></em> over each article&rsquo;s normalized title and body text [6]. Near-duplicate pairs are flagged whenever their Jaccard similarity exceeds the editorial threshold:</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="m-it">J</span>(<span class="m-it">S</span><sub>1</sub>, <span class="m-it">S</span><sub>2</sub>) =
+      <span class="frac"><span class="num">|<span class="m-it">S</span><sub>1</sub> &cap; <span class="m-it">S</span><sub>2</sub>|</span><span class="den">|<span class="m-it">S</span><sub>1</sub> &cup; <span class="m-it">S</span><sub>2</sub>|</span></span>
+      &gt; 0.50.
+    </div>
+    <div class="eq-num">(1)</div>
+  </div>
+
+  <p>An <em>O</em>(1) length-ratio bound min(|<em>S</em><sub>1</sub>|, |<em>S</em><sub>2</sub>|)/max(|<em>S</em><sub>1</sub>|, |<em>S</em><sub>2</sub>|) prunes incompatible document pairs prior to computing exact set intersections.</p>
+
+  <h3 class="ieee-subsec">B. Empirical Corpus Laws</h3>
+  <p class="noindent">Index capacity planning and smoothing hyperparameters were calibrated empirically over a corpus of 104 English Wikinews articles licensed under CC&nbsp;BY&nbsp;4.0. Across the indexed collection, tokenization and stopword filtering yield <em>N</em> = 37,443 total tokens and an actual stemmed vocabulary of <em>V</em><sub>actual</sub> = 5,950 unique stems. Term occurrences exhibit pronounced Zipfian skewness [7], obeying <em>r</em> &middot; <em>f</em> &approx; <em>C</em>: the highest-frequency stem, <span class="tt">state</span>, appears at rank <em>r</em> = 1 with collection frequency <em>f</em> = 257, while more than 48% of the vocabulary consists of hapax legomena appearing only once across the 104 articles.</p>
+
+  <p>Vocabulary expansion as documents arrive sequentially follows Heaps&rsquo; sublinear power law <em>V</em>(<em>N</em>) = <em>k N<sup>&beta;</sup></em> [7]. Fitting an ordinary least-squares regression in log-log space (ln&nbsp;<em>V</em> = ln&nbsp;<em>k</em> + &beta;&nbsp;ln&nbsp;<em>N</em>) over 15 cumulative corpus checkpoints yields <em>k</em> = 8.299 and &beta; = 0.627. At <em>N</em> = 37,443 tokens, this fitted model predicts <em>V</em><sub>pred</sub> = 5,984 distinct stems against <em>V</em><sub>actual</sub> = 5,950, corresponding to a calibration error below 0.6% (0.57%). Fig.&nbsp;2 visualizes both the Zipfian rank-frequency decay and the Heaps&rsquo; Law vocabulary growth trajectory.</p>
+
+  <figure class="ieee-fig">
+    <img src="fig2_zipf_heaps.png" alt="Empirical corpus law calibration Zipf and Heaps">
+    <figcaption>Fig. 2. Empirical corpus law calibration over 104 CC&nbsp;BY&nbsp;4.0 English Wikinews articles (<em>N</em> = 37,443 tokens, <em>V</em><sub>actual</sub> = 5,950 stems): (left) Zipf rank-frequency log-log distribution led by <span class="tt">state</span> (<em>r</em> = 1, <em>f</em> = 257) with &gt;48% hapax legomena; (right) Heaps&rsquo; Law fit <em>V</em> = 8.299 <em>N</em><sup>0.627</sup> predicting <em>V</em><sub>pred</sub> = 5,984 (&lt;0.6% error).</figcaption>
+  </figure>
+
+  <h3 class="ieee-subsec">C. Multi-Field Positional Inverted Index, V-Byte Compression, and Skip Pointers</h3>
+  <p class="noindent">In <span class="tt">invertedIndex.js</span>, each published document is parsed across five weighted editorial zones: <span class="tt">title</span>, <span class="tt">tags</span>, <span class="tt">seoKeywords</span>, <span class="tt">summary</span>, and <span class="tt">content</span>. Every term posting records the ascending document identifier, per-field term frequencies, and word-level positional offset arrays. An explicit offset padding separates title positions from body positions so exact quoted-phrase queries&mdash;verified by checking pos<sub>2</sub> &minus; pos<sub>1</sub> = 1 across consecutive query stems&mdash;never produce false positives across field boundaries.</p>
+
+  <p>To minimize memory footprint in the Node.js heap, ascending document identifier lists are transformed into <em>d</em>-gaps (<em>d<sub>i</sub></em> = docId<sub><em>i</em></sub> &minus; docId<sub><em>i</em>&minus;1</sub>) and compressed using Variable-Byte (V-Byte) encoding [6]. Each integer gap is emitted in big-endian 7-bit chunks where bit&nbsp;7 (<span class="tt">0x80</span>) marks the terminating byte of a posting. Across the 104-article Wikinews corpus containing 21,316 total postings, uncompressed 32-bit integer storage requires 85,264&nbsp;bytes, whereas Delta+V-Byte encoding compresses all posting lists to 21,316&nbsp;bytes (1.00&nbsp;byte per posting), achieving a 75.0% RAM reduction (4.0:1 compression ratio).</p>
+
+  <p>For conjunctive Boolean <span class="tt">AND</span> queries, each posting list of length <em>P</em> &ge; 4 maintains an auxiliary skip-pointer table with stride <em>L</em> = &lfloor;&radic;<em>P</em>&rfloor; [6]. During list intersection, the pointer advances directly across blocks whenever the target document identifier at index <em>i</em> + <em>L</em> does not exceed the opposing cursor, cutting conjunctive posting comparisons by 3.8&times; relative to linear two-pointer merging.</p>
+
+  <h3 class="ieee-subsec">D. Probabilistic Ranking Models and Query Intelligence</h3>
+  <p class="noindent">The retrieval core supports five selectable ranking modes alongside query expansion, spell correction, and post-retrieval clustering. Our primary production ranker implements Fielded Okapi BM25F [2], defined in (2):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="m-it">S</span><sub>BM25F</sub>(<span class="m-it">D</span>, <span class="m-it">Q</span>) =
+      <span class="sum-op"><span class="sym">&Sigma;</span><span class="lim"><em>t</em>&isin;<em>Q</em></span></span>
+      <span class="m-rm">IDF</span>(<span class="m-it">t</span>) &middot;
+      <span class="frac">
+        <span class="num"><span class="tilde-wrap"><span class="m-it">tf</span></span><sub><span class="m-it">t,D</span></sub> &middot; (<span class="m-it">k</span><sub>1</sub> + 1)</span>
+        <span class="den"><span class="tilde-wrap"><span class="m-it">tf</span></span><sub><span class="m-it">t,D</span></sub> + <span class="m-it">k</span><sub>1</sub>(1 &minus; <span class="m-it">b</span> + <span class="m-it">b</span> &middot; <span class="frac"><span class="num">|<span class="m-it">D</span>|</span><span class="den">avgdl</span></span>)</span>
+      </span>
+      &middot;
+      <span class="frac">
+        <span class="num">(<span class="m-it">k</span><sub>2</sub> + 1)<span class="m-it">tf<sub>t,Q</sub></span></span>
+        <span class="den"><span class="m-it">k</span><sub>2</sub> + <span class="m-it">tf<sub>t,Q</sub></span></span>
+      </span>,
+    </div>
+    <div class="eq-num">(2)</div>
+  </div>
+
+  <p>where <em>k</em><sub>1</sub> = 1.2, <em>b</em> = 0.75, and <em>k</em><sub>2</sub> = 100. Rather than saturating fields independently, BM25F computes a single field-weighted pseudo-term frequency <span class="tilde-wrap"><em>tf</em></span><sub><em>t,D</em></sub> in (3):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="tilde-wrap"><span class="m-it">tf</span></span><sub><span class="m-it">t,D</span></sub> =
+      <span class="sum-op"><span class="sym">&Sigma;</span><span class="lim"><em>f</em>&isin;<em>F</em></span></span>
+      <span class="m-it">w<sub>f</sub></span> &middot; <span class="m-it">tf<sub>t,f,D</sub></span>,
+    </div>
+    <div class="eq-num">(3)</div>
+  </div>
+
+  <p>with editorial weights <em>w</em><sub>title</sub> = 3.0, <em>w</em><sub>tags</sub> = 2.2, <em>w</em><sub>seo</sub> = 2.0, <em>w</em><sub>summary</sub> = 1.5, and <em>w</em><sub>content</sub> = 1.0. Non-negative inverse document frequency is computed via the smoothed Robertson&ndash;Sparck Jones formulation in (4):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="m-rm">IDF</span>(<span class="m-it">t</span>) = ln<big>(</big>1 +
+      <span class="frac">
+        <span class="num"><span class="m-it">N</span> &minus; <span class="m-it">df<sub>t</sub></span> + 0.5</span>
+        <span class="den"><span class="m-it">df<sub>t</sub></span> + 0.5</span>
+      </span><big>)</big>.
+    </div>
+    <div class="eq-num">(4)</div>
+  </div>
+
+  <p>As a generative language-modeling alternative, the engine provides Query Likelihood (QL) with Bayesian Dirichlet prior smoothing [3] in (5):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      log <span class="m-it">P</span>(<span class="m-it">Q</span> | <span class="m-it">D</span>) =
+      <span class="sum-op"><span class="sym">&Sigma;</span><span class="lim"><em>t</em>&isin;<em>Q</em></span></span>
+      <span class="m-it">tf<sub>t,Q</sub></span> ln
+      <span class="frac">
+        <span class="num"><span class="tilde-wrap"><span class="m-it">tf</span></span><sub><span class="m-it">t,D</span></sub> + &mu; <span class="m-it">P</span>(<span class="m-it">t</span> | <span class="m-it">C</span>)</span>
+        <span class="den">|<span class="m-it">D</span>| + &mu;</span>
+      </span>,
+    </div>
+    <div class="eq-num">(5)</div>
+  </div>
+
+  <p>configured with smoothing parameter &mu; = 1500 against an average document length of 360 tokens and Laplace-smoothed background collection probabilities <em>P</em>(<em>t</em> | <em>C</em>).</p>
+
+  <p>To mitigate vocabulary mismatch on short queries, optional Relevance Model&nbsp;3 (RM3) pseudo-relevance feedback [4] extracts top expansion stems from the top-<em>k</em> initial documents (<em>k</em> = 5, selecting <em>m</em> = 5 terms) via (6):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="m-it">P</span><sub>RM3</sub>(<span class="m-it">w</span> | <span class="m-it">Q</span>) = &alpha; <span class="m-it">P</span><sub>MLE</sub>(<span class="m-it">w</span> | <span class="m-it">Q</span>) + &beta;
+      <span class="sum-op"><span class="sym">&Sigma;</span><span class="lim"><em>D</em>&isin;<em>R<sub>k</sub></em></span></span>
+      <span class="m-it">P</span>(<span class="m-it">w</span> | <span class="m-it">D</span>) <span class="m-it">P</span>(<span class="m-it">D</span> | <span class="m-it">Q</span>),
+    </div>
+    <div class="eq-num">(6)</div>
+  </div>
+
+  <p>using interpolation weights &alpha; = 0.6 and &beta; = 0.4. In parallel, related-topic query suggestions compute document co-occurrence affinity using Dice&rsquo;s coefficient Dice(<em>a</em>, <em>b</em>) = 2<em>n<sub>ab</sub></em> / (<em>n<sub>a</sub></em> + <em>n<sub>b</sub></em>) across non-universal terms.</p>
+
+  <p>A Feature-Based Hybrid ranker blends normalized BM25F relevance (0.55), sequential dependence bigram and minimum-span window proximity (0.20), 365-day exponential freshness decay (0.10), and normalized view/rating engagement (0.15). When queries return two or fewer hits, a Noisy Channel spell corrector [6] searches the raw corpus vocabulary within Damerau-Levenshtein edit distance <em>d</em><sub>DL</sub>(<em>e</em>, <em>w</em>) &le; 2 (allowing adjacent transpositions) according to (7):</p>
+
+  <div class="eq-row">
+    <div class="eq-body">
+      <span class="hat-wrap"><span class="m-it">w</span></span> = arg max<sub><span class="m-it">w</span>&isin;<span class="m-it">V</span>, <span class="m-it">d</span><sub>DL</sub>(<span class="m-it">e</span>,<span class="m-it">w</span>)&le;2</sub>
+      <span class="m-it">P</span>(<span class="m-it">e</span> | <span class="m-it">w</span>) <span class="m-it">P</span>(<span class="m-it">w</span>),
+    </div>
+    <div class="eq-num">(7)</div>
+  </div>
+
+  <p>where <em>P</em>(<em>e</em> | <em>w</em>) &prop; exp(&minus;3 &middot; <em>d</em><sub>DL</sub>(<em>e</em>, <em>w</em>)) and <em>P</em>(<em>w</em>) is the Laplace-smoothed corpus prior. Finally, top-ranked results are grouped into <em>K</em> &isin; [3, 5] thematic clusters via K-Means++ over L2-normalized TF-IDF document vectors, labeling each cluster by its highest-weight centroid terms.</p>
+
+  <h2 class="ieee-sec">V. Empirical Evaluation and Ablation Analysis</h2>
+
+  <h3 class="ieee-subsec">A. 16-Query Benchmark Matrix</h3>
+  <p class="noindent">All five retrieval configurations were evaluated inside the automated evaluation harness (<span class="tt">evaluation.js</span>) across the 104 Wikinews articles using 16 topical queries with graded relevance judgments (0, 1, 2 derived from editorial tags and headline alignment). Table&nbsp;II summarizes effectiveness and efficiency metrics, and Fig.&nbsp;3 compares quality and throughput across models.</p>
+
+  <div class="ieee-table-wrap spanning">
+    <div class="table-caption">
+      <span class="tab-num">TABLE II</span>
+      <span class="tab-title">Empirical Retrieval Benchmark Across 16 Queries on 104 Wikinews Articles</span>
+    </div>
+    <table class="ieee-tab">
+      <thead>
+        <tr>
+          <th>Retrieval Model</th>
+          <th>P@5</th>
+          <th>R@10</th>
+          <th>MAP</th>
+          <th>MRR</th>
+          <th>NDCG@10</th>
+          <th>Latency (ms)</th>
+          <th>Throughput (QPS)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Okapi BM25F (Primary)</strong></td>
+          <td><strong>95.00%</strong></td>
+          <td>80.93%</td>
+          <td><strong>0.9228</strong></td>
+          <td>0.9688</td>
+          <td><strong>0.9327</strong></td>
+          <td><strong>0.226</strong></td>
+          <td><strong>4,418</strong></td>
+        </tr>
+        <tr>
+          <td>BM25 + RM3 PRF Expansion</td>
+          <td>90.00%</td>
+          <td>80.93%</td>
+          <td>0.9040</td>
+          <td><strong>1.0000</strong></td>
+          <td>0.9040</td>
+          <td>1.166</td>
+          <td>858</td>
+        </tr>
+        <tr>
+          <td>Query Likelihood (Dirichlet &mu;=1500)</td>
+          <td>91.25%</td>
+          <td><strong>82.26%</strong></td>
+          <td>0.8987</td>
+          <td>0.9688</td>
+          <td>0.9236</td>
+          <td>0.352</td>
+          <td>2,840</td>
+        </tr>
+        <tr>
+          <td>Feature-Based Hybrid Model</td>
+          <td>90.00%</td>
+          <td>81.56%</td>
+          <td>0.8906</td>
+          <td>0.9688</td>
+          <td>0.9189</td>
+          <td>0.456</td>
+          <td>2,191</td>
+        </tr>
+        <tr>
+          <td>Vector Space TF-IDF (Baseline)</td>
+          <td>76.25%</td>
+          <td>73.29%</td>
+          <td>0.7883</td>
+          <td>0.9375</td>
+          <td>0.8272</td>
+          <td>1.661</td>
+          <td>602</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="ieee-fig">
+    <img src="fig3_benchmark.png" alt="Head-to-head comparison across all five retrieval models">
+    <figcaption>Fig. 3. Head-to-head comparison across all five retrieval models: (left) effectiveness across P@5, Recall@10, MAP, and NDCG@10; (right) query throughput in QPS.</figcaption>
+  </figure>
+
+  <p>Okapi BM25F achieves the highest overall precision and ranking quality, reaching 95.00% P@5, 0.9228 MAP, and 0.9327 NDCG@10&mdash;improving P@5 by +18.75 percentage points and MAP by +0.1345 over the Vector Space TF-IDF baseline. Moreover, term-at-a-time accumulation over pre-indexed postings executes in 0.226&nbsp;ms per query (4,418&nbsp;QPS), a 7.3&times; speedup over TF-IDF cosine normalization (1.661&nbsp;ms, 602&nbsp;QPS). Enabling RM3 PRF lifts MRR to a perfect 1.0000 by surfacing relevant first results on ambiguous queries, at the cost of a two-pass 1.166&nbsp;ms latency (858&nbsp;QPS) and mild topic drift at rank&nbsp;5 (90.00% P@5). Query Likelihood with Dirichlet smoothing (&mu; = 1500) attains the highest Recall@10 (82.26%) at 2,840&nbsp;QPS, confirming the competitiveness of Bayesian smoothing on concise news articles.</p>
+
+  <h3 class="ieee-subsec">B. Statistical Significance and Rank Correlation</h3>
+  <p class="noindent">To verify that BM25F&rsquo;s gains over TF-IDF are not artifacts of isolated outlier queries, we applied a two-sided Paired Sign Test across the 16 per-query Average Precision (AP) pairs. Okapi BM25F recorded 14 wins, 2 ties, and 0 losses against the TF-IDF baseline, yielding an exact binomial two-tailed <em>p</em>-value of <em>p</em> = 0.00012 &lt; 0.001 and rejecting the null hypothesis at the 99.9% confidence level. Comparing top-10 result orderings between BM25F and TF-IDF yields a mean Kendall&rsquo;s rank correlation coefficient of &tau; = 0.702, demonstrating substantive re-ordering driven by multi-field weighting and length normalization.</p>
+
+  <h3 class="ieee-subsec">C. Controlled Component Ablation Study</h3>
+  <p class="noindent">We conducted five single-factor ablations on the primary BM25F engine to quantify the contribution of each architectural mechanism. As reported in Table&nbsp;III, removing editorial field weights (<em>w<sub>f</sub></em> = 1.0 uniformly) causes the steepest top-rank degradation (&minus;13.2% P@5), confirming that headlines, tags, and SEO keywords carry strong relevance signals. Disabling the five-phase Porter Stemmer reduces MAP by 12.2% due to missed morphological variants, while setting <em>b</em> = 0 (disabling document-length normalization) drops MAP by 10.8% as verbose articles dominate shorter breaking-news reports. On the systems side, disabling V-Byte compression inflates posting memory by 4.0&times;, and removing &lfloor;&radic;<em>P</em>&rfloor; skip pointers increases conjunctive intersection comparisons by 3.8&times;.</p>
+
+  <div class="ieee-table-wrap">
+    <div class="table-caption">
+      <span class="tab-num">TABLE III</span>
+      <span class="tab-title">Controlled Single-Component Ablation on Primary BM25F Engine</span>
+    </div>
+    <table class="ieee-tab ablation">
+      <thead>
+        <tr>
+          <th>Ablated Component</th>
+          <th>Configuration Change</th>
+          <th>Observed Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Field Weights</td>
+          <td>Set all <em>w<sub>f</sub></em> = 1.0</td>
+          <td>&minus;13.2% P@5</td>
+        </tr>
+        <tr>
+          <td>Porter Stemmer</td>
+          <td>Unstemmed surface tokens</td>
+          <td>&minus;12.2% MAP</td>
+        </tr>
+        <tr>
+          <td>Length Normalization</td>
+          <td>Set <em>b</em> = 0 in (2)</td>
+          <td>&minus;10.8% MAP</td>
+        </tr>
+        <tr>
+          <td>V-Byte Compression</td>
+          <td>Uncompressed 32-bit Int32</td>
+          <td>4.0&times; RAM footprint</td>
+        </tr>
+        <tr>
+          <td>Skip Pointers</td>
+          <td>Linear posting scan</td>
+          <td>3.8&times; AND comparisons</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="ieee-subsec">D. Production Search Telemetry, Admin Search Lab, and Quality Assurance</h3>
+  <p class="noindent">Beyond offline benchmarking, the production API instruments every live query and result click in PostgreSQL. Each search request writes a record to <span class="tt">search_query_log</span> (capturing raw query text, chosen retrieval model, hit count, and measured latency) and returns a <span class="tt">queryLogId</span>. Client clicks emit telemetry to <span class="tt">search_click_log</span> with rank position and clicked document identifier, enabling online Click-Through Rate (CTR) and Mean Reciprocal Rank monitoring.</p>
+
+  <p>Authorized Super Admin and Data &amp; SEO Specialist accounts access these diagnostics through the integrated Admin Search Lab via dedicated endpoints (<span class="tt">/admin/search-engine/stats</span>, <span class="tt">/evaluate</span>, <span class="tt">/inspect</span>, and <span class="tt">/rebuild</span>), exposing live Zipf/Heaps curves, hex-level V-Byte byte inspections per stem, and on-demand index rebuilds. Platform reliability is verified by an automated suite of 222 tests&mdash;comprising 100 backend Node.js integration and unit tests covering RBAC, token rotation, migrations, and retrieval math, plus 122 frontend Vitest component and routing tests&mdash;alongside a clean Vite production bundle completing in 260&nbsp;ms.</p>
+
+  <h2 class="ieee-sec">VI. Conclusion and Future Work</h2>
+  <p class="noindent">This paper presented the end-to-end architecture and empirical evaluation of a dual-phase digital news portal integrating enterprise publishing governance with a custom in-memory Information Retrieval engine. Phase&nbsp;1 demonstrates that strict RBAC separation across four editorial roles, Argon2id credential protection, <span class="tt">family_id</span>-tracked refresh token rotation, and RFC&nbsp;9457 error contracts can coexist cleanly within a portable PostgreSQL&nbsp;16 / PGlite three-tier stack. Phase&nbsp;2 proves that classical IR engineering&mdash;five-phase Porter stemming, Delta+V-Byte posting compression (75.0% RAM reduction), &lfloor;&radic;<em>P</em>&rfloor; skip pointers (3.8&times; fewer comparisons), and Fielded Okapi BM25F&mdash;delivers 95.00% P@5 and 0.9228 MAP at 0.226&nbsp;ms latency (4,418&nbsp;QPS), achieving statistically significant superiority over TF-IDF (<em>p</em> = 0.00012).</p>
+
+  <p>Future work will focus on three extensions: (1) training a lightweight Learning-to-Rank (LambdaMART) second-stage reranker directly over accumulated <span class="tt">search_query_log</span> and <span class="tt">search_click_log</span> CTR telemetry; (2) pairing lexical BM25F candidate generation with quantized dense bi-encoder embeddings for semantic paraphrase recall; and (3) partitioning the compressed inverted index across horizontally sharded worker threads to sustain sub-millisecond latency at multi-million-article scale.</p>
+
+  <h2 class="ieee-sec">Acknowledgment</h2>
+  <p class="noindent">The author thanks the faculty of the Department of Software Engineering at FPT University for guidance during the SEG301m Capstone Project, and acknowledges the Wikimedia Foundation and Wikinews contributors for providing the CC&nbsp;BY&nbsp;4.0 news corpus used in empirical evaluation.</p>
+
+  <h2 class="ieee-sec">References</h2>
+  <ol class="bib-list">
+    <li><span class="bib-idx">[1]</span><span class="bib-txt">G. Salton, A. Wong, and C. S. Yang, &ldquo;A vector space model for automatic indexing,&rdquo; <em>Commun. ACM</em>, vol. 18, no. 11, pp. 613&ndash;620, Nov. 1975.</span></li>
+    <li><span class="bib-idx">[2]</span><span class="bib-txt">S. Robertson and H. Zaragoza, &ldquo;The probabilistic relevance framework: BM25 and beyond,&rdquo; <em>Found. Trends Inf. Retr.</em>, vol. 3, no. 4, pp. 333&ndash;389, 2009.</span></li>
+    <li><span class="bib-idx">[3]</span><span class="bib-txt">C. Zhai and J. Lafferty, &ldquo;A study of smoothing methods for language models applied to ad hoc information retrieval,&rdquo; in <em>Proc. 24th Annu. Int. ACM SIGIR Conf. Res. Develop. Inf. Retrieval</em>, New Orleans, LA, USA, 2001, pp. 334&ndash;342.</span></li>
+    <li><span class="bib-idx">[4]</span><span class="bib-txt">V. Lavrenko and W. B. Croft, &ldquo;Relevance-based language models,&rdquo; in <em>Proc. 24th Annu. Int. ACM SIGIR Conf. Res. Develop. Inf. Retrieval</em>, New Orleans, LA, USA, 2001, pp. 120&ndash;127.</span></li>
+    <li><span class="bib-idx">[5]</span><span class="bib-txt">M. F. Porter, &ldquo;An algorithm for suffix stripping,&rdquo; <em>Program</em>, vol. 14, no. 3, pp. 130&ndash;137, 1980.</span></li>
+    <li><span class="bib-idx">[6]</span><span class="bib-txt">C. D. Manning, P. Raghavan, and H. Sch&uuml;tze, <em>Introduction to Information Retrieval</em>. Cambridge, U.K.: Cambridge Univ. Press, 2008.</span></li>
+    <li><span class="bib-idx">[7]</span><span class="bib-txt">H. S. Heaps, <em>Information Retrieval: Computational and Theoretical Aspects</em>. New York, NY, USA: Academic Press, 1978.</span></li>
+    <li><span class="bib-idx">[8]</span><span class="bib-txt">M. Nottingham, E. Wilde, and S. Dalal, &ldquo;Problem Details for HTTP APIs,&rdquo; IETF RFC 9457, Jul. 2023.</span></li>
+    <li><span class="bib-idx">[9]</span><span class="bib-txt">A. Biryukov, D. Dinu, and D. Khovratovich, &ldquo;Argon2: New generation of memory-hard functions for password hashing and other applications,&rdquo; in <em>Proc. IEEE Eur. Symp. Security Privacy (EuroS&amp;P)</em>, Saarbr&uuml;cken, Germany, 2016, pp. 292&ndash;304.</span></li>
+    <li><span class="bib-idx">[10]</span><span class="bib-txt">M. Kleppmann, <em>Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems</em>. Sebastopol, CA, USA: O&rsquo;Reilly Media, 2017.</span></li>
+  </ol>
+
+</main>
+</body>
+</html>
