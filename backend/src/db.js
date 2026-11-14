@@ -70,8 +70,46 @@ async function applyMigrations(pglite) {
   }
 }
 
+const DEMO_USERS = [
+  { email: 'admin@example.test', displayName: 'Demo Admin', role: 'admin' },
+  { email: 'editor@example.test', displayName: 'Demo Editor', role: 'editor' },
+  { email: 'moderator@example.test', displayName: 'Demo Moderator', role: 'moderator' },
+  { email: 'seo@example.test', displayName: 'Demo SEO', role: 'seo' },
+  { email: 'reader@example.test', displayName: 'Demo Reader', role: 'reader' },
+];
+
+/** Ensure built-in demo accounts exist with verified emails and assigned roles. */
+async function ensureDemoUsers(pglite) {
+  const emails = DEMO_USERS.map((u) => u.email.toLowerCase());
+  const { rows: verifiedRows } = await pglite.query(
+    `SELECT count(*) AS count FROM users WHERE lower(email) = ANY($1) AND email_verified_at IS NOT NULL`,
+    [emails],
+  );
+  if (Number(verifiedRows[0]?.count) === DEMO_USERS.length) return;
+
+  const argon2 = (await import('argon2')).default;
+  const passwordHash = await argon2.hash('DevPassw0rd!', { type: argon2.argon2id });
+  for (const user of DEMO_USERS) {
+    const { rows } = await pglite.query(
+      `INSERT INTO users (email, password_hash, display_name, email_verified_at)
+       VALUES ($1, $2, $3, now())
+       ON CONFLICT (lower(email)) DO UPDATE
+         SET email_verified_at = COALESCE(users.email_verified_at, now())
+       RETURNING id`,
+      [user.email, passwordHash, user.displayName],
+    );
+    if (rows.length) {
+      await pglite.query(
+        `INSERT INTO user_roles (user_id, role_id) SELECT $1, id FROM roles WHERE name = $2 ON CONFLICT DO NOTHING`,
+        [rows[0].id, user.role],
+      );
+    }
+  }
+}
+
 async function autoSeedIfNeeded(pglite) {
   try {
+    await ensureDemoUsers(pglite);
     const { rows } = await pglite.query('SELECT count(*) AS count FROM documents');
     if (Number(rows[0]?.count) > 0) return;
   } catch {
@@ -81,19 +119,10 @@ async function autoSeedIfNeeded(pglite) {
   const articlesFile = path.resolve(__dirname, '../db/seed/articles.json');
   if (!fs.existsSync(articlesFile)) return;
 
-  console.log('[db] Initialising database: seeding Wikinews articles and demo users...');
+  console.log('[db] Initialising database: seeding Wikinews articles...');
   const articles = JSON.parse(fs.readFileSync(articlesFile, 'utf8'));
 
-  const argon2 = (await import('argon2')).default;
   const crypto = await import('node:crypto');
-
-  const DEV_PASSWORD = 'DevPassw0rd!';
-  const DEMO_USERS = [
-    { email: 'admin@example.test', displayName: 'Demo Admin', role: 'admin' },
-    { email: 'editor@example.test', displayName: 'Demo Editor', role: 'editor' },
-    { email: 'seo@example.test', displayName: 'Demo SEO', role: 'seo' },
-    { email: 'reader@example.test', displayName: 'Demo Reader', role: 'reader' },
-  ];
 
   const slugify = (text, max = 80) => {
     const slug = text
@@ -126,21 +155,6 @@ async function autoSeedIfNeeded(pglite) {
   };
 
   const nameKey = (name) => slugify(name, 100);
-
-  const passwordHash = await argon2.hash(DEV_PASSWORD, { type: argon2.argon2id });
-  for (const user of DEMO_USERS) {
-    const { rows } = await pglite.query(
-      `INSERT INTO users (email, password_hash, display_name) VALUES ($1, $2, $3)
-       ON CONFLICT (lower(email)) DO NOTHING RETURNING id`,
-      [user.email, passwordHash, user.displayName],
-    );
-    if (rows.length) {
-      await pglite.query(
-        `INSERT INTO user_roles (user_id, role_id) SELECT $1, id FROM roles WHERE name = $2`,
-        [rows[0].id, user.role],
-      );
-    }
-  }
 
   const categoryIds = new Map();
   for (const name of new Set(articles.map((a) => a.category))) {
