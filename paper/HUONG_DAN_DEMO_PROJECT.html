@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hướng Dẫn Demo Hệ Thống — News &amp; Digital Magazine Portal (SEG301m)</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 11mm 14mm;
+    }
+
+    :root {
+      --ink: #171923;
+      --ink-sec: #3f4654;
+      --ink-muted: #646d7a;
+      --bg-paper: #fbf8f2;
+      --line: #dcd6ca;
+      --terra: #b83b2a;
+      --terra-soft: #faeae7;
+      --teal: #0f5c63;
+      --teal-soft: #e6f2f3;
+      --sage: #2e6b46;
+      --sage-soft: #e9f4ed;
+      --amber: #9c6216;
+      --amber-soft: #fdf3e1;
+      --code-bg: #f1ede4;
+      --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --serif: "Segoe UI", Arial, sans-serif;
+      --mono: Consolas, "Cascadia Code", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 10pt;
+      line-height: 1.44;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .header-banner {
+      background: var(--bg-paper);
+      border: 1.5px solid var(--line);
+      border-left: 6px solid var(--terra);
+      border-radius: 10px;
+      padding: 13px 18px;
+      margin-bottom: 12px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 8.2pt;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .pill.terra { background: var(--terra-soft); color: var(--terra); }
+    .pill.teal { background: var(--teal-soft); color: var(--teal); }
+    .pill.sage { background: var(--sage-soft); color: var(--sage); }
+    .pill.amber { background: var(--amber-soft); color: var(--amber); }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 18pt;
+      font-weight: 800;
+      line-height: 1.22;
+      margin: 0 0 5px;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      font-size: 9.5pt;
+      color: var(--ink-sec);
+      margin: 0;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: 13pt;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 14px 0 8px;
+      padding-left: 10px;
+      border-left: 4px solid var(--teal);
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11pt;
+      color: var(--terra);
+      margin: 0 0 6px;
+    }
+
+    p {
+      margin: 0 0 7px;
+      color: var(--ink-sec);
+    }
+
+    ul, ol {
+      margin: 0 0 8px;
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 4px;
+      color: var(--ink-sec);
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 9pt;
+      background: var(--code-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #82271b;
+    }
+
+    pre {
+      background: #1c212b;
+      color: #eef2f7;
+      font-family: var(--mono);
+      font-size: 8.8pt;
+      line-height: 1.45;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin: 8px 0 12px;
+      overflow-x: auto;
+      break-inside: avoid;
+    }
+    pre .cm { color: #8c9bb0; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 8px;
+      break-inside: avoid;
+    }
+
+    .card.tint {
+      background: var(--bg-paper);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 10px;
+      font-size: 9pt;
+      break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 5px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--bg-paper);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .step-box {
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--terra);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      break-inside: avoid;
+    }
+    .step-box.teal { border-left-color: var(--teal); }
+    .step-box.sage { border-left-color: var(--sage); }
+
+    .step-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .step-title strong {
+      font-size: 10.8pt;
+      color: var(--ink);
+    }
+
+    .time-chip {
+      font-size: 8.3pt;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--bg-paper);
+      border: 1px solid var(--line);
+      color: var(--ink-sec);
+    }
+
+    .callout {
+      background: var(--teal-soft);
+      border: 1px solid #b5d8dc;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 9.5pt;
+      color: #0b4146;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+
+    .kbd {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 8.5pt;
+      font-weight: 700;
+      padding: 1px 6px;
+      border: 1px solid #b8b2a6;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .footer-note {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line);
+      font-size: 8.5pt;
+      color: var(--ink-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <div class="badge-row">
+      <span class="pill terra">SEG301m Capstone Project</span>
+      <span class="pill teal">Phase 1: Web &amp; RBAC</span>
+      <span class="pill sage">Phase 2: Custom IR Search Engine</span>
+    </div>
+    <h1>Tài liệu Chức năng &amp; Kịch bản Demo Hệ thống</h1>
+    <p class="subtitle">
+      <strong>Dự án:</strong> News &amp; Digital Magazine Portal &nbsp;|&nbsp;
+      <strong>Stack:</strong> React 19 SPA &middot; Node.js 24 ESM / Express 5 &middot; PostgreSQL 16 / Embedded PGlite &middot; In-Memory IR Engine
+    </p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2>I. Tổng quan Chức năng Hệ thống (Phase 1 + Phase 2)</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>1. Cổng Độc giả &amp; Cộng đồng (Public Portal)</h3>
+      <ul>
+        <li><strong>Đọc báo &amp; Phân loại:</strong> Trang chủ <code>/</code> (tin tiêu điểm + lưới bài mới), chuyên mục <code>/category/:slug</code>, chi tiết bài báo <code>/articles/:slug</code> (thời gian đọc, lượt xem, OpenGraph/SEO meta).</li>
+        <li><strong>Tương tác độc giả:</strong> Đánh giá <strong>1–5 sao</strong> (idempotent upsert), thả tim <code>article_likes</code>, bình luận đa luồng chống gửi trùng, tự gắn thẻ chủ đề (<strong>Community User Tags</strong>) và báo cáo vi phạm.</li>
+        <li><strong>Tài khoản &amp; Bảo mật:</strong> Đăng ký, đăng nhập, xác thực email, quên/đổi mật khẩu, hồ sơ cá nhân với mã hóa <strong>Argon2id</strong>, JWT trong RAM (15 phút) &amp; Refresh Token Rotation qua cookie <code>HttpOnly</code>.</li>
+        <li><strong>Feeds &amp; SEO chuẩn:</strong> <code>/rss.xml</code>, <code>/feed.atom</code>, <code>/feed.json</code>, <code>/sitemap.xml</code>, <code>/robots.txt</code>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>2. Công cụ Tìm kiếm IR Tùy chỉnh (<code>/search</code>)</h3>
+      <ul>
+        <li><strong>Cú pháp nâng cao:</strong> Cụm từ chính xác <code>"World Passport"</code> (kiểm tra offset liền kề), Boolean <code>Manchester AND Green</code> (Skip Pointers), loại trừ <code>Obama -Biden</code>.</li>
+        <li><strong>4 Mô hình xếp hạng:</strong> <code>bm25</code> (Fielded Okapi BM25F mặc định: Title 3.0, Tags 2.2, SEO 2.0, Summary 1.5, Body 1.0), <code>ql</code> (Dirichlet LM <code>&mu;=1500</code>), <code>hybrid</code>, và <code>tfidf</code> (Baseline).</li>
+        <li><strong>Thông minh hóa truy vấn:</strong> Autocomplete tiền tố (<code>&ge;2</code> ký tự), sửa lỗi chính tả <strong>Did-You-Mean</strong> (Noisy Channel / Damerau-Levenshtein &le; 2), mở rộng truy vấn <strong>RM3 PRF</strong> (<code>prf=1</code>) + Dice Co-occurrence.</li>
+        <li><strong>Giải thích &amp; Phân cụm:</strong> Bật <code>explain=1</code> xem điểm từng từ khóa/trường; tự động gom cụm chủ đề <strong>K-Means++</strong>; ghi log click thực tế vào <code>search_click_log</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card tint">
+    <h3>3. Cổng Quản trị Phân quyền 4 Vai trò (Enterprise RBAC — <code>/admin</code>)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 19%;">Vai trò (Role)</th>
+          <th style="width: 31%;">Đường dẫn &amp; Không gian làm việc</th>
+          <th style="width: 50%;">Quyền hạn &amp; Nghiệp vụ kiểm soát qua DB Middleware (<code>requireRole</code>)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Super Admin</strong><br><code>admin</code></td>
+          <td><code>/admin/users</code>, <code>/admin/logs</code>, <code>/admin/settings</code> + toàn quyền khác</td>
+          <td>Quản lý tài khoản người dùng, cấp/thu hồi vai trò nhân sự, theo dõi nhật ký hệ thống (<code>audit_log</code>), cấu hình toàn cục và thực thi mọi quyền của các vai trò bên dưới.</td>
+        </tr>
+        <tr>
+          <td><strong>Content Manager</strong><br><code>editor</code></td>
+          <td><code>/admin</code>, <code>/admin/articles/new</code>, <code>/admin/articles/:id</code>, <code>/admin/taxonomy</code></td>
+          <td>Tạo/sửa/xuất bản/lưu trữ bài báo (104 bài Wikinews nền tảng), thiết lập slug &amp; meta SEO bài viết, quản lý danh mục (Categories) &amp; thẻ từ khóa (Tags), ẩn bình luận khi cần.</td>
+        </tr>
+        <tr>
+          <td><strong>Moderator</strong><br><code>moderator</code></td>
+          <td><code>/admin/moderation</code></td>
+          <td>Tiếp nhận hàng đợi báo cáo vi phạm (bài báo &amp; bình luận bị độc giả gắn cờ), phê duyệt/ẩn/xóa bình luận vi phạm quy chuẩn cộng đồng.</td>
+        </tr>
+        <tr>
+          <td><strong>Data &amp; SEO</strong><br><code>seo</code></td>
+          <td><code>/admin/search-engine</code>, <code>/admin/seo</code>, <code>/admin/analytics</code></td>
+          <td>Vận hành <strong>Search Engine Lab (Phase 2)</strong>: xem thông số nén V-Byte (tiết kiệm 75% RAM), chạy Benchmark 16 truy vấn, soi Posting List trong RAM, kiểm chứng Zipf/Heaps &amp; đo CTR thực tế.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 2 -->
+  <h2>II. Hướng dẫn Khởi chạy &amp; Danh sách Tài khoản Demo</h2>
+
+  <pre><span class="cm"># Di chuyển vào thư mục gốc dự án</span>
+cd c:\Users\Trieu\Downloads\SEG\news-magazine-portal
+
+<span class="cm"># 1. Chạy SQL migrations (001–011) và nạp 104 bài báo Wikinews + 5 tài khoản demo</span>
+<span class="cm"># (Nếu máy không cài/chưa bật PostgreSQL, hệ thống tự fallback sang PGlite nhúng sẵn)</span>
+npm --prefix backend run migrate
+npm --prefix backend run seed
+
+<span class="cm"># 2. Khởi chạy đồng thời Backend API (:4000) và Frontend Vite (:5173)</span>
+npm run dev</pre>
+
+  <div class="callout">
+    <strong>URL truy cập sau khi chạy:</strong> Giao diện Web tại <code>http://localhost:5173</code> &nbsp;|&nbsp; API Health Check tại <code>http://localhost:4000/api/health</code> &nbsp;|&nbsp; Slide báo cáo (nếu bật HTTP server) tại <code>http://localhost:8765/</code>.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Vai trò Demo</th>
+        <th>Email đăng nhập</th>
+        <th>Mật khẩu chung</th>
+        <th>Trang chuyển hướng mặc định khi vào <code>/admin</code></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Super Admin</strong></td>
+        <td><code>admin@example.test</code></td>
+        <td><code>DevPassw0rd!</code></td>
+        <td><code>/admin</code> (Dashboard bài viết + full menu Users, Logs, Settings, IR Lab)</td>
+      </tr>
+      <tr>
+        <td><strong>Content Manager</strong></td>
+        <td><code>editor@example.test</code></td>
+        <td><code>DevPassw0rd!</code></td>
+        <td><code>/admin</code> (Quản lý bài viết &amp; Taxonomy Categories/Tags)</td>
+      </tr>
+      <tr>
+        <td><strong>Moderator</strong></td>
+        <td><code>moderator@example.test</code></td>
+        <td><code>DevPassw0rd!</code></td>
+        <td><code>/admin/moderation</code> (Hàng đợi xử lý báo cáo vi phạm)</td>
+      </tr>
+      <tr>
+        <td><strong>Data &amp; SEO Specialist</strong></td>
+        <td><code>seo@example.test</code></td>
+        <td><code>DevPassw0rd!</code></td>
+        <td><code>/admin/seo</code> &amp; <code>/admin/search-engine</code> (Search Engine Lab &amp; Analytics)</td>
+      </tr>
+      <tr>
+        <td><strong>Reader (Độc giả)</strong></td>
+        <td><code>reader@example.test</code></td>
+        <td><code>DevPassw0rd!</code></td>
+        <td>Trang chủ <code>/</code> (Không có quyền vào khu vực <code>/admin</code>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3 -->
+  <h2>III. Kịch bản Demo 5 Phút trước Hội đồng (Step-by-Step Checklist)</h2>
+
+  <div class="step-box sage">
+    <div class="step-title">
+      <strong>Bước 1 — Demo Cổng Độc giả &amp; Tương tác Cộng đồng</strong>
+      <span class="time-chip">Phút 0:00 – 1:00</span>
+    </div>
+    <ol>
+      <li>Mở <code>http://localhost:5173</code> &rarr; trình bày giao diện báo chí, bài tiêu điểm và bộ lọc chuyên mục (<code>/category/...</code>).</li>
+      <li>Vào <code>/login</code>, đăng nhập bằng <code>reader@example.test</code> / <code>DevPassw0rd!</code>.</li>
+      <li>Mở một bài viết bất kỳ: <strong>chấm 5 sao</strong> (Rating), bấm <strong>Like</strong>, thêm một <strong>User Tag</strong> tùy chỉnh, viết 1 <strong>bình luận</strong>, và bấm <strong>Report</strong> thử bài viết/bình luận để tạo dữ liệu cho Moderator ở Bước 3.</li>
+    </ol>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">
+      <strong>Bước 2 — Demo Công cụ Tìm kiếm IR Chuyên sâu tại <code>/search</code></strong>
+      <span class="time-chip">Phút 1:00 – 3:00</span>
+    </div>
+    <ol>
+      <li>Truy cập <code>http://localhost:5173/search</code>.</li>
+      <li><strong>Sửa lỗi chính tả (Noisy Channel Model):</strong> Gõ <code>afirca</code> &rarr; chỉ ra gợi ý tự động <em>"Did you mean: africa"</em> và hộp autocomplete tiền tố.</li>
+      <li><strong>Tìm cụm từ &amp; Boolean + Skip Pointers:</strong> Lần lượt bấm các chip truy vấn mẫu:
+        <code>"World Passport"</code> (khớp vị trí liền kề), <code>Manchester AND Green</code> (giao danh sách dùng bước nhảy Skip Pointer), và <code>Obama -Biden</code> (phủ định <code>NOT</code>).</li>
+      <li><strong>So sánh mô hình &amp; Explainability:</strong> Tìm <code>Pope Africa</code>, tích chọn <strong>RM3 PRF</strong> (<code>prf=1</code>) và <strong>Explain scores</strong> (<code>explain=1</code>). Chuyển đổi qua lại giữa <strong>Okapi BM25F</strong>, <strong>Dirichlet LM</strong>, và <strong>TF-IDF Baseline</strong> để chỉ ra sự thay đổi thứ hạng, bảng giải thích điểm TF/IDF từng trường và cụm chủ đề <strong>K-Means++</strong> bên thanh cạnh.</li>
+      <li>Click vào một bài kết quả để chứng minh hệ thống ghi nhận <strong>Click Telemetry</strong> (<code>search_click_log</code>).</li>
+    </ol>
+  </div>
+
+  <div class="step-box teal">
+    <div class="step-title">
+      <strong>Bước 3 — Demo Phân quyền RBAC &amp; Search Engine Lab tại <code>/admin</code></strong>
+      <span class="time-chip">Phút 3:00 – 5:00</span>
+    </div>
+    <ol>
+      <li>Đăng xuất, đăng nhập bằng <code>moderator@example.test</code> &rarr; hệ thống điều hướng thẳng vào <code>/admin/moderation</code>. Xử lý báo cáo vi phạm đã tạo ở Bước 1; thử nhập tay URL <code>/admin/users</code> để chứng minh <strong>RBAC Guard chặn truy cập trái phép</strong>.</li>
+      <li>Đăng nhập bằng <code>admin@example.test</code> (hoặc <code>seo@example.test</code>), mở mục <strong>Search Engine Lab</strong> (<code>/admin/search-engine</code>):
+        <ul>
+          <li>Chỉ ra thông số trực tiếp: <strong>N = 104 bài</strong>, <strong>V = 5.950 stems</strong>, nén <strong>V-Byte 4.0x (tiết kiệm 75,0% RAM)</strong>.</li>
+          <li>Trình chiếu bảng <strong>Benchmark 16 truy vấn</strong>: BM25F đạt <strong>P@5 = 95.00%</strong>, <strong>MAP = 0.9228</strong>, <strong>0.226 ms</strong> (4.418 QPS), kiểm định dấu <strong>p &lt; 0.001</strong>.</li>
+          <li>Kéo xuống mục <strong>Inverted Index &amp; V-Byte Posting Inspector</strong>: gõ từ <code>elections</code> và bấm <strong>Inspect</strong> để trình diễn gốc từ Porter <code>elect</code>, tần suất 5 trường và dãy byte đã nén Delta + V-Byte.</li>
+          <li>Kiểm chứng đường cong <strong>Zipf's Law</strong> (<code>r * f = 257</code>) và <strong>Heaps' Law</strong> (<code>k = 8.299, beta = 0.627</code>).</li>
+        </ul>
+      </li>
+      <li>Mở <code>/admin/logs</code> (bằng tài khoản Admin) để kết thúc bằng minh chứng toàn bộ thao tác đều có dấu vết kiểm toán (<code>audit_log</code>).</li>
+    </ol>
+  </div>
+
+  <!-- SECTION 4 -->
+  <h2>IV. Phím tắt Điều khiển Slide Thuyết trình (<code>presentation/index.html</code>)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 24%;">Phím tắt / Thao tác</th>
+        <th style="width: 26%;">Chức năng</th>
+        <th style="width: 50%;">Ghi chú trình chiếu thực tế</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> <span class="kbd">Space</span></td>
+        <td>Chuyển Slide tới / lui</td>
+        <td>Hỗ trợ thêm phím <span class="kbd">Home</span> / <span class="kbd">End</span>, cuộn chuột và vuốt cảm ứng.</td>
+      </tr>
+      <tr>
+        <td><span class="kbd">T</span></td>
+        <td>Đổi Theme giao diện</td>
+        <td>Chuyển vòng 4 preset: <em>Paper &amp; Ink</em>, <em>Cobalt Grid</em>, <em>Signal Navy</em>, <em>Swiss Modern</em>.</td>
+      </tr>
+      <tr>
+        <td><span class="kbd">G</span> hoặc <span class="kbd">O</span></td>
+        <td>Grid Overview (20 slides)</td>
+        <td>Bật lưới thu nhỏ để nhảy nhanh tới bất kỳ slide nào; bấm <span class="kbd">Esc</span> để đóng.</td>
+      </tr>
+      <tr>
+        <td><span class="kbd">N</span> hoặc <span class="kbd">S</span></td>
+        <td>Speaker Notes</td>
+        <td>Mở ghi chú thuyết trình chi tiết cho từng slide (ẩn khỏi khung chiếu nếu tắt).</td>
+      </tr>
+      <tr>
+        <td><span class="kbd">E</span> (hoặc rê góc trên-trái)</td>
+        <td>Inline Edit Mode</td>
+        <td>Cho phép sửa trực tiếp văn bản trên slide ngay lúc tổng duyệt (lưu localStorage).</td>
+      </tr>
+      <tr>
+        <td><span class="kbd">F</span> / <span class="kbd">P</span></td>
+        <td>Fullscreen / Print PDF</td>
+        <td>Mở toàn màn hình không viền hoặc xuất toàn bộ 20 slide ra file PDF.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer-note">
+    <span>News &amp; Digital Magazine Portal (SEG301m) &mdash; Demo &amp; QA Playbook</span>
+    <span>222 Automated Tests (100 Backend + 122 Frontend Vitest) &middot; Ready for Defense</span>
+  </div>
+
+</body>
+</html>
