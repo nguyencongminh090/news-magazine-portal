@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
@@ -66,7 +66,9 @@ export function createApp(cfg = {}) {
   app.use('/api', notFound);
 
   // Production only: dev serves the shell from Vite. `cfg.shell` lets tests inject the HTML.
-  const shell = cfg.shell ?? (cfg.isProd ? readFileSync(join(cfg.frontendDist, 'index.html'), 'utf8') : null);
+  // Guard with existsSync so standalone backend deployments (e.g. Vercel Services) do not crash when frontend/dist is absent.
+  const indexPath = cfg.isProd && !cfg.shell ? join(cfg.frontendDist, 'index.html') : null;
+  const shell = cfg.shell ?? (indexPath && existsSync(indexPath) ? readFileSync(indexPath, 'utf8') : null);
   if (shell) app.use(articleShellRouter({ shell, baseUrl: cfg.publicBaseUrl }));
 
   app.use(errorHandler);
